@@ -21,6 +21,6 @@ class GuestLayout extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('livewire.layouts.guest-layout');
+        return view('livewire.components.guest-layout');
     }
 }

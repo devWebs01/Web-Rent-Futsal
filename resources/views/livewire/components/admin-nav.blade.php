@@ -1,7 +1,7 @@
 <ul class="menu-inner py-1">
     <!-- Dashboards -->
     <li class="menu-item {{ Request::is('home') ? 'active' : '' }}">
-        <a href="/home" class="menu-link">
+        <a href="/home" wire:navigate class="menu-link">
             <i class="menu-icon tf-icons ri-home-smile-line"></i>
             <div data-i18n="Dashboards">Dashboards</div>
         </a>

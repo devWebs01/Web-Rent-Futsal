@@ -21,6 +21,6 @@ class AdminLayout extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('livewire.layouts.admin-layout');
+        return view('livewire.components.admin-layout');
     }
 }

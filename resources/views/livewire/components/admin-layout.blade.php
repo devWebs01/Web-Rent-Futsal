@@ -13,7 +13,7 @@
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('') }}../assets/admin/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('../assets/admin/img/favicon/favicon.ico') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -34,8 +34,7 @@
     <link rel="stylesheet" href="{{ asset('../assets/admin/css/demo.css') }}" />
 
     <!-- Vendors CSS -->
-    <link rel="stylesheet"
-        href="{{ asset('') }}../assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="{{ asset('../assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
@@ -50,9 +49,13 @@
     <!-- Page CSS -->
 
     <!-- Helpers -->
-    <script src="{{ asset('') }}../assets/admin/vendor/js/helpers.js"></script>
+    <script src="{{ asset('../assets/admin/vendor/js/helpers.js') }}"></script>
 
-    <script src="{{ asset('') }}../assets/admin/js/config.js"></script>
+    <script src="{{ asset('../assets/admin/js/config.js') }}"></script>
+
+    @livewireStyles
+
+    @stack('css')
 
     @vite([])
 </head>
@@ -143,7 +146,7 @@
                                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);"
                                     data-bs-toggle="dropdown">
                                     <div class="avatar avatar-online">
-                                        <img src="{{ asset('') }}../assets/admin/img/avatars/1.png" alt
+                                        <img src="{{ asset('../assets/admin/img/avatars/1.png') }}" alt
                                             class="w-px-40 h-auto rounded-circle" />
                                     </div>
                                 </a>
@@ -153,7 +156,7 @@
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0 me-2">
                                                     <div class="avatar avatar-online">
-                                                        <img src="{{ asset('') }}../assets/admin/img/avatars/1.png"
+                                                        <img src="{{ asset('../assets/admin/img/avatars/1.png') }}"
                                                             alt class="w-px-40 h-auto rounded-circle" />
                                                     </div>
                                                 </div>
@@ -275,26 +278,34 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
-    <script src="{{ asset('') }}../assets/admin/vendor/libs/jquery/jquery.js"></script>
-    <script src="{{ asset('') }}../assets/admin/vendor/libs/popper/popper.js"></script>
-    <script src="{{ asset('') }}../assets/admin/vendor/js/bootstrap.js"></script>
-    <script src="{{ asset('') }}../assets/admin/vendor/libs/node-waves/node-waves.js"></script>
-    <script src="{{ asset('') }}../assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <script src="{{ asset('') }}../assets/admin/vendor/js/menu.js"></script>
+    <script src="{{ asset('../assets/admin/vendor/libs/jquery/jquery.js') }}"></script>
+    <script src="{{ asset('../assets/admin/vendor/libs/popper/popper.js') }}"></script>
+    <script src="{{ asset('../assets/admin/vendor/js/bootstrap.js') }}"></script>
+    <script src="{{ asset('../assets/admin/vendor/libs/node-waves/node-waves.js') }}"></script>
+    <script src="{{ asset('../assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
+    <script src="{{ asset('../assets/admin/vendor/js/menu.js') }}"></script>
 
     <!-- endbuild -->
 
     <!-- Vendors JS -->
-    <script src="{{ asset('') }}../assets/admin/vendor/libs/apex-charts/apexcharts.js"></script>
+    <script src="{{ asset('../assets/admin/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 
     <!-- Main JS -->
-    <script src="{{ asset('') }}../assets/admin/js/main.js"></script>
+    <script src="{{ asset('../assets/admin/js/main.js') }}"></script>
 
     <!-- Page JS -->
-    <script src="{{ asset('') }}../assets/admin/js/dashboards-analytics.js"></script>
+    <script src="{{ asset('../assets/admin/js/dashboards-analytics.js') }}"></script>
 
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    @stack('scripts')
+
+    @livewireScripts
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <x-livewire-alert::scripts />
 </body>
 
 </html>

@@ -1,21 +1,39 @@
+<?php
+
+use function Livewire\Volt\{state};
+
+state(['count' => 0]);
+
+$increment = fn() => $this->count++;
+
+?>
+
 <x-admin-layout>
     <x-slot name="title">Dashboard</x-slot>
 
-    <div class="row justify-content-center">
-        <div class="col">
-            <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
+    @volt
+        <div>
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
+            <h1>{{ $count }}</h1>
+            <button wire:click="increment">+</button>
+
+            <div class="row justify-content-center">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">{{ __('Dashboard') }}</div>
+
+                        <div class="card-body">
+                            @if (session('status'))
+                                <div class="alert alert-success" role="alert">
+                                    {{ session('status') }}
+                                </div>
+                            @endif
+
+                            {{ __('You are logged in!') }}
                         </div>
-                    @endif
-
-                    {{ __('You are logged in!') }}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endvolt
 </x-admin-layout>

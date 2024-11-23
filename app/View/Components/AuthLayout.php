@@ -21,6 +21,6 @@ class AuthLayout extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('livewire.layouts.auth-layout');
+        return view('livewire.components.auth-layout');
     }
 }
