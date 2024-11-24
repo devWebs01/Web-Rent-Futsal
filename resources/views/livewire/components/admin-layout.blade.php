@@ -1,19 +1,19 @@
 <!doctype html>
 
 <html lang="en" class="light-style layout-wide" dir="ltr" data-theme="theme-default"
-    data-assets-path="{{ asset('../assets/admin/') }}" data-template="vertical-menu-template-free" data-style="light">
+    data-assets-path="{{ asset('/assets/admin/') }}" data-template="vertical-menu-template-free" data-style="light">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Blank layout - Layouts | Materio - Bootstrap Material Design Admin Template</title>
+    <title>{{ $title ?? '' }} | AL Pama Futsal</title>
 
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('../assets/admin/img/favicon/favicon.ico') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('/assets/admin/img/favicon/favicon.ico') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,20 +21,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&ampdisplay=swap"
         rel="stylesheet" />
 
-    <link rel="stylesheet" href="{{ asset('../assets/admin/vendor/fonts/remixicon/remixicon.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/admin/vendor/fonts/remixicon/remixicon.css') }}" />
 
     <!-- Menu waves for no-customizer fix -->
-    <link rel="stylesheet" href="{{ asset('../assets/admin/vendor/libs/node-waves/node-waves.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/admin/vendor/libs/node-waves/node-waves.css') }}" />
 
     <!-- Core CSS -->
-    <link rel="stylesheet" href="{{ asset('../assets/admin/vendor/css/core.css') }}"
+    <link rel="stylesheet" href="{{ asset('/assets/admin/vendor/css/core.css') }}"
         class="template-customizer-core-css" />
-    <link rel="stylesheet" href="{{ asset('../assets/admin/vendor/css/theme-default.css') }}"
+    <link rel="stylesheet" href="{{ asset('/assets/admin/vendor/css/theme-default.css') }}"
         class="template-customizer-theme-css" />
-    <link rel="stylesheet" href="{{ asset('../assets/admin/css/demo.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/admin/css/demo.css') }}" />
 
     <!-- Vendors CSS -->
-    <link rel="stylesheet" href="{{ asset('../assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
@@ -49,9 +49,9 @@
     <!-- Page CSS -->
 
     <!-- Helpers -->
-    <script src="{{ asset('../assets/admin/vendor/js/helpers.js') }}"></script>
+    <script src="{{ asset('/assets/admin/vendor/js/helpers.js') }}"></script>
 
-    <script src="{{ asset('../assets/admin/js/config.js') }}"></script>
+    <script src="{{ asset('/assets/admin/js/config.js') }}"></script>
 
     @livewireStyles
 
@@ -146,7 +146,7 @@
                                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);"
                                     data-bs-toggle="dropdown">
                                     <div class="avatar avatar-online">
-                                        <img src="{{ asset('../assets/admin/img/avatars/1.png') }}" alt
+                                        <img src="{{ asset('/assets/admin/img/avatars/1.png') }}" alt
                                             class="w-px-40 h-auto rounded-circle" />
                                     </div>
                                 </a>
@@ -156,8 +156,8 @@
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0 me-2">
                                                     <div class="avatar avatar-online">
-                                                        <img src="{{ asset('../assets/admin/img/avatars/1.png') }}"
-                                                            alt class="w-px-40 h-auto rounded-circle" />
+                                                        <img src="{{ asset('/assets/admin/img/avatars/1.png') }}" alt
+                                                            class="w-px-40 h-auto rounded-circle" />
                                                     </div>
                                                 </div>
                                                 <div class="flex-grow-1">
@@ -171,27 +171,12 @@
                                         <div class="dropdown-divider"></div>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="#">
+                                        <a class="dropdown-item" href="{{ route('profile.users') }}">
                                             <i class="ri-user-3-line ri-22px me-2"></i>
                                             <span class="align-middle">My Profile</span>
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="ri-settings-4-line ri-22px me-2"></i>
-                                            <span class="align-middle">Settings</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <span class="d-flex align-items-center align-middle">
-                                                <i class="flex-shrink-0 ri-file-text-line ri-22px me-3"></i>
-                                                <span class="flex-grow-1 align-middle">Billing</span>
-                                                <span
-                                                    class="flex-shrink-0 badge badge-center rounded-pill bg-danger h-px-20 d-flex align-items-center justify-content-center">4</span>
-                                            </span>
-                                        </a>
-                                    </li>
+
                                     <li>
                                         <div class="dropdown-divider"></div>
                                     </li>
@@ -278,23 +263,23 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
-    <script src="{{ asset('../assets/admin/vendor/libs/jquery/jquery.js') }}"></script>
-    <script src="{{ asset('../assets/admin/vendor/libs/popper/popper.js') }}"></script>
-    <script src="{{ asset('../assets/admin/vendor/js/bootstrap.js') }}"></script>
-    <script src="{{ asset('../assets/admin/vendor/libs/node-waves/node-waves.js') }}"></script>
-    <script src="{{ asset('../assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
-    <script src="{{ asset('../assets/admin/vendor/js/menu.js') }}"></script>
+    <script src="{{ asset('/assets/admin/vendor/libs/jquery/jquery.js') }}"></script>
+    <script src="{{ asset('/assets/admin/vendor/libs/popper/popper.js') }}"></script>
+    <script src="{{ asset('/assets/admin/vendor/js/bootstrap.js') }}"></script>
+    <script src="{{ asset('/assets/admin/vendor/libs/node-waves/node-waves.js') }}"></script>
+    <script src="{{ asset('/assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
+    <script src="{{ asset('/assets/admin/vendor/js/menu.js') }}"></script>
 
     <!-- endbuild -->
 
     <!-- Vendors JS -->
-    <script src="{{ asset('../assets/admin/vendor/libs/apex-charts/apexcharts.js') }}"></script>
+    <script src="{{ asset('/assets/admin/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 
     <!-- Main JS -->
-    <script src="{{ asset('../assets/admin/js/main.js') }}"></script>
+    <script src="{{ asset('/assets/admin/js/main.js') }}"></script>
 
     <!-- Page JS -->
-    <script src="{{ asset('../assets/admin/js/dashboards-analytics.js') }}"></script>
+    <script src="{{ asset('/assets/admin/js/dashboards-analytics.js') }}"></script>
 
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>

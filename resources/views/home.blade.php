@@ -1,10 +1,9 @@
 <?php
 
+use App\Models\User;
 use function Livewire\Volt\{state};
 
-state(['count' => 0]);
-
-$increment = fn() => $this->count++;
+state(['count' => fn() => User::count()]);
 
 ?>
 
@@ -13,10 +12,6 @@ $increment = fn() => $this->count++;
 
     @volt
         <div>
-
-            <h1>{{ $count }}</h1>
-            <button wire:click="increment">+</button>
-
             <div class="row justify-content-center">
                 <div class="col">
                     <div class="card">

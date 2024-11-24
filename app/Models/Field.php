@@ -24,4 +24,14 @@ class Field extends Model
     {
         return $this->hasMany(Facility::class);
     }
+
+    /**
+     * Get all of the images for the Field
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class);
+    }
 }
