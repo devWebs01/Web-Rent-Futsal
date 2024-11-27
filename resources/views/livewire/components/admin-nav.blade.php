@@ -13,6 +13,13 @@
             <i class="menu-icon tf-icons ri-home-smile-line"></i>
             <div data-i18n="Dashboards">Lapangan</div>
         </a>
+    </li>
+
+    <li class="menu-item {{ Request::is(['settings', 'settings/*']) ? 'active' : '' }}">
+        <a href="{{ route('settings.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons ri-home-smile-line"></i>
+            <div data-i18n="Dashboards">Pengaturan</div>
+        </a>
 
     </li>
 
