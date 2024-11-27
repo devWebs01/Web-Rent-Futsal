@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Field;
+use App\Models\Image;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use function Laravel\Folio\name;
 use function Livewire\Volt\{computed, state, usesPagination, uses};
@@ -27,8 +28,24 @@ $fields = computed(function () {
 });
 
 $destroy = function (field $field) {
+
     try {
+
+        $images = Image::where('field_id', $field->id)->get();
+
+        if ($images->isNotEmpty()) {
+            // Cek apakah koleksi tidak kosong
+            foreach ($images as $image) {
+                // Hapus file dari penyimpanan
+                Storage::delete($image->image_path);
+
+                // Hapus data dari database
+                $image->delete();
+            }
+        }
+
         $field->delete();
+
         $this->alert('success', 'Data berhasil dihapus!', [
             'position' => 'center',
             'timer' => 3000,
@@ -99,6 +116,8 @@ $destroy = function (field $field) {
                                 </tbody>
                             </table>
 
+                        </div>
+                        <div class="m-3">
                             {{ $this->fields->links() }}
                         </div>
 

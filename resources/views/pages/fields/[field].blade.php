@@ -24,49 +24,103 @@ state([
 rules([
     'field_name' => 'required|string|min:5',
     'description' => 'required|string|min:5',
-    'facilities' => 'required|min:1', // Validasi array
+    'facilities' => 'required', // Validasi array
     'facilities.*' => 'required|string|min:5', // Validasi setiap item
-    'images' => 'required', // Validasi file gambar
+    'images' => 'nullable', // Validasi file gambar
     'images.*' => 'image|max:2048', // Validasi file gambar
 ]);
+
+$updatingImages = function ($value) {
+    $this->previmages = $this->images;
+};
+
+$updatedImages = function ($value) {
+    $this->images = array_merge($this->previmages, $value);
+};
+
+$removeItem = function ($key) {
+    if (isset($this->images[$key])) {
+        $file = $this->images[$key];
+        $file->delete();
+        unset($this->images[$key]);
+    }
+
+    $this->images = array_values($this->images);
+};
 
 $edit = function () {
     $field = $this->field;
 
     $validateData = $this->validate();
 
-    // Update field
-    $field->update([
-        'field_name' => $validateData['field_name'],
-        'description' => $validateData['description'],
-    ]);
+    try {
+        // Mulai transaksi database
+        \DB::beginTransaction();
 
-    // Pastikan facilities berupa array
-    $facilities = is_array($this->facilities) ? $this->facilities : explode(',', $this->facilities);
+        // Update field
+        $field->update([
+            'field_name' => $validateData['field_name'],
+            'description' => $validateData['description'],
+        ]);
 
-    // Hapus fasilitas lama dan tambahkan yang baru
-    $field->facilities()->delete();
-    foreach ($facilities as $facility) {
-        $field->facilities()->create([
-            'facility_name' => $facility,
+        // Pastikan facilities berupa array
+        $facilities = is_array($this->facilities) ? $this->facilities : explode(',', $this->facilities);
+
+        // Hapus fasilitas lama dan tambahkan yang baru
+        $field->facilities()->delete();
+        
+        foreach ($facilities as $facility) {
+            $field->facilities()->create([
+                'facility_name' => $facility,
+            ]);
+        }
+
+        if (count($this->images) > 0) {
+            $images = Image::where('field_id', $field->id)->get();
+
+            if ($images->isNotEmpty()) {
+                // Cek apakah koleksi tidak kosong
+                foreach ($images as $image) {
+                    // Hapus file dari penyimpanan
+                    Storage::delete($image->image_path);
+
+                    // Hapus data dari database
+                    $image->delete();
+                }
+            }
+
+            foreach ($this->images as $image) {
+                $path = $image->store('fields', 'public'); // Simpan ke folder "fields" di storage
+                Image::create([
+                    'field_id' => $field->id,
+                    'image_path' => $path,
+                ]);
+
+                $image->delete();
+            }
+        }
+
+        // Commit transaksi
+        \DB::commit();
+
+        $this->alert('success', 'Data berhasil diedit!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => true,
+        ]);
+
+        $this->redirectRoute('fields.index');
+    } catch (\Exception $e) {
+        // Rollback transaksi jika terjadi kesalahan
+        \DB::rollBack();
+
+        // Tampilkan notifikasi error
+        $this->alert('error', 'Terjadi kesalahan saat menyimpan data!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => true,
         ]);
     }
-
-    // Simpan Images
-    foreach ($this->images as $image) {
-        $path = $image->store('images'); // Simpan ke folder "fields" di storage
-        Image::create([
-            'field_id' => $field->id,
-            'image_path' => $path,
-        ]);
-    }
-    $this->alert('success', 'Data berhasil diedit!', [
-        'position' => 'center',
-        'timer' => 3000,
-        'toast' => true,
-    ]);
-
-    $this->redirectRoute('fields.index');
 };
 
 ?>
@@ -78,52 +132,107 @@ $edit = function () {
 
     @volt
         <div>
-            @foreach ($errors->all() as $item)
-                <p>{{ $item }}</p>
-            @endforeach
             <div class="card">
                 <div class="card-header">
                     <div class="alert alert-primary" role="alert">
                         <strong>Edit Lapangan</strong>
-                        <p>Pada halaman edit Lapangan, kamu dapat mengubah informasi Lapangan yang sudah ada.
+                        <p>
+                            Pada halaman edit Lapangan, kamu dapat mengubah informasi Lapangan yang sudah ada.
                         </p>
                     </div>
                 </div>
                 <div class="card-body">
+                    @if ($images)
+                        <div class="mb-3 row d-flex flex-nowrap gap-1 overflow-auto">
+                            @foreach ($images as $key => $image)
+                                <div class="col-3">
+                                    <div class="card position-relative mt-6" style="width: 200px;">
+                                        <div class="card-img-top">
+                                            <img src="{{ $image->temporaryUrl() }}" class="img"
+                                                style="object-fit: cover;" width="200px" height="200px" alt="preview">
+                                            <a type="button" class="position-absolute top-0 start-100 translate-middle p-2"
+                                                wire:click.prevent='removeItem({{ json_encode($key) }})'>
+                                                <i
+                                                    class="ri-close-large-line p-2 rounded-circle ri-20px text-white bg-danger"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text text-center">
+                                            {{ Str::limit($image->getClientOriginalName(), 20, '...') }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @elseif($field->images->isNotEmpty())
+                        <small>Gambar tersimpan
+                            <span class="text-danger">(Jika tidak mengubah gambar, tidak perlu melakukan
+                                input gambar)</span>
+                            .
+                        </small>
+                        <div class="mb-3 row d-flex flex-nowrap gap-1 overflow-auto">
+                            @foreach ($field->images as $key => $image)
+                                <div class="col-3">
+                                    <div class="card position-relative" style="width: 200px;">
+                                        <div class="card-img-top">
+                                            <img src="{{ Storage::url($image->image_path) }}" class="img"
+                                                style="object-fit: cover;" width="200px" height="200px" alt="preview">
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                </div>
+
+                <div class="card-body">
                     <form wire:submit="edit">
                         @csrf
 
-                        <div class="mb-3">
-                            <label for="field_name" class="form-label">Nama Lapangan</label>
-                            <input type="text" class="form-control @error('field_name') is-invalid @enderror"
-                                wire:model="field_name" id="field_name" aria-describedby="field_nameId" autofocus
-                                autocomplete="field_name" />
-                            @error('field_name')
-                                <small id="field_nameId" class="form-text text-danger">{{ $message }}</small>
-                            @enderror
+                        <div class="row">
+                            <div class="col-md">
+                                <div class="mb-3">
+                                    <label for="field_name" class="form-label">Nama Lapangan</label>
+                                    <input type="text" class="form-control @error('field_name') is-invalid @enderror"
+                                        wire:model="field_name" id="field_name" aria-describedby="field_nameId" autofocus
+                                        autocomplete="field_name" />
+                                    @error('field_name')
+                                        <small id="field_nameId" class="form-text text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="mb-3">
+                                    <label for="images" class="form-label">Nama Lapangan</label>
+                                    <input type="file" class="form-control @error('images') is-invalid @enderror"
+                                        wire:model="images" id="images" aria-describedby="imagesId" accept="image/*"
+                                        autocomplete="images" multiple />
+                                    @error('images')
+                                        <small id="imagesId" class="form-text text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
+
 
                         <div class="mb-3">
                             <label for="facilities" class="form-label">Fasilitas</label>
                             <div wire:ignore>
                                 <input type="text" wire:model="facilities" id="input-tags"
-                                    aria-describedby="facilitiesId" value="{{ implode(',', $facilities) }}" autofocus
+                                    aria-describedby="facilitiesId" value="{{ implode(',', $facilities) }}"
                                     autocomplete="facilities" />
                             </div>
                             @error('facilities')
                                 <small id="facilitiesId" class="form-text text-danger">{{ $message }}</small>
                             @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="images" class="form-label">Nama Lapangan</label>
-                            <input type="file" class="form-control @error('images') is-invalid @enderror"
-                                wire:model="images" id="images" aria-describedby="imagesId" autofocus
-                                autocomplete="images" multiple />
-                            @error('images')
-                                <small id="imagesId" class="form-text text-danger">{{ $message }}</small>
+                            <br>
+                            @error('facilities.*')
+                                <small id="facilitiesId" class="form-text text-danger">{{ $message }}</small>
                             @enderror
                         </div>
+
+
 
                         <div class="mb-3">
                             <label for="description" class="form-label">Deskripsi Lapangan</label>
