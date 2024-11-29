@@ -13,25 +13,18 @@ class Field extends Model
     protected $fillable = [
         'field_name',
         'description',
+        'status',
     ];
 
-    /**
-     * Get all of the facilities for the Field
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function facilities(): HasMany
     {
         return $this->hasMany(Facility::class);
     }
 
-    /**
-     * Get all of the images for the Field
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function images(): HasMany
     {
         return $this->hasMany(Image::class);
     }
+
+
 }

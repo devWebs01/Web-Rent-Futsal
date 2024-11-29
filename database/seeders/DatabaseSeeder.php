@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FieldSeeder::class,
             SettingSeeder::class,
+            PriceSeeder::class,
         ]);
 
         \App\Models\User::factory()->create([

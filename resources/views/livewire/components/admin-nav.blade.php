@@ -20,7 +20,13 @@
             <i class="menu-icon tf-icons ri-home-smile-line"></i>
             <div data-i18n="Dashboards">Pengaturan</div>
         </a>
+    </li>
 
+    <li class="menu-item {{ Request::is(['prices', 'prices/*']) ? 'active' : '' }}">
+        <a href="{{ route('prices.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons ri-home-smile-line"></i>
+            <div data-i18n="Dashboards">Harga</div>
+        </a>
     </li>
 
 
