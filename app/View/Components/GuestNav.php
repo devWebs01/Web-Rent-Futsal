@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class GuestLayout extends Component
+class GuestNav extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class GuestLayout extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.guest-layout');
+        return view('livewire.components.guest-nav');
     }
 }

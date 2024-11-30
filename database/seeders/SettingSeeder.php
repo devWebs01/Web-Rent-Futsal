@@ -14,7 +14,7 @@ class SettingSeeder extends Seeder
     public function run(): void
     {
         Setting::create([
-            'name' => 'Alpama Futsal Jambi',
+            'name' => 'Alpama Futsal',
             'telp' => '08978301766',
             'whatsApp' => '08978301766',
             'address' => 'Kotabaru Jambi',

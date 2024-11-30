@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             FieldSeeder::class,
             SettingSeeder::class,
             PriceSeeder::class,
+            FacilitySeeder::class,
         ]);
 
         \App\Models\User::factory()->create([
