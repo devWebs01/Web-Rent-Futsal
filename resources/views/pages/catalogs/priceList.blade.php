@@ -1,7 +1,8 @@
 <?php
 
 use App\Models\Price;
-use function Livewire\Volt\{state, computed, uses};
+use App\Models\Cart;
+use function Livewire\Volt\{state, computed, uses, rules};
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Carbon\Carbon;
 
@@ -12,12 +13,74 @@ state(['selectDate'])->url();
 state([
     'allPrice' => fn() => Price::all(),
     'today' => fn() => Carbon::now()->format('Y-m-d'),
+    'activeTab' => 'student', // Tab default
     'field',
+
+    // booking
+    'user_id' => fn() => Auth()->user()->id,
+    'field_id' => fn() => $this->field->id,
+    'booking_date' => fn() => $this->selectDate ? $this->selectDate : $this->today,
+    'start_time',
+    'end_time',
+    'price',
 ]);
+
+rules([
+    'user_id' => 'required|exists:users,id',
+    'field_id' => 'required|exists:fields,id',
+]);
+
+$addToCart = function ($slot) {
+    // Periksa apakah user sudah login
+    if (!Auth::check()) {
+        $this->redirect('/login');
+    }
+
+    $this->validate();
+
+    // Periksa apakah slot sudah ada di keranjang
+    $checkCart = Cart::where('user_id', Auth::id())
+        ->where('field_id', $this->field_id)
+        ->where('booking_date', $this->selectDate ?? $this->today)
+        ->where('start_time', explode(' - ', $slot['time'])[0])
+        ->where('type', $slot['type']) // Periksa berdasarkan type juga
+        ->exists();
+
+    if ($checkCart) {
+        $this->alert('warning', 'Waktu sudah ada dikeranjang.', [
+            'position' => 'top',
+            'timer' => '2000',
+            'toast' => true,
+            'timerProgressBar' => true,
+            'text' => '',
+        ]);
+    } else {
+        // Tambahkan slot ke keranjang
+        Cart::create([
+            'user_id' => Auth::id(),
+            'field_id' => $this->field_id,
+            'booking_date' => $this->selectDate ?? $this->today,
+            'start_time' => explode(' - ', $slot['time'])[0],
+            'end_time' => explode(' - ', $slot['time'])[1],
+            'type' => $slot['type'], // Simpan type ke keranjang
+            'price' => $slot['cost'],
+        ]);
+
+        $this->dispatch('cart-updated');
+
+        $this->alert('success', 'Waktu berhasil ditambahkan ke keranjang.', [
+            'position' => 'top',
+            'timer' => '2000',
+            'toast' => true,
+            'timerProgressBar' => true,
+            'text' => '',
+        ]);
+    }
+};
 
 $slots = computed(function () {
     $prices = $this->allPrice;
-    $date = Carbon::parse($this->selectDate)->format('l') ?? Carbon::now()->format('l');
+    $date = Carbon::parse($this->selectDate ?? $this->today)->format('l');
 
     $slots = []; // Deklarasikan array kosong untuk menyimpan slot waktu
 
@@ -52,6 +115,10 @@ $slots = computed(function () {
     ];
 });
 
+$setActiveTab = function ($tab) {
+    $this->activeTab = $tab;
+};
+
 ?>
 
 @volt
@@ -65,41 +132,46 @@ $slots = computed(function () {
 
         </div>
         <!-- Tabs Navigation -->
+        <!-- Tabs Navigation -->
         <ul class="nav nav-pills mb-5 justify-content-center" id="pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="pills-student-tab" data-bs-toggle="pill" data-bs-target="#pills-student"
-                    type="button" role="tab" aria-controls="pills-student" aria-selected="true">
+                <button class="nav-link @if ($this->activeTab === 'student') active @endif"
+                    wire:click.prevent="setActiveTab('student')" type="button" role="tab">
                     <strong>PELAJAR</strong>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="pills-general-tab" data-bs-toggle="pill" data-bs-target="#pills-general"
-                    type="button" role="tab" aria-controls="pills-general" aria-selected="false">
+                <button class="nav-link @if ($this->activeTab === 'general') active @endif"
+                    wire:click.prevent="setActiveTab('general')" type="button" role="tab">
                     <strong>UMUM</strong>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="pills-tournament-tab" data-bs-toggle="pill" data-bs-target="#pills-tournament"
-                    type="button" role="tab" aria-controls="pills-tournament" aria-selected="false">
+                <button class="nav-link @if ($this->activeTab === 'tournament') active @endif"
+                    wire:click.prevent="setActiveTab('tournament')" type="button" role="tab">
                     <strong>TURNAMEN/KERAMAIAN</strong>
                 </button>
             </li>
         </ul>
 
+
         <!-- Tabs Content -->
         <div class="tab-content mb-3" id="pills-tabContent">
             <!-- Tab Pelajar -->
-            <div class="tab-pane fade show active" id="pills-student" role="tabpanel" aria-labelledby="pills-student-tab">
+            <div class="tab-pane fade @if ($this->activeTab === 'student') show active @endif" id="pills-student"
+                role="tabpanel">
                 <div class="row gap-3 justify-content-evenly">
                     @foreach ($this->slots['student'] as $slot)
                         <div class="col-md-3 col-sm-4 card p-0 border-0">
                             <div class="card-body text-center shadow rounded-4">
                                 <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
-                                <p class="fw-bold">
-                                    {{ formatRupiah($slot['cost']) }}
-                                </p>
-                                <a class="d-grid btn btn-outline-dark mb-3" href="#" role="button">
-                                    Booking
+                                <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
+                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3"
+                                    wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
+                                    <span wire:loading.class='d-none'>Booking</span>
+                                    <span wire:loading.class.remove='d-none'
+                                        class="spinner-border spinner-border-sm d-none">
+                                    </span>
                                 </a>
                             </div>
                         </div>
@@ -108,17 +180,20 @@ $slots = computed(function () {
             </div>
 
             <!-- Tab Umum -->
-            <div class="tab-pane fade" id="pills-general" role="tabpanel" aria-labelledby="pills-general-tab">
+            <div class="tab-pane fade @if ($this->activeTab === 'general') show active @endif" id="pills-general"
+                role="tabpanel">
                 <div class="row gap-3 justify-content-evenly">
                     @foreach ($this->slots['general'] as $slot)
                         <div class="col-md-3 col-sm-4 card p-0 border-0">
                             <div class="card-body text-center shadow rounded-4">
                                 <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
-                                <p class="fw-bold">
-                                    {{ formatRupiah($slot['cost']) }}
-                                </p>
-                                <a class="d-grid btn btn-outline-dark mb-3" href="#" role="button">
-                                    Booking
+                                <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
+                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3"
+                                    wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
+                                    <span wire:loading.class='d-none'>Booking</span>
+                                    <span wire:loading.class.remove='d-none'
+                                        class="spinner-border spinner-border-sm d-none">
+                                    </span>
                                 </a>
                             </div>
                         </div>
@@ -127,17 +202,20 @@ $slots = computed(function () {
             </div>
 
             <!-- Tab Turnamen/Keramaian -->
-            <div class="tab-pane fade" id="pills-tournament" role="tabpanel" aria-labelledby="pills-tournament-tab">
+            <div class="tab-pane fade @if ($this->activeTab === 'tournament') show active @endif" id="pills-tournament"
+                role="tabpanel">
                 <div class="row gap-3 justify-content-evenly">
                     @foreach ($this->slots['tournament'] as $slot)
                         <div class="col-md-3 col-sm-4 card p-0 border-0">
                             <div class="card-body text-center shadow rounded-4">
                                 <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
-                                <p class="fw-bold">
-                                    {{ formatRupiah($slot['cost']) }}
-                                </p>
-                                <a class="d-grid btn btn-outline-dark mb-3" href="#" role="button">
-                                    Booking
+                                <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
+                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3"
+                                    wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
+                                    <span wire:loading.class='d-none'>Booking</span>
+                                    <span wire:loading.class.remove='d-none'
+                                        class="spinner-border spinner-border-sm d-none">
+                                    </span>
                                 </a>
                             </div>
                         </div>
@@ -145,5 +223,6 @@ $slots = computed(function () {
                 </div>
             </div>
         </div>
+
     </div>
 @endvolt

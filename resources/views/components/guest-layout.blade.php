@@ -42,6 +42,10 @@
     </style>
 
 
+    @livewireStyles
+
+    @stack('css')
+
     @vite([])
 </head>
 
@@ -163,7 +167,7 @@
     <!-- Bootstrap JavaScript Libraries -->
     <script
         src="/assets/guest
-                                                                                                                /assets/guest/js/jquery-1.11.0.min.js">
+                                                                                                                                /assets/guest/js/jquery-1.11.0.min.js">
     </script> <!-- jquery file-->
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -175,20 +179,18 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script> <!--cdn link-->
-    <script
-        src="/assets/guest
-                                                                                                                /assets/guest/js/plugins.js">
-    </script>
-    <script type="text/javascript"
-        src="/assets/guest
-                                                                                                                /assets/guest/js/lightbox.min.js">
-    </script>
+    <script src="/assets/guest/js/plugins.js"></script>
+    <script type="text/javascript" src="/assets/guest/js/lightbox.min.js"></script>
 
     <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
-    <script
-        src="/assets/guest
-                                                                                                                /assets/guest/js/script.js">
-    </script>
+    <script src="/assets/guest/js/script.js"></script>
+    @stack('scripts')
+
+    @livewireScripts
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <x-livewire-alert::scripts />
 </body>
 
 </html>
