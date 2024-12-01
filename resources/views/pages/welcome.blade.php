@@ -64,7 +64,7 @@ state(['fields' => fn() => Field::get()]);
             <section class="p-5 ">
                 <div class="container">
                     <div class="row justify-content-center">
-                        <div class="col-lg-3">
+                        <div class="col-lg">
                             <div class="d-flex gap-4 align-items-start">
                                 <div class="icon">
                                     <svg class="text-primary monitor" width="50" height="50">
@@ -81,7 +81,7 @@ state(['fields' => fn() => Field::get()]);
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg">
                             <div class="d-flex gap-4 align-items-start">
                                 <div class="icon">
                                     <svg class="text-primary notes" width="50" height="50">
@@ -98,7 +98,7 @@ state(['fields' => fn() => Field::get()]);
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg">
                             <div class="d-flex gap-4 align-items-start">
                                 <div class="icon">
                                     <svg class="text-primary laptop" width="50" height="50">
@@ -112,87 +112,6 @@ state(['fields' => fn() => Field::get()]);
                                     <p class="postf">
                                         Tim dukungan siap membantu Anda kapan saja jika ada pertanyaan.
                                     </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md">
-                            <div class="h-100 bg-green p-4 rounded-4">
-                                <h3>
-                                    Pengalaman Pelanggan
-                                </h3>
-                                <div class="py-4">
-                                    <p class="text-dark-emphasis">
-                                        2015 - 2020
-                                    </p>
-                                    <h5>
-                                        Manajer Lapangan Futsal
-                                    </h5>
-                                    <p class="text-dark-emphasis">
-                                        Meningkatkan kepuasan pelanggan melalui layanan yang responsif.
-                                    </p>
-                                </div>
-                                <p class="text-dark-emphasis">
-                                    2020 - Sekarang
-                                </p>
-                                <h5>
-                                    Pemilik Futsal Arena
-                                </h5>
-                                <p class="text-dark-emphasis">
-                                    Mengelola dan mengembangkan bisnis futsal dengan layanan terbaik.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="col-md">
-                            <div class="h-100 bg-teal p-4 rounded-4">
-                                <h3>
-                                    Testimoni
-                                </h3>
-                                <div class="py-4">
-                                    <p class="text-dark-emphasis">
-                                        "Lapangan futsal terbaik yang pernah saya coba! Sangat direkomendasikan."
-                                    </p>
-                                    <h5>
-                                        - Andi S.
-                                    </h5>
-                                </div>
-                                <p class="text-dark-emphasis">
-                                    "Proses booking yang sangat mudah dan cepat."
-                                </p>
-                                <h5>
-                                    - Budi T.
-                                </h5>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </section>
-
-            <section class="py-5">
-                <div class="container">
-                    <div class="rounded-4 p-5"
-                        style="background-image: url('https://images.pexels.com/photos/13521967/pexels-photo-13521967.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); background-size: cover ; background-repeat: no-repeat; background-position: center;">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="h-100 bg-black text-white p-4 rounded-4">
-                                    <h1>
-                                        AYO, Temukan Kawan Mainmu Sekarang!
-                                    </h1>
-                                    <div class="py-4">
-                                        <p class="text-light-emphasis">
-                                            Puluhan ribu teman baru sudah menantimu di lapangan, yuk booking lapangan
-                                            sekarang juga!
-                                        </p>
-
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -224,7 +143,7 @@ state(['fields' => fn() => Field::get()]);
                                                 class="text-decoration-none">
                                                 <div class="row g-md-5">
                                                     <div class="col-lg-5">
-                                                        @if ($field->images)
+                                                        @if ($field->images->count() < 0)
                                                             <img src="https://images.pexels.com/photos/29388472/pexels-photo-29388472.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                                                                 class="img rounded-4 w-100" width="200px" height="200px"
                                                                 style="object-fit: cover;">
@@ -253,6 +172,76 @@ state(['fields' => fn() => Field::get()]);
                         </div>
 
                     </div>
+            </section>
+
+
+            <section>
+                <div class="container">
+                    <div class="rounded-4 p-5"
+                        style="background-image: url('https://images.pexels.com/photos/13521967/pexels-photo-13521967.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); background-size: cover ; background-repeat: no-repeat; background-position: center;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="h-100 bg-black text-white p-4 rounded-4">
+                                    <h1>
+                                        AYO, Temukan Kawan Mainmu Sekarang!
+                                    </h1>
+                                    <div class="py-4">
+                                        <p class="text-light-emphasis">
+                                            Puluhan ribu teman baru sudah menantimu di lapangan, yuk booking lapangan
+                                            sekarang juga!
+                                        </p>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="container pt-5">
+                    <div class="row">
+                        <div class="col-md">
+                            <div class="h-100 bg-green p-4 rounded-4">
+                                <h3>
+                                    Pengalaman Pelanggan
+                                </h3>
+                                <div class="py-4">
+                                    <h5>
+                                        Manajer Lapangan Futsal
+                                    </h5>
+                                    <p class="text-dark-emphasis">
+                                        Meningkatkan kepuasan pelanggan melalui layanan yang responsif.
+                                    </p>
+                                    <h5>
+                                        Pemilik Futsal Arena
+                                    </h5>
+                                    <p class="text-dark-emphasis">
+                                        Mengelola dan mengembangkan bisnis futsal dengan layanan terbaik.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md">
+                            <div class="h-100 bg-teal p-4 rounded-4">
+                                <h3>
+                                    Testimoni
+                                </h3>
+                                <div class="py-4">
+                                    <p class="text-dark-emphasis">
+                                        "Lapangan futsal terbaik yang pernah saya coba! Sangat direkomendasikan."
+                                    </p>
+                                    <p class="text-dark-emphasis">
+                                        "Proses booking yang sangat mudah dan cepat."
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </section>
 
             <section>

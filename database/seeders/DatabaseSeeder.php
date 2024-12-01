@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
             PriceSeeder::class,
             FacilitySeeder::class,
+            ImageSeeder::class,
         ]);
 
         \App\Models\User::factory()->create([

@@ -19,7 +19,7 @@
 
     <!--cdncss link-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="/assets/guest/css/lightbox.min.css">
 
     <!--style sheet-->
@@ -163,7 +163,7 @@
     <!-- Bootstrap JavaScript Libraries -->
     <script
         src="/assets/guest
-                                                                                                            /assets/guest/js/jquery-1.11.0.min.js">
+                                                                                                                /assets/guest/js/jquery-1.11.0.min.js">
     </script> <!-- jquery file-->
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -177,17 +177,17 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script> <!--cdn link-->
     <script
         src="/assets/guest
-                                                                                                            /assets/guest/js/plugins.js">
+                                                                                                                /assets/guest/js/plugins.js">
     </script>
     <script type="text/javascript"
         src="/assets/guest
-                                                                                                            /assets/guest/js/lightbox.min.js">
+                                                                                                                /assets/guest/js/lightbox.min.js">
     </script>
 
     <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
     <script
         src="/assets/guest
-                                                                                                            /assets/guest/js/script.js">
+                                                                                                                /assets/guest/js/script.js">
     </script>
 </body>
 

@@ -1,8 +1,9 @@
 <?php
 
 use App\Models\Setting;
+use App\Models\Price;
 use App\Models\Field;
-use function Livewire\Volt\{state, rules, uses};
+use function Livewire\Volt\{state, computed, uses};
 use Illuminate\Validation\Rule;
 use function Laravel\Folio\{name};
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -13,6 +14,7 @@ name('catalogs.field');
 
 state([
     'setting' => fn() => Setting::first(),
+    'price' => fn() => Price::get()->min('cost'),
     'field',
 ]);
 
@@ -59,18 +61,21 @@ state([
                         <span class="visually-hidden">Next</span>
                     </button>
                 </div>
+            </section>
 
-                <div class="row mb-5">
+            <section class="container">
+                <div class="row mb-5 mx-2">
                     <h1 class="fw-bolder">
                         {{ $field->field_name }}
-                        <span class="fs-5 badge bg-primary">{{ $field->status }}</span>
-
                     </h1>
+                    <p>
+                        <span class="fs-5 badge bg-dark">{{ __('status.' . $field->status) }}</span>
+                    </p>
                     <p class="text-muted mb-3">
                         {{ $setting->address }}
                     </p>
 
-                    <div class="col-lg-8">
+                    <div class="col-lg-8 col-md-12">
 
                         <h5 class="fw-bolder">
                             Deksripsi
@@ -95,12 +100,169 @@ state([
                         </div>
 
                     </div>
-                    <div class="col-lg-4">
-                        <div class="card border border-0">
-                            <div class="card-body border rounded mb-3" style="height: 200px">
-
+                    <div class="col-lg-4 col-md-12">
+                        <div class="row border border-0">
+                            <div class="col-12 mb-0 d-lg-block d-sm-none">
+                                <p class="mb-0">
+                                    Mulai dari
+                                </p>
+                                <h1 class="fw-bolder text-danger">
+                                    {{ formatRupiah($price) }}
+                                </h1>
                             </div>
-                            <div class="card-body border rounded" style="height: 100px">
+                            <div class="col-12">
+                                <h5>Sewa lapangan kini lebih menyenangkan!</h5>
+                                <ul>
+                                    <li>
+                                        Proses booking yang cepat dan mudah hanya dalam hitungan menit.</li>
+                                    <li>
+                                        Metode pembayaran yang aman dan terpercaya untuk kenyamanan Anda.</li>
+                                    <li>
+                                        Tim dukungan siap membantu Anda kapan saja jika ada pertanyaan.</li>
+                                </ul>
+                                <a type="button" class="text-decoration-underline text-danger" data-bs-toggle="modal"
+                                    data-bs-target="#modalId">
+                                    Syarat & Ketentuan Berlaku
+                                </a>
+
+                                <div class="modal fade" id="modalId" tabindex="-1" data-bs-backdrop="static"
+                                    data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg"
+                                        role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header border border-0">
+                                                <h5 class="modal-title" id="modalTitleId">
+                                                    Syarat & Ketentuan Berlaku
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="accordion" id="sewaRulesAccordion">
+
+
+                                                    <!-- Kategori Pengguna -->
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header" id="headingTwo">
+                                                            <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                                                aria-expanded="false" aria-controls="collapseTwo">
+                                                                1. Kategori Pengguna
+                                                            </button>
+                                                        </h2>
+                                                        <div id="collapseTwo" class="accordion-collapse collapse show"
+                                                            aria-labelledby="headingTwo"
+                                                            data-bs-parent="#sewaRulesAccordion">
+                                                            <div class="accordion-body">
+                                                                <ul>
+                                                                    <li><strong>Pelajar:</strong> Berlaku untuk siswa SD/SMP
+                                                                        (harus menunjukkan kartu identitas).</li>
+                                                                    <li><strong>Umum:</strong> Berlaku untuk semua kalangan
+                                                                        selain kategori pelajar.</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Pembayaran -->
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header" id="headingThree">
+                                                            <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse" data-bs-target="#collapseThree"
+                                                                aria-expanded="false" aria-controls="collapseThree">
+                                                                2. Pembayaran
+                                                            </button>
+                                                        </h2>
+                                                        <div id="collapseThree" class="accordion-collapse collapse"
+                                                            aria-labelledby="headingThree"
+                                                            data-bs-parent="#sewaRulesAccordion">
+                                                            <div class="accordion-body">
+                                                                <ul>
+                                                                    <li>DP minimal <strong>50%</strong> dari total biaya.
+                                                                    </li>
+                                                                    <li>Pelunasan dilakukan sebelum sesi dimulai.</li>
+                                                                    <li>Tidak ada pengembalian uang untuk pembatalan.</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Ketentuan Pemesanan -->
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header" id="headingFour">
+                                                            <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse" data-bs-target="#collapseFour"
+                                                                aria-expanded="false" aria-controls="collapseFour">
+                                                                3. Ketentuan Pemesanan
+                                                            </button>
+                                                        </h2>
+                                                        <div id="collapseFour" class="accordion-collapse collapse"
+                                                            aria-labelledby="headingFour"
+                                                            data-bs-parent="#sewaRulesAccordion">
+                                                            <div class="accordion-body">
+                                                                <ul>
+                                                                    <li><strong>Tidak Ada Pembatalan:</strong> Pemesanan
+                                                                        yang sudah dibayar tidak dapat dibatalkan.</li>
+                                                                    <li><strong>Perubahan Waktu:</strong> Tidak
+                                                                        diperkenankan mengubah jadwal setelah konfirmasi.
+                                                                    </li>
+                                                                    <li><strong>Kehadiran Tepat Waktu:</strong> Penyewa
+                                                                        diwajibkan datang tepat waktu sesuai jadwal yang
+                                                                        sudah disepakati.</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Sanksi -->
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header" id="headingFive">
+                                                            <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse" data-bs-target="#collapseFive"
+                                                                aria-expanded="false" aria-controls="collapseFive">
+                                                                4. Sanksi
+                                                            </button>
+                                                        </h2>
+                                                        <div id="collapseFive" class="accordion-collapse collapse"
+                                                            aria-labelledby="headingFive"
+                                                            data-bs-parent="#sewaRulesAccordion">
+                                                            <div class="accordion-body">
+                                                                <ul>
+                                                                    <li>Penyewa yang datang terlambat tidak diberikan
+                                                                        perpanjangan waktu atau pengembalian dana.</li>
+                                                                    <li>Penyewa yang tidak hadir sesuai jadwal tetap
+                                                                        dikenakan biaya penuh.</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Penjadwalan dan Reservasi -->
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header" id="headingSeven">
+                                                            <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse" data-bs-target="#collapseSeven"
+                                                                aria-expanded="false" aria-controls="collapseSeven">
+                                                                5. Penjadwalan dan Reservasi
+                                                            </button>
+                                                        </h2>
+                                                        <div id="collapseSeven" class="accordion-collapse collapse"
+                                                            aria-labelledby="headingSeven"
+                                                            data-bs-parent="#sewaRulesAccordion">
+                                                            <div class="accordion-body">
+                                                                Pemesanan dilakukan melalui sistem reservasi online atau
+                                                                langsung di tempat dengan ketersediaan waktu sesuai jadwal
+                                                                yang tersedia.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
@@ -108,6 +270,9 @@ state([
                 </div>
             </section>
 
+            <section class="container">
+                @include('pages.catalogs.priceList')
+            </section>
         </div>
     @endvolt
 </x-guest-layout>

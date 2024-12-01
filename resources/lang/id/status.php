@@ -23,4 +23,8 @@ return [
     'unpaid' => 'Belum Dibayar',
     'paid' => 'Lunas',
 
+    // fields
+    'ACTIVE' => 'TERSEDIA',
+    'NON-ACTIVE' => 'TIDAK TERSEDIA',
+
 ];
