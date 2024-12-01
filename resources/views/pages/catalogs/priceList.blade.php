@@ -7,15 +7,17 @@ use Carbon\Carbon;
 
 uses([LivewireAlert::class]);
 
+state(['selectDate'])->url();
+
 state([
     'allPrice' => fn() => Price::all(),
-    'date' => fn() => Carbon::now()->format('l'),
+    'today' => fn() => Carbon::now()->format('Y-m-d'),
     'field',
 ]);
 
 $slots = computed(function () {
     $prices = $this->allPrice;
-    $date = $this->date;
+    $date = Carbon::parse($this->selectDate)->format('l') ?? Carbon::now()->format('l');
 
     $slots = []; // Deklarasikan array kosong untuk menyimpan slot waktu
 
@@ -54,6 +56,14 @@ $slots = computed(function () {
 
 @volt
     <div>
+        <div class="row justify-content-center">
+            <div class="col-8 mb-3 ">
+                <label for="selectDate" class="form-label">Pilih Tanggal</label>
+                <input type="date" wire:model.live='selectDate' class="form-control" name="selectDate" id="selectDate"
+                    min="{{ $today }}" value="{{ $today }}" placeholder="Please select date" />
+            </div>
+
+        </div>
         <!-- Tabs Navigation -->
         <ul class="nav nav-pills mb-5 justify-content-center" id="pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
@@ -80,14 +90,18 @@ $slots = computed(function () {
         <div class="tab-content mb-3" id="pills-tabContent">
             <!-- Tab Pelajar -->
             <div class="tab-pane fade show active" id="pills-student" role="tabpanel" aria-labelledby="pills-student-tab">
-                <div class="row gap-3 justify-content-center">
+                <div class="row gap-3 justify-content-evenly">
                     @foreach ($this->slots['student'] as $slot)
-                        <div class="col-3 d-grid shadow text-center rounded">
-                            <p class="mt-3">{{ $slot['time'] }}</p>
-                            <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                            <a class="btn btn-outline-dark mb-3" href="#" role="button">
-                                Booking
-                            </a>
+                        <div class="col-md-3 col-sm-4 card p-0 border-0">
+                            <div class="card-body text-center shadow rounded-4">
+                                <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
+                                <p class="fw-bold">
+                                    {{ formatRupiah($slot['cost']) }}
+                                </p>
+                                <a class="d-grid btn btn-outline-dark mb-3" href="#" role="button">
+                                    Booking
+                                </a>
+                            </div>
                         </div>
                     @endforeach
                 </div>
@@ -95,14 +109,18 @@ $slots = computed(function () {
 
             <!-- Tab Umum -->
             <div class="tab-pane fade" id="pills-general" role="tabpanel" aria-labelledby="pills-general-tab">
-                <div class="row gap-3 justify-content-center">
+                <div class="row gap-3 justify-content-evenly">
                     @foreach ($this->slots['general'] as $slot)
-                        <div class="col-3 d-grid shadow text-center rounded">
-                            <p class="mt-3">{{ $slot['time'] }}</p>
-                            <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                            <a class="btn btn-outline-dark mb-3" href="#" role="button">
-                                Booking
-                            </a>
+                        <div class="col-md-3 col-sm-4 card p-0 border-0">
+                            <div class="card-body text-center shadow rounded-4">
+                                <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
+                                <p class="fw-bold">
+                                    {{ formatRupiah($slot['cost']) }}
+                                </p>
+                                <a class="d-grid btn btn-outline-dark mb-3" href="#" role="button">
+                                    Booking
+                                </a>
+                            </div>
                         </div>
                     @endforeach
                 </div>
@@ -110,14 +128,18 @@ $slots = computed(function () {
 
             <!-- Tab Turnamen/Keramaian -->
             <div class="tab-pane fade" id="pills-tournament" role="tabpanel" aria-labelledby="pills-tournament-tab">
-                <div class="row gap-3 justify-content-center">
+                <div class="row gap-3 justify-content-evenly">
                     @foreach ($this->slots['tournament'] as $slot)
-                        <div class="col-3 d-grid shadow text-center rounded">
-                            <p class="mt-3">{{ $slot['time'] }}</p>
-                            <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                            <a class="btn btn-outline-dark mb-3" href="#" role="button">
-                                Booking
-                            </a>
+                        <div class="col-md-3 col-sm-4 card p-0 border-0">
+                            <div class="card-body text-center shadow rounded-4">
+                                <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
+                                <p class="fw-bold">
+                                    {{ formatRupiah($slot['cost']) }}
+                                </p>
+                                <a class="d-grid btn btn-outline-dark mb-3" href="#" role="button">
+                                    Booking
+                                </a>
+                            </div>
                         </div>
                     @endforeach
                 </div>

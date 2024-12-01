@@ -2,9 +2,13 @@
     <li class="nav-item">
         <a class="nav-link active text-uppercase ls-4 text-white" aria-current="page" href="/">Home</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item position-relative">
         <a class="nav-link text-uppercase ls-4 text-white" aria-current="page" href="/">Lapangan
         </a>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            99+
+            <span class="visually-hidden">unread messages</span>
+        </span>
     </li>
     </li>
     <li class="nav-item">
