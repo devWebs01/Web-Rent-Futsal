@@ -71,7 +71,7 @@ state([
                     <p>
                         <span class="fs-5 badge bg-dark">{{ __('status.' . $field->status) }}</span>
                     </p>
-                    <p class="text-muted mb-3">
+                    <p class="postf mb-3">
                         {{ $setting->address }}
                     </p>
 
@@ -80,7 +80,7 @@ state([
                         <h5 class="fw-bolder">
                             Deksripsi
                         </h5>
-                        <p class="text-muted mb-3">
+                        <p class="postf mb-3">
                             {{ $field->description }}
                         </p>
 
@@ -91,7 +91,7 @@ state([
                         <div class="row mb-3">
                             @foreach ($field->facilities as $facility)
                                 <div class="col-6">
-                                    <p class="text-muted">
+                                    <p class="postf">
                                         -
                                         {{ $facility->facility_name }}
                                     </p>
@@ -113,11 +113,11 @@ state([
                             <div class="col-12">
                                 <h5>Sewa lapangan kini lebih menyenangkan!</h5>
                                 <ul>
-                                    <li>
+                                    <li class="postf">
                                         Proses booking yang cepat dan mudah hanya dalam hitungan menit.</li>
-                                    <li>
+                                    <li class="postf">
                                         Metode pembayaran yang aman dan terpercaya untuk kenyamanan Anda.</li>
-                                    <li>
+                                    <li class="postf">
                                         Tim dukungan siap membantu Anda kapan saja jika ada pertanyaan.</li>
                                 </ul>
                                 <a type="button" class="text-decoration-underline text-danger" data-bs-toggle="modal"

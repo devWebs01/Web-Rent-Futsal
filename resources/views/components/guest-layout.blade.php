@@ -127,15 +127,10 @@
                         </svg>
                     </span>
                 </button>
-                <div class="offcanvas offcanvas-end text-white bg-black" tabindex="-1" id="offcanvasNavbar"
+                <div class="offcanvas offcanvas-end bg-white" tabindex="-1" id="offcanvasNavbar"
                     aria-labelledby="offcanvasNavbarLabel">
-                    <div class="offcanvas-header">
-                        <button type="button" class="btn-close btn-close-white ms-3" data-bs-dismiss="offcanvas"
-                            aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body">
-                        <x-guest-nav></x-guest-nav>
-                    </div>
+
+                    <x-guest-sidebar></x-guest-sidebar>
                 </div>
             </div>
         </nav>
@@ -167,7 +162,7 @@
     <!-- Bootstrap JavaScript Libraries -->
     <script
         src="/assets/guest
-                                                                                                                                /assets/guest/js/jquery-1.11.0.min.js">
+                                                                                                                                                                                                                /assets/guest/js/jquery-1.11.0.min.js">
     </script> <!-- jquery file-->
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"

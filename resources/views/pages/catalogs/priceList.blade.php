@@ -17,7 +17,7 @@ state([
     'field',
 
     // booking
-    'user_id' => fn() => Auth()->user()->id,
+    'user_id' => fn() => Auth()->user()->id ?? '',
     'field_id' => fn() => $this->field->id,
     'booking_date' => fn() => $this->selectDate ? $this->selectDate : $this->today,
     'start_time',
@@ -38,7 +38,7 @@ $addToCart = function ($slot) {
 
     $this->validate();
 
-    // Periksa apakah slot sudah ada di keranjang
+    // Periksa apakah slot sudah ada di daftar
     $checkCart = Cart::where('user_id', Auth::id())
         ->where('field_id', $this->field_id)
         ->where('booking_date', $this->selectDate ?? $this->today)
@@ -47,7 +47,7 @@ $addToCart = function ($slot) {
         ->exists();
 
     if ($checkCart) {
-        $this->alert('warning', 'Waktu sudah ada dikeranjang.', [
+        $this->alert('warning', 'Waktu sudah ada didaftar!', [
             'position' => 'top',
             'timer' => '2000',
             'toast' => true,
@@ -55,20 +55,20 @@ $addToCart = function ($slot) {
             'text' => '',
         ]);
     } else {
-        // Tambahkan slot ke keranjang
+        // Tambahkan slot ke daftar
         Cart::create([
             'user_id' => Auth::id(),
             'field_id' => $this->field_id,
             'booking_date' => $this->selectDate ?? $this->today,
             'start_time' => explode(' - ', $slot['time'])[0],
             'end_time' => explode(' - ', $slot['time'])[1],
-            'type' => $slot['type'], // Simpan type ke keranjang
+            'type' => $slot['type'], // Simpan type ke daftar
             'price' => $slot['cost'],
         ]);
 
         $this->dispatch('cart-updated');
 
-        $this->alert('success', 'Waktu berhasil ditambahkan ke keranjang.', [
+        $this->alert('success', 'Waktu berhasil ditambahkan ke daftar', [
             'position' => 'top',
             'timer' => '2000',
             'toast' => true,
@@ -168,7 +168,7 @@ $setActiveTab = function ($tab) {
                                 <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                                 <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3"
                                     wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
-                                    <span wire:loading.class='d-none'>Booking</span>
+                                    <span wire:loading.class='d-none'>PILIH</span>
                                     <span wire:loading.class.remove='d-none'
                                         class="spinner-border spinner-border-sm d-none">
                                     </span>
@@ -190,7 +190,7 @@ $setActiveTab = function ($tab) {
                                 <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                                 <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3"
                                     wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
-                                    <span wire:loading.class='d-none'>Booking</span>
+                                    <span wire:loading.class='d-none'>PILIH</span>
                                     <span wire:loading.class.remove='d-none'
                                         class="spinner-border spinner-border-sm d-none">
                                     </span>
@@ -212,7 +212,7 @@ $setActiveTab = function ($tab) {
                                 <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                                 <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3"
                                     wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
-                                    <span wire:loading.class='d-none'>Booking</span>
+                                    <span wire:loading.class='d-none'>PILIH</span>
                                     <span wire:loading.class.remove='d-none'
                                         class="spinner-border spinner-border-sm d-none">
                                     </span>
