@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FieldSeeder::class,
             SettingSeeder::class,
-            PriceSeeder::class,
+            ScheduleSeeder::class,
             FacilitySeeder::class,
             ImageSeeder::class,
         ]);

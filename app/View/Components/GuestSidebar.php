@@ -21,6 +21,6 @@ class GuestSidebar extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('livewire.components.guest-sidebar');
+        return view('livewire.layout.guest-sidebar');
     }
 }

@@ -35,7 +35,7 @@
                     <div class="col-lg-6 mb-5 mb-lg-0">
                         <div class="pe-lg-3">
                             <h1 class="display-5 fw-bold mb-2 mb-md-3">Jadilah Juara di Setiap
-                                <span class="text-primary">Pertandingan!</span>
+                                <span class="text-danger">Pertandingan!</span>
                             </h1>
                             <p class="lead mb-4">
                                 Daftar atau Masuk sekarang dan buktikan bahwa Anda adalah bagian dari tim yang hebat!
@@ -45,7 +45,7 @@
                             <div class="col-sm-6 mb-3 mb-sm-0">
                                 <div class="d-flex">
                                     <div class="flex-shrink-0">
-                                        <div class="text-primary">
+                                        <div class="text-danger">
                                             <svg class="bi bi-chat-right-fill" fill="currentColor" height="32"
                                                 viewbox="0 0 16 16" width="32" xmlns="http://www.w3.org/2000/svg">
                                                 <path
@@ -62,7 +62,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <div class="d-flex">
-                                    <div class="text-primary">
+                                    <div class="text-danger">
                                         <svg class="bi bi-shield-fill-check" fill="currentColor" height="32"
                                             viewbox="0 0 16 16" width="32" xmlns="http://www.w3.org/2000/svg">
                                             <path
@@ -80,8 +80,8 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="ps-lg-5">
-                            <div class="card shadow-lg border border-primary text-white text-left h-100">
-                                <div class="card-body bg-primary p-4 p-xl-5">
+                            <div class="card shadow-lg border border-danger text-white text-left h-100">
+                                <div class="card-body bg-danger p-4 p-xl-5">
 
                                     {{ $slot }}
                                 </div>

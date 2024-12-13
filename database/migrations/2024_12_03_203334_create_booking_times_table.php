@@ -8,18 +8,24 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * 'booking_id',
+     * 'field_id',
+     * 'booking_date',
+     * 'start_time',
+     * 'end_time',
+     * 'price',
      */
     public function up(): void
     {
-        Schema::create('carts', function (Blueprint $table) {
+        Schema::create('booking_times', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Pelanggan
-            $table->foreignId('field_id')->constrained('fields')->onDelete('cascade'); // Lapangan
-            $table->date('booking_date');
+            $table->foreignId('booking_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('field_id')->constrained()->cascadeOnDelete();
+            $table->string('booking_date');
             $table->string('start_time');
             $table->string('end_time');
+            $table->string('price');
             $table->string('type');
-            $table->integer('price');
             $table->timestamps();
         });
     }
@@ -29,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('carts');
+        Schema::dropIfExists('booking_times');
     }
 };

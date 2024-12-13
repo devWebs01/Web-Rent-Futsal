@@ -6,24 +6,20 @@ return [
     'checked-in' => 'Selesai',
     'canceled' => 'Batal',
 
-    // medicalRecord
-    'completed' => 'Selesai',
-    'in-progress' => 'Pemeriksaan',
-    'follow-up' => 'Tindak Lanjut',
-    'payment' => 'Pembayaran',
+    // Booking
+    'PAID' => 'Bayar',
+    'UNPAID' => 'Belum Bayar',
+    'DOWNPAYMENT' => 'Down Payment (DP)',
+    'CANCEL' => 'Batal',
+    'PROCESS' => 'Sedang Diproses',
 
-    // InpatientRecord
-    'outpatient' => 'Rawat Jalan',
-    'inpatient' => 'Rawat Inap (One Day Care)',
-    'discharged' => 'Pulang',
-    'active' => 'Aktif',
+    // PaymentRecord
+    'DRAF' => 'Draf',
+    'WAITING' => 'Menunggu Konfirmasi',
+    'CONFIRM' => 'Konfirmasi',
+    'REJECT' => 'Tolak',
 
-    // payment
-    'pending' => 'Belum Dibayar',
-    'unpaid' => 'Belum Dibayar',
-    'paid' => 'Lunas',
-
-    // fields
+    // Field
     'ACTIVE' => 'TERSEDIA',
     'NON-ACTIVE' => 'TIDAK TERSEDIA',
 
