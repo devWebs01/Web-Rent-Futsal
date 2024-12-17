@@ -27,10 +27,9 @@ $submit = function () {
     ]);
 
     // Update payment
-    $payment = PaymentRecord::findOrFail($this->paymentRecord->id);
-    $payment->update([
+    $this->paymentRecord->update([
         'receipt' => $this->receipt->store('public/receipt'),
-        'payment_status' => 'WAITING', // Ubah status pembayaran menjadi WAITING_CONFIRM_PAYMENT
+        'status' => 'WAITING', // Ubah status pembayaran menjadi WAITING_CONFIRM_PAYMENT
     ]);
 
     $this->booking->update([
@@ -99,7 +98,7 @@ $submit = function () {
                             <h6>Total Pembayaran:</h6>
                             <div class="row">
                                 <div class="col-lg-7">
-                                    <h1 id="font-custom">
+                                    <h1 class="text-danger">
                                         {{ formatRupiah($paymentRecord->amount) }}
                                     </h1>
 
@@ -109,8 +108,6 @@ $submit = function () {
                                             <div class="mb-3">
                                                 <p class="form-label fw-semibold">Status:
                                                     {{ __('status.' . $paymentRecord->status) }}</p>
-                                                <p class="form-label fw-semibold">Tanggal Pembayaran:
-                                                    {{ \Carbon\Carbon::parse($payment->payment_date)->format('d F Y') }}</p>
 
                                                 <label for="receipt" class="form-label fw-semibold">
                                                     Silahkan masukkan bukti pembayaran anda!
@@ -126,7 +123,7 @@ $submit = function () {
                                                 @enderror
                                             </div>
                                             <div class="d-grid">
-                                                <button class="btn btn-outline-secondary" type="submit">Submit</button>
+                                                <button class="btn btn-danger" type="submit">Submit</button>
                                             </div>
                                         </form>
                                     </div>

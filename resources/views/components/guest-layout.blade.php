@@ -64,7 +64,7 @@
 </head>
 
 <body>
-    <header id="top" class="position-sticky z-3">
+    <header id="top" class="position-sticky z-3 d-print-none">
         <nav class="navbar bg-white pt-3">
             <div class="container">
                 <div class="d-flex align-items-center g-4">
@@ -87,7 +87,7 @@
     {{ $slot }}
 
 
-    <footer id="footer" class="bg-black text-white py-5">
+    <footer id="footer" class="bg-black text-white py-5 d-print-none">
         <div class="container-sm text-center">
             <h2 class="fw-bold">{{ $setting ?? 'Testing' }}</h2>
             <div class="row g-md-5 mb-5 text-center">

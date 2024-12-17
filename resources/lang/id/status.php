@@ -1,11 +1,6 @@
 <?php
 
 return [
-    // appointment
-    'waiting' => 'Menunggu',
-    'checked-in' => 'Selesai',
-    'canceled' => 'Batal',
-
     // Booking
     'PAID' => 'Bayar',
     'UNPAID' => 'Belum Bayar',
@@ -22,5 +17,9 @@ return [
     // Field
     'ACTIVE' => 'TERSEDIA',
     'NON-ACTIVE' => 'TIDAK TERSEDIA',
+
+    // payment_method
+    'fullpayment' => 'Lunas',
+    'downpayment' => 'Down Payment (DP)',
 
 ];

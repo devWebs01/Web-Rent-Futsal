@@ -137,9 +137,6 @@ $processBooking = function () {
                             <div class="col-10">
                                 <p class="fw-bold mb-0">
                                     {{ $item->field->field_name }}
-                                    <span class="badge bg-primary">
-                                        {{ __('type.' . $item->type) }}
-                                    </span>
                                 </p>
                                 <small class="fw-bold postf mb-0">
                                     <span class="text-danger">
@@ -151,6 +148,8 @@ $processBooking = function () {
                                 <br>
                                 <small class="fw-bold postf">
                                     {{ formatRupiah($item->price) }}
+                                    -
+                                    {{ __('type.' . $item->type) }}
                                 </small>
                             </div>
                             <div class="col-2 align-content-center">

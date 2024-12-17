@@ -14,7 +14,6 @@ name('catalogs.field');
 
 state([
     'setting' => fn() => Setting::first(),
-    'schedule' => fn() => Schedule::get()->min('cost'),
     'field',
 ]);
 
@@ -102,14 +101,6 @@ state([
                     </div>
                     <div class="col-lg-4 col-md-12">
                         <div class="row border border-0">
-                            <div class="col-12 mb-0 d-lg-block d-sm-none">
-                                <p class="mb-0">
-                                    Mulai dari
-                                </p>
-                                <h1 class="fw-bolder text-danger">
-                                    {{ formatRupiah($schedule) }}
-                                </h1>
-                            </div>
                             <div class="col-12">
                                 <h5>Sewa lapangan kini lebih menyenangkan!</h5>
                                 <ul>
@@ -120,8 +111,8 @@ state([
                                     <li class="postf">
                                         Tim dukungan siap membantu Anda kapan saja jika ada pertanyaan.</li>
                                 </ul>
-                                <a type="button" class="text-decoration-underline text-danger" data-bs-toggle="modal"
-                                    data-bs-target="#modalId">
+                                <a type="button" class="text-decoration-underline text-danger fw-bold"
+                                    data-bs-toggle="modal" data-bs-target="#modalId">
                                     Syarat & Ketentuan Berlaku
                                 </a>
 

@@ -2,6 +2,7 @@
 
 use App\Models\Schedule;
 use App\Models\Cart;
+use App\Models\BookingTime;
 use function Livewire\Volt\{state, computed, uses, rules};
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Carbon\Carbon;
@@ -52,7 +53,6 @@ $addToCart = function ($slot) {
             'timer' => '2000',
             'toast' => true,
             'timerProgressBar' => true,
-            'text' => '',
         ]);
     } else {
         // Tambahkan slot ke daftar
@@ -82,6 +82,20 @@ $slots = computed(function () {
     $schedules = $this->allSchedule;
     $date = Carbon::parse($this->selectDate ?? $this->today)->format('l');
 
+    // Mengambil slot yang sudah di-booking selain status CANCEL
+    $bookedSlots = BookingTime::where('field_id', $this->field_id)
+        ->where('booking_date', $this->selectDate ?? $this->today)
+        ->whereHas('booking', function ($query) {
+            $query->where('status', '!=', 'CANCEL');
+        })
+        ->get(['start_time', 'type']) // Ambil start_time dan type untuk validasi
+        ->toArray();
+
+    // Memetakan slot yang sudah di-booking berdasarkan start_time dan type
+    $bookedMap = collect($bookedSlots)->mapWithKeys(function ($slot) {
+        return [$slot['start_time'] => $slot['type']];
+    });
+
     $slots = []; // Deklarasikan array kosong untuk menyimpan slot waktu
 
     foreach ($schedules as $schedule) {
@@ -98,10 +112,15 @@ $slots = computed(function () {
             while ($start < $end) {
                 $slotStart = $start->format('H:i');
                 $slotEnd = $start->addHour()->format('H:i');
+
+                // Periksa apakah slot sudah di-booking berdasarkan waktu dan type
+                $isBooked = isset($bookedMap[$slotStart]) && $bookedMap[$slotStart] === $schedule->type;
+
                 $slots[] = [
                     'time' => "$slotStart - $slotEnd",
                     'cost' => $schedule->cost,
                     'type' => $schedule->type,
+                    'isBooked' => $isBooked,
                 ];
             }
         }
@@ -166,7 +185,7 @@ $setActiveTab = function ($tab) {
                             <div class="card-body text-center shadow rounded-4">
                                 <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
                                 <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3"
+                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3 {{ $slot['isBooked'] ? 'd-none' : '' }}"
                                     wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                     <span wire:loading.class='d-none'>PILIH</span>
                                     <span wire:loading.class.remove='d-none'
@@ -188,7 +207,7 @@ $setActiveTab = function ($tab) {
                             <div class="card-body text-center shadow rounded-4">
                                 <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
                                 <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3"
+                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3 {{ $slot['isBooked'] ? 'd-none' : '' }}"
                                     wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                     <span wire:loading.class='d-none'>PILIH</span>
                                     <span wire:loading.class.remove='d-none'
@@ -210,7 +229,7 @@ $setActiveTab = function ($tab) {
                             <div class="card-body text-center shadow rounded-4">
                                 <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
                                 <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3"
+                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3 {{ $slot['isBooked'] ? 'd-none' : '' }}"
                                     wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                     <span wire:loading.class='d-none'>PILIH</span>
                                     <span wire:loading.class.remove='d-none'

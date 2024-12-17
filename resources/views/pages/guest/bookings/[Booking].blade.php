@@ -17,7 +17,7 @@ name('bookings.show');
 state([
     'fullpayment' => fn() => $this->booking->total_price,
     'downpayment' => fn() => $this->booking->total_price / 2,
-    'payment_method',
+    'payment_method' => fn() => $this->booking->payment_method ?? '',
     'booking',
 
     //
@@ -25,7 +25,7 @@ state([
     'booking_id' => fn() => $this->booking->id,
     'user_name' => fn() => $this->user->name,
     'user_phone' => fn() => $this->user->phone,
-    'alternative_phone',
+    'alternative_phone' => fn() => $this->booking->alternative_phone ?? '',
 ]);
 
 rules([
@@ -76,7 +76,7 @@ $save_booking = function () {
 
         DB::commit();
 
-        $this->alert('success', 'Data booking sedang di proses! Silahkan lanjut pada upload bukti pembayaran', [
+        $this->alert('success', 'Data booking sedang di proses!', [
             'position' => 'center',
             'timer' => 5000,
             'toast' => true,
@@ -96,143 +96,152 @@ $save_booking = function () {
 ?>
 
 <x-guest-layout>
-    <x-slot name="title">Checkout booking</x-slot>
 
 
     @volt
         <div>
-            <section class="container">
-                <span class="fw-bold">Checkout</span>
-                <h4 class="display-6 fw-bold text-danger">
-                    {{ $booking->invoice }}
-                </h4>
-                <p class="text-muted">
-                    Silakan lanjutkan ke tahap pembayaran untuk memastikan tempat bermain Anda.
-                </p>
-            </section>
+            <x-slot name="title">Booking {{ $booking->invoice }}</x-slot>
 
-            <section class="p-0">
-                <div class="container">
-                    <div class="row g-2">
-                        <div class="col-auto">
-                            <div class="card border-0">
-                                <div class="card-body mb-3">
+            @if (empty($booking->payment->records))
+                <section class="container">
+                    <span class="fw-bold">Invoice</span>
+                    <h4 class="display-6 fw-bold text-danger">
+                        {{ $booking->invoice }}
+                    </h4>
+                    <p class="text-muted">
+                        Silakan lanjutkan ke tahap pembayaran untuk memastikan tempat bermain Anda.
+                    </p>
+                </section>
 
-                                    <h5 class="mb-3 fw-bold">Pemesanan</h5>
-
-                                    <div class="row">
-                                        <div class="text-muted col-5">Total Bayar</div>
-                                        <div class="fw-bold text-danger col-7">
-                                            {{ formatRupiah($booking->total_price) }}
-                                        </div>
-                                        <br>
-                                        <div class="text-muted col-5">Status</div>
-                                        <div class="fw-bold text-danger col-7">
-                                            {{ __('status.' . $booking->status) }}
-                                        </div>
-                                        <br>
-                                        <div class="text-muted col-5">Pelanggan</div>
-                                        <div class="fw-bold text-danger col-7">
-                                            {{ $booking->user->name }}
-                                        </div>
-                                    </div>
-
-                                    <p class="text-muted mt-4 text-lowercase">
-                                        List Waktu yang Telah Anda Pilih:
-                                    </p>
-
-
-                                    @foreach ($booking->times as $item)
+                <section class="p-0">
+                    <div class="container">
+                        <div class="row g-2">
+                            <div class="col">
+                                <div class="card border-0">
+                                    <div class="card-body mb-3">
+                                        <h5 class="mb-3 fw-bold ">Pemesanan</h5>
+                                        <hr>
                                         <div class="row">
-                                            <div class="col-4">
-                                                @if ($item->field->images->first()->image_path)
-                                                    <img src="{{ Storage::url($item->field->images->first()->image_path) }}"
-                                                        class="img-fluid rounded" alt="image field">
-                                                @else
-                                                    <img src="https://images.pexels.com/photos/29388472/pexels-photo-29388472.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                                                        class="img-fluid rounded" alt="image field">
-                                                @endif
+                                            <div class="text-muted col-5">Total Bayar</div>
+                                            <div class="fw-bold text-danger col-7">
+                                                {{ formatRupiah($booking->total_price) }}
                                             </div>
-
-                                            <div class="col">
-                                                <h4 class="fw-bold text-danger">{{ $item->field->field_name }}</h4>
-                                                <p class="small mb-0">
-                                                    {{ Carbon::parse($item->booking_date)->format('d M Y') }}
-                                                    - {{ $item->start_time . ' - ' . $item->end_time }}
-                                                    - {{ __('type.' . $item->type) }}
-                                                </p>
-                                                <p class="small">{{ formatRupiah($item->price) }}</p>
+                                            <br>
+                                            <div class="text-muted col-5">Status</div>
+                                            <div class="fw-bold text-danger col-7">
+                                                {{ __('status.' . $booking->status) }}
+                                            </div>
+                                            <br>
+                                            <div class="text-muted col-5">Pelanggan</div>
+                                            <div class="fw-bold text-danger col-7">
+                                                {{ $booking->user->name }}
                                             </div>
                                         </div>
+
+                                        <p class="text-muted mt-4 text-lowercase">
+                                            List Waktu yang Telah Anda Pilih:
+                                        </p>
+
+
+                                        @foreach ($booking->times as $item)
+                                            <div class="row">
+                                                <div class="col-4">
+                                                    @if ($item->field->images->first()->image_path)
+                                                        <img src="{{ Storage::url($item->field->images->first()->image_path) }}"
+                                                            class="img-fluid rounded" alt="image field">
+                                                    @else
+                                                        <img src="https://images.pexels.com/photos/29388472/pexels-photo-29388472.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                                                            class="img-fluid rounded" alt="image field">
+                                                    @endif
+                                                </div>
+
+                                                <div class="col">
+                                                    <h4 class="fw-bold text-danger">{{ $item->field->field_name }}</h4>
+                                                    <p class="small mb-0">
+                                                        {{ Carbon::parse($item->booking_date)->format('d M Y') }}
+                                                        - {{ $item->start_time . ' - ' . $item->end_time }}
+                                                        - {{ __('type.' . $item->type) }}
+                                                    </p>
+                                                    <p class="small">{{ formatRupiah($item->price) }}</p>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
-                                <tr>
-                                </tr>
-                                @endforeach
                             </div>
-                        </div>
 
-                        <div class="{{ $booking->status !== 'PROCESS' ? 'col-lg-5' : 'd-none' }}">
-                            <div class="card border-0">
-                                <div class="card-body">
-                                    <h5 class="mb-3 fw-bold">Pembayaran</h5>
-                                    <form wire:submit='save_booking'>
-                                        <div class="mb-3">
-                                            <label for="payment_method" class="form-label">
-                                                Metode Pembayaran
-                                            </label>
-                                            <select class="form-select" wire:model.live='payment_method'
-                                                name="payment_method" id="payment_method">
-                                                <option value=" " selected>Pilih salah satu</option>
-                                                <option value="downpayment">
-                                                    Down Payment (DP)
-                                                </option>
-                                                <option value="fullpayment">
-                                                    Bayar Penuh (Lunas)
-                                                </option>
-                                            </select>
-                                            @error('payment_method')
-                                                <small class="text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-
-                                        @if ($payment_method === 'downpayment')
+                            <div class="col-lg-5">
+                                <div class="card border-0">
+                                    <div class="card-body">
+                                        <h5 class="mb-3 fw-bold">Pembayaran</h5>
+                                        <hr>
+                                        <form wire:submit='save_booking'>
                                             <div class="mb-3">
-                                                <label for="downpayment" class="form-label">Down Payment (DP)</label>
-                                                <input type="number" class="form-control" name="downpayment"
-                                                    id="downpayment" value="{{ $downpayment }}" readonly />
-                                                <small id="downpaymentId" class="form-text text-muted">Silahkan bayar sisa
-                                                    pembayaran saat dilapangan</small>
+                                                <label for="payment_method" class="form-label">
+                                                    Metode Pembayaran
+                                                </label>
+                                                <select class="form-select" wire:model.live='payment_method'
+                                                    name="payment_method" id="payment_method"
+                                                    {{ $booking->status !== 'PROCESS' ?: 'disabled' }}>
+                                                    <option value=" " selected>Pilih salah satu</option>
+                                                    <option value="downpayment">
+                                                        Down Payment (DP)
+                                                    </option>
+                                                    <option value="fullpayment">
+                                                        Bayar Penuh (Lunas)
+                                                    </option>
+                                                </select>
+                                                @error('payment_method')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                             </div>
-                                        @endif
 
-                                        <div class="mb-3">
-                                            <label for="alternative_phone" class="form-label">Telp Alternatif
-                                                (Opsional)</label>
-                                            <input type="number" class="form-control" name="alternative_phone"
-                                                id="alternative_phone" />
-                                            @error('alternative_phone')
-                                                <small id="alternative_phoneId" class="form-text text-danger">
-                                                    {{ $message }}
-                                                </small>
-                                            @else
-                                                <small id="alternative_phoneId" class="form-text text-muted">Nomor alternatif
-                                                    yang
-                                                    dapat dihubungi.</small>
-                                            @enderror
-                                        </div>
+                                            @if ($payment_method === 'downpayment')
+                                                <div class="mb-3">
+                                                    <label for="downpayment" class="form-label">Down Payment (DP)</label>
+                                                    <input type="number" class="form-control" name="downpayment"
+                                                        id="downpayment" value="{{ $downpayment }}" readonly
+                                                        {{ $booking->status !== 'PROCESS' ?: 'disabled' }} />
+                                                    <small id="downpaymentId" class="form-text text-muted">Silahkan bayar
+                                                        sisa
+                                                        pembayaran saat dilapangan</small>
+                                                </div>
+                                            @endif
 
-                                        <button type="submit" class="w-100 btn btn-danger">
-                                            Submit
-                                        </button>
+                                            <div class="mb-3">
+                                                <label for="alternative_phone" class="form-label">Telp Alternatif
+                                                    (Opsional)</label>
+                                                <input type="number" wire:model='alternative_phone' class="form-control"
+                                                    name="alternative_phone" id="alternative_phone"
+                                                    {{ $booking->status !== 'PROCESS' ?: 'disabled' }} />
+                                                @error('alternative_phone')
+                                                    <small id="alternative_phoneId" class="form-text text-danger">
+                                                        {{ $message }}
+                                                    </small>
+                                                @else
+                                                    <small id="alternative_phoneId" class="form-text text-muted">Nomor
+                                                        alternatif
+                                                        yang
+                                                        dapat dihubungi.</small>
+                                                @enderror
+                                            </div>
 
-                                    </form>
+                                            <button type="submit"
+                                                class="w-100 btn btn-danger {{ $booking->status !== 'PROCESS' ?: 'd-none' }}">
+                                                Submit
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </section>
+            @else
+                <div class="container">
+                    @include('pages.guest.bookings.invoice')
                 </div>
-            </section>
-
+            @endif
 
         </div>
     @endvolt
