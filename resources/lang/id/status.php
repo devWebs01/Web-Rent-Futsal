@@ -14,7 +14,7 @@ return [
     'PROCESS' => 'Sedang Diproses',
 
     // PaymentRecord
-    'DRAF' => 'Draf',
+    'DRAF' => 'Menunggu Pembayaran',
     'WAITING' => 'Menunggu Konfirmasi',
     'CONFIRM' => 'Konfirmasi',
     'REJECT' => 'Tolak',

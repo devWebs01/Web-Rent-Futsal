@@ -75,7 +75,11 @@
 
                 <x-guest-nav></x-guest-nav>
 
-                <x-guest-sidebar></x-guest-sidebar>
+                @auth
+                    <x-guest-sidebar></x-guest-sidebar>
+                @else
+                    <a class="btn btn-dark text-white" href="/login" role="button">Masuk</a>
+                @endauth
             </div>
         </nav>
     </header>

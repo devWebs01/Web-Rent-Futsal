@@ -66,7 +66,7 @@ $processBooking = function () {
         $booking = Booking::create([
             'invoice' => $invoice,
             'user_id' => $userId,
-            'status' => 'unpaid', // Status default
+            'status' => 'UNPAID', // Status default
             'total_price' => $totalPrice,
         ]);
 
@@ -90,7 +90,7 @@ $processBooking = function () {
             'toast' => true,
         ]);
 
-        $this->redirectRoute('bookings.checkout', ['booking' => $booking]);
+        $this->redirectRoute('bookings.show', ['booking' => $booking]);
 
         // Hapus data dari keranjang setelah diproses
         Cart::where('user_id', $userId)->delete();

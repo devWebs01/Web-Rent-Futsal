@@ -7,8 +7,10 @@
         href="/#fields">
         Lapangan
     </a>
-    <a class="col-auto fw-bold text-decoration-none icon-link icon-link-hover link-underline-opacity-100-hover"
-        href="{{ route('bookings.index') }}">
-        Pesanan
-    </a>
+    @auth
+        <a class="col-auto fw-bold text-decoration-none icon-link icon-link-hover link-underline-opacity-100-hover"
+            href="{{ route('bookings.index') }}">
+            Pesanan
+        </a>
+    @endauth
 </div>

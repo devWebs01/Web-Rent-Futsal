@@ -28,5 +28,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '08978301711',
             'role' => 'admin',
         ]);
+
+        \App\Models\Bank::factory(3)->create();
     }
 }

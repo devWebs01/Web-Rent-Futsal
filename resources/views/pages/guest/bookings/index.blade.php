@@ -45,10 +45,10 @@ state([
                                             <td>{{ formatRupiah($item->total_price) }}</td>
                                             <td>
                                                 <div>
-                                                    <a href="{{ route('transactions.booking', ['booking' => $item->id]) }}"
+                                                    <a href="{{ route('bookings.show', ['booking' => $item->id]) }}"
                                                         wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
                                                         class="btn btn-sm btn-danger">
-                                                        {{ __('Hapus') }}
+                                                        Detail
                                                     </a>
                                                 </div>
                                             </td>

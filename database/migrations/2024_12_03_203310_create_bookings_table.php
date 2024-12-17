@@ -20,8 +20,9 @@ return new class extends Migration
             $table->string('invoice');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->enum('status', ['PAID', 'UNPAID', 'DOWNPAYMENT', 'CANCEL', 'PROCESS'])->default('UNPAID');
-            $table->string('payment_method')->nullable();
+            $table->enum('payment_method', ['draf', 'fullpayment', 'downpayment'])->default('draf');
             $table->string('total_price');
+            $table->string('alternative_phone')->nullable();
             $table->timestamps();
         });
     }
