@@ -19,7 +19,7 @@ name('settings.index');
                         alt="matdash-img" class="img-fluid">
                 </div>
                 <div class="card-body">
-                    @include('pages.settings.profile')
+                    @include('pages.admin.settings.profile')
                 </div>
             </div>
         </div>

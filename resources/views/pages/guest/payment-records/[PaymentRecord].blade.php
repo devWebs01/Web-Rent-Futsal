@@ -67,7 +67,7 @@ $submit = function () {
 
             <section>
                 <div class="container">
-                    <div class="card">
+                    <div class="card border-0">
                         <div class="d-flex">
                             @foreach ($banks as $item)
                                 <div class="card-body">
@@ -83,6 +83,7 @@ $submit = function () {
                                 </div>
                             @endforeach
                         </div>
+                        <hr>
                     </div>
                 </div>
             </section>
@@ -123,7 +124,7 @@ $submit = function () {
                                                 @enderror
                                             </div>
                                             <div class="d-grid">
-                                                <button class="btn btn-danger" type="submit">Submit</button>
+                                                <button class="btn btn-dark" type="submit">Submit</button>
                                             </div>
                                         </form>
                                     </div>

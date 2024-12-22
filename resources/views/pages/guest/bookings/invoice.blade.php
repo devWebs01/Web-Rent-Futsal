@@ -106,9 +106,10 @@ state([
             <div class="row">
                 @foreach ($payment->records as $item)
                     <div class="col-md">
-                        <div class="card text-start">
+                        <div class="card text-start mb-3">
                             @if ($item->receipt)
-                                <img class="card-img-top" src="{{ Storage::url($item->receipt) }}" alt="Title" />
+                                <img class="card-img-top" style="height: 250px; width: 100%; object-fit: cover;"
+                                    src="{{ Storage::url($item->receipt) }}" alt="Title" />
                             @else
                                 <div class="card placeholder" style="height: 250px; width: 100%">
                                 </div>
@@ -134,13 +135,13 @@ state([
                                         {{ $item->updated_at }}
                                     </div>
                                 </div>
-                                @if (empty($item->receipt))
-                                    <a class="btn btn-dark d-grid"
-                                        href="{{ route('payment_record.show', ['paymentRecord' => $item->id]) }}"
-                                        role="button">Input Pembayaran</a>
-                                @endif
                             </div>
                         </div>
+                        @if ($loop->first && empty($item->receipt))
+                            <a class="btn btn-dark d-grid"
+                                href="{{ route('payment_record.show', ['paymentRecord' => $item->id]) }}"
+                                role="button">Input Pembayaran</a>
+                        @endif
                     </div>
                 @endforeach
             </div>

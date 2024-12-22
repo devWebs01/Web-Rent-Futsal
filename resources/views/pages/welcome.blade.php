@@ -245,29 +245,12 @@ state([
                                     <h5 class="accordion-header">
                                         <button class="accordion-button bg-white rounded-4 text-danger collapsed"
                                             style="font-weight:bold;" type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#collapseOne" aria-expanded="true"
-                                            aria-controls="collapseOne">
-                                            Apakah saya bisa menggunakan kartu kredit untuk pembayaran?
-                                        </button>
-                                    </h5>
-                                    <div id="collapseOne" class="accordion-collapse collapse show"
-                                        data-bs-parent="#accordion-flush">
-                                        <div class="accordion-body">
-                                            <p>Ya, kami menerima pembayaran menggunakan kartu kredit dan metode pembayaran
-                                                lainnya untuk kenyamanan Anda.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item border mb-3 rounded-3">
-                                    <h5 class="accordion-header">
-                                        <button class="accordion-button bg-white rounded-4 text-danger collapsed"
-                                            style="font-weight:bold;" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#collapseTwo" aria-expanded="false"
                                             aria-controls="collapseTwo">
                                             Jam berapa lapangan futsal tersedia untuk sewa?
                                         </button>
                                     </h5>
-                                    <div id="collapseTwo" class="accordion-collapse collapse"
+                                    <div id="collapseTwo" class="accordion-collapse collapse show"
                                         data-bs-parent="#accordion-flush">
                                         <div class="accordion-body">
                                             <p>Lapangan futsal kami tersedia untuk sewa setiap hari dari pukul 08:00
