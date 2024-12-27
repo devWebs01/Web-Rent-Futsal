@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Booking;
+use App\Models\PaymentRecord;
 use Illuminate\Validation\Rule;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use function Livewire\Volt\{state, rules, uses};
@@ -18,7 +19,28 @@ state([
     'totalPrice' => fn() => $this->booking->times->sum('price'),
     'payment' => fn() => $this->booking->payment,
     'booking',
+    'id',
 ]);
+
+$confirmReceipt = function ($id) {
+    try {
+        // Cari data berdasarkan ID
+        $receipt = PaymentRecord::findOrFail($id);
+
+        // Update status
+        $receipt->update([
+            'status' => 'CONFIRM',
+        ]);
+
+        $this->alert('success', 'Pembayaran diterima!', [
+            'position' => 'center',
+        ]);
+    } catch (\Throwable $th) {
+        $this->alert('error', 'Proses gagal!', [
+            'position' => 'center',
+        ]);
+    }
+};
 
 ?>
 
@@ -52,7 +74,15 @@ state([
                             </p>
                             @foreach ($booking->times as $time)
                                 <div class="row mb-3">
-                                    <img src="https://via.placeholder.com/100" alt="Macbook Air" class="img-fluid col-2">
+
+                                    @if ($time->field->images->count() < 0)
+                                        <img src="https://images.pexels.com/photos/29388472/pexels-photo-29388472.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                                            class="img-fluid col-2" style="object-fit: cover;">
+                                    @else
+                                        <img src="{{ Storage::url($time->field->images->first()->image_path) }}"
+                                            class="img-fluid col-2" style="object-fit: cover;">
+                                    @endif
+
                                     <div class="col-10">
                                         <div class="row mb-1 fw-bold">
                                             <div class="col-6 fs-5">
@@ -137,15 +167,19 @@ state([
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($record->receipt)
+                                            @if ($record->receipt && $record->status === 'WAITING')
                                                 <div class="d-flex gap-1 justify-content-center">
                                                     <button type="button" class="btn btn-sm btn-danger">
                                                         Tolak
                                                     </button>
 
-                                                    <button type="button" class="btn btn-sm btn-primary">
+                                                    <button wire:confirm="Yakin ingin mengkonfimasi pembayaran ini?"
+                                                        wire:key="{{ $record->id }}"
+                                                        wire:click="confirmReceipt({{ $record->id }})" type="button"
+                                                        class="btn btn-sm btn-primary">
                                                         Terima
                                                     </button>
+
                                                 </div>
                                             @else
                                                 -
@@ -157,7 +191,7 @@ state([
 
                             </tbody>
                         </table>
-                        <div class="d-flex justify-content-end">
+                        <div class="d-flex justify-content-end mt-5">
                             <button class="btn btn-outline-secondary me-2">Send invoice</button>
                             <button class="btn btn-primary">Collect payment</button>
                         </div>
