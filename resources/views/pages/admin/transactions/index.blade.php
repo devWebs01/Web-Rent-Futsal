@@ -19,7 +19,7 @@ $bookings = computed(function () {
         return booking::query()
             ->where(function ($query) {
                 // isi
-                $query->whereAny([' '], 'LIKE', "%{$this->search}%");
+                $query->whereAny(['invoice', 'status', 'total_price', 'payment_method'], 'LIKE', "%{$this->search}%");
             })
             ->latest()
             ->paginate(10);
@@ -44,7 +44,8 @@ $bookings = computed(function () {
                             </div>
                             <div class="col">
                                 <input wire:model.live="search" type="search" class="form-control" name="search"
-                                id="search" aria-describedby="searchId" placeholder="Masukkan kata kunci pencarian" />
+                                    id="search" aria-describedby="searchId"
+                                    placeholder="Masukkan kata kunci pencarian" />
                             </div>
                         </div>
                     </div>
@@ -69,7 +70,7 @@ $bookings = computed(function () {
                                             <td>{{ $item->user->name }}</td>
                                             <td>{{ $item->invoice }}</td>
                                             <td>{{ formatRupiah($item->total_price) }}</td>
-                                            <td>{{ __('status.'.$item->status) }}</td>
+                                            <td>{{ __('status.' . $item->status) }}</td>
                                             <td>
                                                 <div>
                                                     <a href="{{ route('transactions.edit', ['booking' => $item->id]) }}"

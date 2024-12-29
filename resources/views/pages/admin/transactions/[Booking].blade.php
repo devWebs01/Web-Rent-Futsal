@@ -16,49 +16,70 @@ state([
     'user' => fn() => $this->booking->user,
     'invoice' => fn() => $this->booking->invoice,
     'totalPrice' => fn() => $this->booking->times->sum('price'),
-    'payment' => fn() => $this->booking->payment,
+    'payment' => fn() => $this->booking->payment ?? null,
+    'records' => fn() => $this->booking->payment->records ?? null,
     'booking',
     'id',
 ]);
 
 $canConfirm = function () {
-    $allPaid = $this->booking->payment->records->every(fn($payment) => in_array($payment->status, ['PAID', 'CASH', 'CONFIRM']));
-    $validStatus = in_array($this->booking->status, ['PROCESS']);
+    // Cek apakah payment ada dan records tidak null
+    if (!$this->payment || !$this->records) {
+        return false;
+    }
+
+    $allPaid = $this->records->every(fn($payment) => in_array($payment->status, ['PAID', 'CASH', 'CONFIRM']));
+    $validStatus = in_array($this->booking->status, ['PAID']);
 
     return $allPaid && $validStatus;
 };
 
+$updatingStatusTimes = function () {
+    if (!$this->booking->times) {
+        return false;
+    }
+
+    foreach ($this->booking->times as $time) {
+        $time->update([
+            'status' => 'START',
+        ]);
+    }
+};
+
 $confirmBooking = function () {
     try {
-        // Periksa apakah semua pembayaran memiliki status valid
-        $allPaid = $this->booking->payment->records->every(fn($payment) => in_array($payment->status, ['PAID', 'CASH', 'CONFIRM']));
-
-        // Periksa apakah status booking valid
-        $validStatus = in_array($this->booking->status, ['PROCESS']);
-
-        if (!$allPaid || !$validStatus) {
-            $this->alert('error', 'Tidak dapat mengkonfirmasi booking. Periksa status pembayaran atau booking.', [
+        // Cek apakah payment ada dan records tidak null
+        if (!$this->payment || !$this->records) {
+            $this->alert('error', 'Metode pembayaran belum dipilih atau data pembayaran tidak tersedia.', [
                 'position' => 'center',
             ]);
+            return;
         }
+
+        $this->updatingStatusTimes();
 
         $this->booking->update([
             'status' => 'CONFIRM',
         ]);
+
         $this->alertSuccess();
     } catch (\Throwable $th) {
         $this->alertError();
-        //throw $th;
     }
 };
 
-$confirmReceipt = function ($id) {
+$confirmRecord = function ($id) {
     try {
         // Cari data berdasarkan ID
-        $receipt = PaymentRecord::findOrFail($id);
+        $record = PaymentRecord::findOrFail($id);
         // Update status
-        $receipt->update([
+        $record->update([
             'status' => 'CONFIRM',
+        ]);
+
+        $booking = $this->booking;
+        $booking->update([
+            'status' => 'PAID',
         ]);
 
         $this->alertSuccess();
@@ -89,6 +110,19 @@ $cashPayment = function ($id) {
         $receipt->update([
             'status' => 'CASH',
         ]);
+
+        $booking = $this->booking;
+
+        if ($this->booking->payment_method === 'downpayment' && $this->booking->status === 'DOWNPAYMENT') {
+            $booking->update([
+                'status' => 'PAID',
+            ]);
+        } elseif ($this->booking->payment_method === 'downpayment') {
+            $booking->update([
+                'status' => 'DOWNPAYMENT',
+            ]);
+        }
+
         $this->alertSuccess();
     } catch (\Throwable $th) {
         $this->alertError();
@@ -115,7 +149,7 @@ $alertError = function () {
         <div>
             <x-slot name="title">Booking {{ $invoice }}</x-slot>
 
-            {{-- @dd($this->booking->status, $this->canConfirm(), $this->booking->payment->records->pluck('status')); --}}
+            {{ $booking->status }}
 
             <div class="card">
                 <div class="card-header bg-light  justify-content-between align-items-center">
@@ -187,7 +221,7 @@ $alertError = function () {
                         <h5 class="fw-bold mb-3">Pembayaran</h5>
                         <p> Pelanggan
                             <span class="text-primary">{{ $booking->user->name }}</span>
-                            memilih menggunakan metode pembayaran
+                            memilih
                             <span class="text-primary">
                                 {{ __('status.' . $booking->payment_method) }}
                             </span>
@@ -211,63 +245,64 @@ $alertError = function () {
                                         #
                                     </td>
                                 </tr>
-                                @foreach ($payment->records as $no => $record)
+                                @if ($payment && $payment->records)
+                                    @foreach ($payment->records as $no => $record)
+                                        <tr>
+                                            <td>{{ ++$no }}</td>
+                                            <td>{{ formatRupiah($record->amount) }}</td>
+                                            <td>{{ __('status.' . $record->status) }}</td>
+                                            <td>
+                                                @if ($record->receipt)
+                                                    <a href="{{ Storage::url($record->receipt) }}" data-fancybox
+                                                        data-caption="{{ $record->receipt }}">
+                                                        <img src="{{ Storage::url($record->receipt) }}"
+                                                            alt="bukti pembayaran" class="img object-fit-cover"
+                                                            width="30" height="30">
+                                                    </a>
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($record->receipt && $record->status === 'WAITING')
+                                                    <div class="d-flex gap-1 justify-content-center">
+                                                        <button wire:confirm="Yakin ingin menolak pembayaran ini?"
+                                                            wire:key="{{ $record->id }}"
+                                                            wire:click="rejectReceipt({{ $record->id }})" type="button"
+                                                            class="btn btn-sm btn-danger">
+                                                            Tolak
+                                                        </button>
+                                                        <button wire:confirm="Yakin ingin mengkonfimasi pembayaran ini?"
+                                                            wire:key="{{ $record->id }}"
+                                                            wire:click="confirmRecord({{ $record->id }})" type="button"
+                                                            class="btn btn-sm btn-primary">
+                                                            Konfirmasi
+                                                        </button>
+                                                    </div>
+                                                @elseif (!$record->receipt && $record->status === 'DRAF')
+                                                    <div class="d-flex gap-1 justify-content-center">
+                                                        <button
+                                                            wire:confirm="Yakin ingin mengkonfimasi pembayaran ini dan pelanggan telah membayar ditempat?"
+                                                            wire:key="{{ $record->id }}"
+                                                            wire:click="cashPayment({{ $record->id }})" type="button"
+                                                            class="btn btn-sm btn-primary">
+                                                            Bayar Ditempat
+                                                        </button>
+                                                    </div>
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
                                     <tr>
-                                        <td>
-                                            {{ ++$no }}
-                                        </td>
-                                        <td>
-                                            {{ formatRupiah($record->amount) }}
-                                        </td>
-                                        <td>
-                                            {{ __('status.' . $record->status) }}
-                                        </td>
-                                        <td>
-                                            @if ($record->receipt)
-                                                <a href="{{ Storage::url($record->receipt) }}" data-fancybox
-                                                    data-caption="{{ $record->receipt }}">
-                                                    <img src="{{ Storage::url($record->receipt) }}" alt="bukti pembayaran"
-                                                        class="img object-fit-cover" width="30" height="30">
-                                                </a>
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($record->receipt && $record->status === 'WAITING')
-                                                <div class="d-flex gap-1 justify-content-center">
-                                                    <button wire:confirm="Yakin ingin menolak pembayaran ini?"
-                                                        wire:key="{{ $record->id }}"
-                                                        wire:click="rejectReceipt({{ $record->id }})" type="button"
-                                                        class="btn btn-sm btn-danger">
-                                                        Tolak
-                                                    </button>
-
-                                                    <button wire:confirm="Yakin ingin mengkonfimasi pembayaran ini?"
-                                                        wire:key="{{ $record->id }}"
-                                                        wire:click="confirmReceipt({{ $record->id }})" type="button"
-                                                        class="btn btn-sm btn-primary">
-                                                        Konfirmasi
-                                                    </button>
-
-                                                </div>
-                                            @elseif (!$record->receipt && $record->status === 'DRAF')
-                                                <div class="d-flex gap-1 justify-content-center">
-                                                    <button
-                                                        wire:confirm="Yakin ingin mengkonfimasi pembayaran ini dan pelanggan telah membayar ditempat?"
-                                                        wire:key="{{ $record->id }}"
-                                                        wire:click="cashPayment({{ $record->id }})" type="button"
-                                                        class="btn btn-sm btn-primary">
-                                                        Bayar Ditempat
-                                                    </button>
-                                                </div>
-                                            @else
-                                                -
-                                            @endif
-
+                                        <td colspan="5">
+                                            Belum ada!
                                         </td>
                                     </tr>
-                                @endforeach
+                                @endif
+
 
                             </tbody>
                         </table>
@@ -276,9 +311,6 @@ $alertError = function () {
                                 class="btn btn-primary {{ $this->canConfirm() ? 'd-block' : 'd-none' }}">
                                 Konfirmasi Booking
                             </button>
-
-
-
                         </div>
                     </div>
 

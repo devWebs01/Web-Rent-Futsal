@@ -14,6 +14,10 @@ return [
     'START' => 'Berjalan',
     'STOP' => 'Selesai',
 
+    // BookingTime
+    'draf' => 'Menunggu Memilih Metode Pembayaran',
+    'fullpayment' => 'Bayar Penuh (Lunas)',
+    'downpayment' => 'DP (Down Payment)',
 
     // PaymentRecord
     'DRAF' => 'Menunggu Pembayaran',
