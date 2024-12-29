@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('end_time');
             $table->string('price');
             $table->string('type');
+            $table->enum('status', ['START', 'STOP'])->default('START');
             $table->timestamps();
         });
     }

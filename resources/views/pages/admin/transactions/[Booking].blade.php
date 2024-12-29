@@ -15,31 +15,95 @@ name('transactions.edit');
 state([
     'user' => fn() => $this->booking->user,
     'invoice' => fn() => $this->booking->invoice,
-    'status' => fn() => $this->booking->status,
     'totalPrice' => fn() => $this->booking->times->sum('price'),
     'payment' => fn() => $this->booking->payment,
     'booking',
     'id',
 ]);
 
+$canConfirm = function () {
+    $allPaid = $this->booking->payment->records->every(fn($payment) => in_array($payment->status, ['PAID', 'CASH', 'CONFIRM']));
+    $validStatus = in_array($this->booking->status, ['PROCESS']);
+
+    return $allPaid && $validStatus;
+};
+
+$confirmBooking = function () {
+    try {
+        // Periksa apakah semua pembayaran memiliki status valid
+        $allPaid = $this->booking->payment->records->every(fn($payment) => in_array($payment->status, ['PAID', 'CASH', 'CONFIRM']));
+
+        // Periksa apakah status booking valid
+        $validStatus = in_array($this->booking->status, ['PROCESS']);
+
+        if (!$allPaid || !$validStatus) {
+            $this->alert('error', 'Tidak dapat mengkonfirmasi booking. Periksa status pembayaran atau booking.', [
+                'position' => 'center',
+            ]);
+        }
+
+        $this->booking->update([
+            'status' => 'CONFIRM',
+        ]);
+        $this->alertSuccess();
+    } catch (\Throwable $th) {
+        $this->alertError();
+        //throw $th;
+    }
+};
+
 $confirmReceipt = function ($id) {
     try {
         // Cari data berdasarkan ID
         $receipt = PaymentRecord::findOrFail($id);
-
         // Update status
         $receipt->update([
             'status' => 'CONFIRM',
         ]);
 
-        $this->alert('success', 'Pembayaran diterima!', [
-            'position' => 'center',
-        ]);
+        $this->alertSuccess();
     } catch (\Throwable $th) {
-        $this->alert('error', 'Proses gagal!', [
-            'position' => 'center',
-        ]);
+        $this->alertError();
     }
+};
+
+$rejectReceipt = function ($id) {
+    try {
+        // Cari data berdasarkan ID
+        $receipt = PaymentRecord::findOrFail($id);
+        // Update status
+        $receipt->update([
+            'status' => 'REJECT',
+        ]);
+        $this->alertSuccess();
+    } catch (\Throwable $th) {
+        $this->alertError();
+    }
+};
+
+$cashPayment = function ($id) {
+    try {
+        // Cari data berdasarkan ID
+        $receipt = PaymentRecord::findOrFail($id);
+        // Update status
+        $receipt->update([
+            'status' => 'CASH',
+        ]);
+        $this->alertSuccess();
+    } catch (\Throwable $th) {
+        $this->alertError();
+    }
+};
+
+$alertSuccess = function () {
+    $this->alert('success', 'Proses berhasil!', [
+        'position' => 'center',
+    ]);
+};
+$alertError = function () {
+    $this->alert('error', 'Proses gagal!', [
+        'position' => 'center',
+    ]);
 };
 
 ?>
@@ -51,6 +115,8 @@ $confirmReceipt = function ($id) {
         <div>
             <x-slot name="title">Booking {{ $invoice }}</x-slot>
 
+            {{-- @dd($this->booking->status, $this->canConfirm(), $this->booking->payment->records->pluck('status')); --}}
+
             <div class="card">
                 <div class="card-header bg-light  justify-content-between align-items-center">
                     <div class="row">
@@ -60,12 +126,13 @@ $confirmReceipt = function ($id) {
                             </p>
                         </div>
                         <div class="col text-end">
-                            <span class="badge bg-secondary py-2 rounded">{{ __('status.' . $status) }}</span>
+                            <span class="badge bg-secondary py-2 rounded">{{ __('status.' . $booking->status) }}</span>
+                            <br>
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
 
+                <div class="card-body">
                     <!-- Order Item -->
                     <div class="my-4">
                         <h5 class="mb-3 fw-bold">Pemesanan</h6>
@@ -158,7 +225,7 @@ $confirmReceipt = function ($id) {
                                         <td>
                                             @if ($record->receipt)
                                                 <a href="{{ Storage::url($record->receipt) }}" data-fancybox
-                                                    data-caption="Caption #1">
+                                                    data-caption="{{ $record->receipt }}">
                                                     <img src="{{ Storage::url($record->receipt) }}" alt="bukti pembayaran"
                                                         class="img object-fit-cover" width="30" height="30">
                                                 </a>
@@ -169,7 +236,10 @@ $confirmReceipt = function ($id) {
                                         <td>
                                             @if ($record->receipt && $record->status === 'WAITING')
                                                 <div class="d-flex gap-1 justify-content-center">
-                                                    <button type="button" class="btn btn-sm btn-danger">
+                                                    <button wire:confirm="Yakin ingin menolak pembayaran ini?"
+                                                        wire:key="{{ $record->id }}"
+                                                        wire:click="rejectReceipt({{ $record->id }})" type="button"
+                                                        class="btn btn-sm btn-danger">
                                                         Tolak
                                                     </button>
 
@@ -177,9 +247,19 @@ $confirmReceipt = function ($id) {
                                                         wire:key="{{ $record->id }}"
                                                         wire:click="confirmReceipt({{ $record->id }})" type="button"
                                                         class="btn btn-sm btn-primary">
-                                                        Terima
+                                                        Konfirmasi
                                                     </button>
 
+                                                </div>
+                                            @elseif (!$record->receipt && $record->status === 'DRAF')
+                                                <div class="d-flex gap-1 justify-content-center">
+                                                    <button
+                                                        wire:confirm="Yakin ingin mengkonfimasi pembayaran ini dan pelanggan telah membayar ditempat?"
+                                                        wire:key="{{ $record->id }}"
+                                                        wire:click="cashPayment({{ $record->id }})" type="button"
+                                                        class="btn btn-sm btn-primary">
+                                                        Bayar Ditempat
+                                                    </button>
                                                 </div>
                                             @else
                                                 -
@@ -192,19 +272,26 @@ $confirmReceipt = function ($id) {
                             </tbody>
                         </table>
                         <div class="d-flex justify-content-end mt-5">
-                            <button class="btn btn-outline-secondary me-2">Send invoice</button>
-                            <button class="btn btn-primary">Collect payment</button>
+                            <button wire:confirm="Yakin untuk mengkonfirmasi booking ini?" wire:click="confirmBooking"
+                                class="btn btn-primary {{ $this->canConfirm() ? 'd-block' : 'd-none' }}">
+                                Konfirmasi Booking
+                            </button>
+
+
+
                         </div>
                     </div>
 
+                    <hr>
+
                     <!-- Timeline -->
                     <div class="mb-4">
-                        <h6 class="mb-3">Timeline</h6>
+                        <h5 class="fw-bold mb-3">Data Pelanggan</h5>
                         <div class="d-flex align-items-center">
                             <img src="https://via.placeholder.com/40" alt="Alex Jander" class="rounded-circle me-3">
                             <div>
-                                <strong>Alex Jander</strong>
-                                <p class="text-muted mb-0">First customer and order!</p>
+                                <strong>{{ $user->name }}</strong>
+                                <p class="text-muted mb-0">Pelanggan</p>
                             </div>
                         </div>
                     </div>
@@ -212,26 +299,17 @@ $confirmReceipt = function ($id) {
                     <!-- Customer Details -->
                     <div class="row">
                         <div class="col-md-6">
-                            <h6 class="mb-3">Customer</h6>
-                            <p class="mb-1">Alex Jander</p>
-                            <p class="mb-1">1 order</p>
-                            <p class="text-muted">Customer is tax-exempt</p>
+                            <h6 class="mb-3">Bio Pelanggan</h6>
+                            <p class="mb-1">{{ $user->name }}</p>
+                            <p class="mb-1">{{ $user->created_at }}</p>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="mb-3">Contact Information</h6>
-                            <p class="mb-1">alexjander@gmail.com</p>
-                            <p class="text-muted">+1 628 276 9041</p>
+                            <h6 class="mb-3">Kontak</h6>
+                            <p class="mb-1">{{ $user->email }}</p>
+                            <p class="text-muted">{{ $user->phone }}</p>
                         </div>
                     </div>
 
-                    <!-- Shipping Address -->
-                    <div class="mt-4">
-                        <h6 class="mb-3">Shipping Address</h6>
-                        <p class="mb-1">Alex Jander</p>
-                        <p class="mb-1">1226 University Drive</p>
-                        <p class="mb-1">Menlo Park CA 94025</p>
-                        <p class="text-muted">United States</p>
-                    </div>
                 </div>
             </div>
 

@@ -17,6 +17,7 @@ class BookingTime extends Model
         'end_time',
         'price',
         'type',
+        'status',
     ];
 
     // Relasi ke Booking

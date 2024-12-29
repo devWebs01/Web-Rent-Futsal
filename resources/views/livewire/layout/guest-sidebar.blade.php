@@ -133,7 +133,9 @@ $processBooking = function () {
             <div class="offcanvas-body">
                 <div class="flex-grow-1 text-dark">
                     @foreach ($cart as $item)
-                        <div wire:poll.15s class="row mb-3 py-3 border-5 border-start border-black rounded-3 bg-yellow">
+                        <div
+                        {{-- wire:poll.30s --}}
+                         class="row mb-3 py-3 border-5 border-start border-black rounded-3 bg-yellow">
                             <div class="col-10">
                                 <p class="fw-bold mb-0">
                                     {{ $item->field->field_name }}

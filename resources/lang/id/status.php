@@ -7,12 +7,21 @@ return [
     'DOWNPAYMENT' => 'Down Payment (DP)',
     'CANCEL' => 'Batal',
     'PROCESS' => 'Sedang Diproses',
+    // 'CONFIRM' => 'Konfirmasi',
+    'COMPLETE' => 'Selesai',
+
+    // BookingTime
+    'START' => 'Berjalan',
+    'STOP' => 'Selesai',
+
 
     // PaymentRecord
     'DRAF' => 'Menunggu Pembayaran',
     'WAITING' => 'Menunggu Konfirmasi',
     'CONFIRM' => 'Konfirmasi',
     'REJECT' => 'Tolak',
+    'CASH' => 'Bayar Ditempat',
+    'CANCELED' => 'Batal Pembayaran',
 
     // Field
     'ACTIVE' => 'TERSEDIA',

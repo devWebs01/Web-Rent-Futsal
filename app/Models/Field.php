@@ -25,16 +25,14 @@ class Field extends Model
     {
         return $this->hasMany(Image::class);
     }
+    
+    public function bookingTimes()
+    {
+        return $this->hasMany(BookingTime::class);
+    }
 
-    /**
-     * Get all of the carts for the Field
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function carts(): HasMany
     {
         return $this->hasMany(Cart::class);
     }
-
-
 }
