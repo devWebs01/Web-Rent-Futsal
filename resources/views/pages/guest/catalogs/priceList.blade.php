@@ -80,31 +80,31 @@ $addToCart = function ($slot) {
 
 $slots = computed(function () {
     $schedules = $this->allSchedule;
-    $date = Carbon::parse($this->selectDate ?? $this->today)->format('l');
+    $selectedDate = Carbon::parse($this->selectDate ?? $this->today); // Tanggal yang dipilih
+    $today = Carbon::now(); // Tanggal dan waktu sekarang
+    $now = $today->format('H:i'); // Waktu sekarang (jam dan menit)
 
-    // Mengambil slot yang sudah di-booking selain status CANCEL
     $bookedSlots = BookingTime::where('field_id', $this->field_id)
-        ->where('booking_date', $this->selectDate ?? $this->today)
+        ->where('booking_date', $selectedDate->format('Y-m-d'))
         ->whereHas('booking', function ($query) {
             $query->where('status', '!=', 'CANCEL');
         })
-        ->get(['start_time', 'type']) // Ambil start_time dan type untuk validasi
+        ->get(['start_time', 'type'])
         ->toArray();
 
-    // Memetakan slot yang sudah di-booking berdasarkan start_time dan type
+    // Map slot yang sudah dibooking
     $bookedMap = collect($bookedSlots)->mapWithKeys(function ($slot) {
         return [$slot['start_time'] => $slot['type']];
     });
 
-    $slots = []; // Deklarasikan array kosong untuk menyimpan slot waktu
+    $slots = [];
 
     foreach ($schedules as $schedule) {
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         $startIndex = array_search($schedule->start_day, $days);
         $endIndex = array_search($schedule->end_day, $days);
-        $currentIndex = array_search($date, $days);
+        $currentIndex = array_search($selectedDate->format('l'), $days);
 
-        // Filter slot hanya untuk hari ini
         if ($startIndex <= $currentIndex && $currentIndex <= $endIndex) {
             $start = Carbon::createFromTimeString($schedule->start_time);
             $end = Carbon::createFromTimeString($schedule->end_time);
@@ -113,26 +113,28 @@ $slots = computed(function () {
                 $slotStart = $start->format('H:i');
                 $slotEnd = $start->addHour()->format('H:i');
 
-                // Periksa apakah slot sudah di-booking berdasarkan waktu dan type
-                $isBooked = isset($bookedMap[$slotStart]) && $bookedMap[$slotStart] === $schedule->type;
+                // Periksa apakah slot ini di masa lalu
+                $isPast = $selectedDate->isSameDay($today) && $slotStart < $now;
+                $isBooked = isset($bookedMap[$slotStart]); // Tidak perlu memeriksa type, cukup cek jika slot sudah dibooking
 
                 $slots[] = [
                     'time' => "$slotStart - $slotEnd",
                     'cost' => $schedule->cost,
                     'type' => $schedule->type,
                     'isBooked' => $isBooked,
+                    'isPast' => $isPast,
                 ];
             }
         }
     }
 
-    // Pisahkan slot berdasarkan type
     return [
         'student' => array_filter($slots, fn($slot) => $slot['type'] === 'STUDENT'),
         'general' => array_filter($slots, fn($slot) => $slot['type'] === 'GENERAL'),
         'tournament' => array_filter($slots, fn($slot) => $slot['type'] === 'TOURNAMENT'),
     ];
 });
+
 
 $setActiveTab = function ($tab) {
     $this->activeTab = $tab;
@@ -175,7 +177,7 @@ $setActiveTab = function ($tab) {
 
 
         <!-- Tabs Content -->
-        <div class="tab-content mb-3" id="pills-tabContent">
+        <div class="tab-content mb-3" id="pills-tabContent" wire:poll.10s>
             <!-- Tab Pelajar -->
             <div class="tab-pane fade @if ($this->activeTab === 'student') show active @endif" id="pills-student"
                 role="tabpanel">
@@ -185,13 +187,17 @@ $setActiveTab = function ($tab) {
                             <div class="card-body text-center shadow rounded-4">
                                 <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
                                 <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3 {{ $slot['isBooked'] ? 'd-none' : '' }}"
+                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
+                                    {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                     wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
-                                    <span wire:loading.class='d-none'>PILIH</span>
+                                    <span wire:loading.class='d-none'>
+                                        PILIH
+                                    </span>
                                     <span wire:loading.class.remove='d-none'
                                         class="spinner-border spinner-border-sm d-none">
                                     </span>
                                 </a>
+
                             </div>
                         </div>
                     @endforeach
@@ -207,13 +213,17 @@ $setActiveTab = function ($tab) {
                             <div class="card-body text-center shadow rounded-4">
                                 <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
                                 <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3 {{ $slot['isBooked'] ? 'd-none' : '' }}"
+                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
+                                    {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                     wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
-                                    <span wire:loading.class='d-none'>PILIH</span>
+                                    <span wire:loading.class='d-none'>
+                                        PILIH
+                                    </span>
                                     <span wire:loading.class.remove='d-none'
                                         class="spinner-border spinner-border-sm d-none">
                                     </span>
                                 </a>
+
                             </div>
                         </div>
                     @endforeach
@@ -229,13 +239,17 @@ $setActiveTab = function ($tab) {
                             <div class="card-body text-center shadow rounded-4">
                                 <h5 class="mt-3 text-danger">{{ $slot['time'] }}</h5>
                                 <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3 {{ $slot['isBooked'] ? 'd-none' : '' }}"
+                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
+                                    {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                     wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
-                                    <span wire:loading.class='d-none'>PILIH</span>
+                                    <span wire:loading.class='d-none'>
+                                        PILIH
+                                    </span>
                                     <span wire:loading.class.remove='d-none'
                                         class="spinner-border spinner-border-sm d-none">
                                     </span>
                                 </a>
+
                             </div>
                         </div>
                     @endforeach

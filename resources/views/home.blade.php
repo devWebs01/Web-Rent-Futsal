@@ -10,6 +10,19 @@ uses([LivewireAlert::class]);
 
 state(['id']);
 
+$isOvertime = function ($booking) {
+    $endTime = Carbon::parse($booking->booking_date . ' ' . $booking->end_time);
+    return Carbon::now()->greaterThan($endTime);
+};
+
+$getRemainingTime = function ($booking) {
+    if ($this->isOvertime($booking)) {
+        return null;
+    }
+    $endTime = Carbon::parse($booking->booking_date . ' ' . $booking->end_time);
+    return $endTime->diff(Carbon::now());
+};
+
 $markComplete = function ($id) {
     try {
         // Tandai booking sebagai selesai
@@ -82,10 +95,14 @@ $monitoring_bookings = computed(function () {
                                         </span>
                                     </td>
                                     <td>
-                                        <button wire:click="markComplete({{ $item->id }})"
-                                            class="btn btn-primary btn-sm {{ $item->status !== 'STOP' ?: 'd-none' }}">
-                                            Tandai Selesai
-                                        </button>
+                                        @if ($item->status === 'STOP')
+                                            -
+                                        @else
+                                            <button wire:click="markComplete({{ $item->id }})"
+                                                class="btn btn-primary btn-sm {{ $item->status !== 'STOP' ?: 'd-none' }}">
+                                                Tandai Selesai
+                                            </button>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

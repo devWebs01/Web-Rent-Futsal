@@ -11,7 +11,10 @@ name('bookings.index');
 
 state(['search'])->url();
 state([
-    'bookings' => fn() => booking::query()->latest()->get(),
+    'auth' => fn() => Auth::user(),
+    'bookings' => fn() => booking::where('user_id', $this->auth->id)
+        ->latest()
+        ->get(),
 ]);
 
 ?>

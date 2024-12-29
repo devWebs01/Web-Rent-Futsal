@@ -3,6 +3,7 @@
 use App\Models\Booking;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use function Livewire\Volt\{state, uses, rules};
+use Carbon\Carbon;
 
 uses([LivewireAlert::class]);
 
@@ -68,10 +69,11 @@ state([
             <div class="row mb-3">
                 <div class="col-12">
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped text-center">
                             <thead>
                                 <tr>
                                     <th scope="col" class="text-uppercase">Lapangan</th>
+                                    <th scope="col" class="text-uppercase">Hari</th>
                                     <th scope="col" class="text-uppercase">Jam</th>
                                     <th scope="col" class="text-uppercase text-end">Type</th>
                                     <th scope="col" class="text-uppercase text-end">Harga</th>
@@ -81,6 +83,7 @@ state([
                                 @foreach ($booking->times as $time)
                                     <tr>
                                         <th>{{ $time->field->field_name }}</th>
+                                        <th>{{ Carbon::parse($time->booking_date)->format('d-m-Y') }}</th>
                                         <td>{{ $time->start_time . ' - ' . $time->end_time }}</td>
                                         <td class="text-end">
                                             {{ __('type.' . $time->type) }}
@@ -92,7 +95,7 @@ state([
                                 @endforeach
 
                                 <tr>
-                                    <th scope="row" colspan="3" class="text-uppercase text-end">Total</th>
+                                    <th scope="row" colspan="4" class="text-uppercase text-end">Total</th>
                                     <td class="text-end">
                                         {{ formatRupiah($totalPrice) }}
                                     </td>

@@ -10,7 +10,7 @@
                 name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
 
             @error('name')
-                <span class="invalid-feedback" role="alert">
+                <span class="invalid-feedback text-white" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
             @enderror
@@ -20,10 +20,23 @@
         <div class="mb-3">
             <label for="email" class="form-label">{{ __('Email') }}</label>
             <input id="email" type="email" class="form-control border px-2 @error('email') is-invalid @enderror"
-                name="email" value="{{ old('email') }}" required autocomplete="email">
+                name="email" value="{{ old('email') }}" required>
 
             @error('email')
-                <span class="invalid-feedback" role="alert">
+                <span class="invalid-feedback text-white" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+
+        </div>
+
+        <div class="mb-3">
+            <label for="phone" class="form-label">{{ __('No. Telp') }}</label>
+            <input id="phone" type="number" class="form-control border px-2 @error('phone') is-invalid @enderror"
+                name="phone" value="{{ old('phone') }}" required>
+
+            @error('phone')
+                <span class="invalid-feedback text-white" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
             @enderror
@@ -33,11 +46,10 @@
         <div class="mb-3">
             <label for="password" class="form-label">{{ __('Kata Sandi') }}</label>
             <input id="password" type="password"
-                class="form-control border px-2 @error('password') is-invalid @enderror" name="password" required
-                autocomplete="new-password">
+                class="form-control border px-2 @error('password') is-invalid @enderror" name="password" required>
 
             @error('password')
-                <span class="invalid-feedback" role="alert">
+                <span class="invalid-feedback text-white" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
             @enderror

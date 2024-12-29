@@ -54,6 +54,7 @@ $processBooking = function () {
                 'timer' => 3000,
                 'toast' => true,
             ]);
+            return;
         }
 
         // Hitung total harga
@@ -70,9 +71,30 @@ $processBooking = function () {
             'total_price' => $totalPrice,
         ]);
 
-        // Loop data dari keranjang untuk disimpan di tabel booking_times
         foreach ($carts as $cart) {
-            // dd($cart);
+            // Validasi slot waktu
+            $conflictingTime = BookingTime::where('field_id', $cart->field_id)
+                ->where('booking_date', $cart->booking_date)
+                ->where('type', $cart->type) // Validasi tipe booking
+                ->where(function ($query) use ($cart) {
+                    $query->where(function ($subQuery) use ($cart) {
+                        // Cek apakah waktu mulai berada di dalam interval booking yang ada
+                        $subQuery->where('start_time', '<', $cart->end_time)->where('end_time', '>', $cart->start_time);
+                    });
+                })
+                ->lockForUpdate()
+                ->first(); // Ambil data konflik pertama
+
+            if ($conflictingTime) {
+                $this->alert('error', 'Waktu yang dipilih sudah dipesan untuk lapangan dan tipe yang sama! ' . '<br> <br>' . ' Waktu yang sudah dibooking: ' . $conflictingTime->start_time . ' - ' . $conflictingTime->end_time, [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => true,
+                ]);
+                return;
+            }
+
+            // Simpan slot waktu ke tabel booking_times
             BookingTime::create([
                 'booking_id' => $booking->id,
                 'field_id' => $cart->field_id,
@@ -84,16 +106,16 @@ $processBooking = function () {
             ]);
         }
 
-        $this->alert('success', 'Keranjang kosong, tidak dapat memproses booking!', [
+        // Hapus data dari keranjang setelah diproses
+        Cart::where('user_id', $userId)->delete();
+
+        $this->alert('success', 'Booking berhasil diproses!', [
             'position' => 'center',
             'timer' => 3000,
             'toast' => true,
         ]);
 
         $this->redirectRoute('bookings.show', ['booking' => $booking]);
-
-        // Hapus data dari keranjang setelah diproses
-        Cart::where('user_id', $userId)->delete();
     });
 };
 
@@ -133,9 +155,8 @@ $processBooking = function () {
             <div class="offcanvas-body">
                 <div class="flex-grow-1 text-dark">
                     @foreach ($cart as $item)
-                        <div
-                        {{-- wire:poll.30s --}}
-                         class="row mb-3 py-3 border-5 border-start border-black rounded-3 bg-yellow">
+                        <div {{-- wire:poll.30s --}}
+                            class="row mb-3 py-3 border-5 border-start border-black rounded-3 bg-yellow">
                             <div class="col-10">
                                 <p class="fw-bold mb-0">
                                     {{ $item->field->field_name }}
