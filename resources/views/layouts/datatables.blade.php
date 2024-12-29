@@ -8,13 +8,27 @@
             text-align: center;
         }
 
-        .dt-paging.paging_full_numbers .page-item.active .page-link {
-            background-color: #dc3545;
-            /* Bootstrap 5's color-danger */
-            border-color: #dc3545;
-            /* Ensure border color matches */
-            color: #fff;
-            /* White text for contrast */
+        /* Pagination styling */
+        .pagination .page-item.active .page-link {
+            background-color: #dc3545; /* Warna merah */
+            border-color: #dc3545; /* Warna merah */
+            color: #fff; /* Warna teks putih */
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: #e4606d; /* Warna merah hover */
+            border-color: #e4606d; /* Warna merah hover */
+            color: #fff; /* Warna teks putih */
+        }
+
+        .pagination .page-item .page-link {
+            color: #dc3545; /* Warna merah */
+            border: 1px solid #dc3545; /* Border merah */
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #aaa; /* Warna abu-abu untuk disabled */
+            background-color: #f8f9fa; /* Background abu-abu terang */
         }
     </style>
 @endpush

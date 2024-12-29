@@ -37,36 +37,13 @@
         </a>
     </li>
 
-
-    <li class="menu-header mt-7">
-        <span class="menu-header-text">Menus Example</span>
-    </li>
-    <!-- Apps -->
-
-    <!-- Pages -->
-    <li class="menu-item">
-        <a href="/home" class="menu-link menu-toggle">
+    <li class="menu-item {{ Request::is(['reports', 'reports/*']) ? 'active' : '' }}">
+        <a href="{{ route('reports.index') }}" class="menu-link">
             <i class="menu-icon tf-icons ri-layout-left-line"></i>
-            <div data-i18n="Account Settings">Account Settings</div>
+            <div data-i18n="Dashboards">Laporan Transaksi</div>
         </a>
-        <ul class="menu-sub">
-            <li class="menu-item">
-                <a href="pages-account-settings-account.html" class="menu-link">
-                    <div data-i18n="Account">Account</div>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="pages-account-settings-notifications.html" class="menu-link">
-                    <div data-i18n="Notifications">Notifications</div>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="pages-account-settings-connections.html" class="menu-link">
-                    <div data-i18n="Connections">Connections</div>
-                </a>
-            </li>
-        </ul>
     </li>
-    <!-- Components -->
+
+
 
 </ul>

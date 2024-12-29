@@ -78,9 +78,19 @@ $confirmRecord = function ($id) {
         ]);
 
         $booking = $this->booking;
-        $booking->update([
-            'status' => 'PAID',
-        ]);
+        if ($this->booking->payment_method === 'downpayment' && $this->booking->status === 'DOWNPAYMENT') {
+            $booking->update([
+                'status' => 'PAID',
+            ]);
+        } elseif ($this->booking->payment_method === 'downpayment') {
+            $booking->update([
+                'status' => 'DOWNPAYMENT',
+            ]);
+        } elseif ($this->booking->payment_method === 'fullpayment') {
+            $booking->update([
+                'status' => 'PAID',
+            ]);
+        }
 
         $this->alertSuccess();
     } catch (\Throwable $th) {
@@ -308,7 +318,7 @@ $alertError = function () {
                         </table>
                         <div class="d-flex justify-content-end mt-5">
                             <button wire:confirm="Yakin untuk mengkonfirmasi booking ini?" wire:click="confirmBooking"
-                                class="btn btn-primary {{ $this->canConfirm() ? 'd-block' : 'd-none' }}">
+                                class="btn btn-primary {{ $booking->status === 'PAID' ?: 'd-none' }}">
                                 Konfirmasi Booking
                             </button>
                         </div>
