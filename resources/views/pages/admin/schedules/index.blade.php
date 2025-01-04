@@ -57,7 +57,7 @@ $destroy = function (schedule $schedule) {
                         <div class="row">
                             <div class="col">
                                 <a href="{{ route('schedules.create') }}" class="btn btn-primary">Tambah
-                                    schedule</a>
+                                    Jadwal</a>
                             </div>
                             <div class="col">
                                 <input wire:model.live="search" type="search" class="form-control" name="search"

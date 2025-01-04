@@ -8,79 +8,74 @@
 
     </li>
 
-    <li class="menu-item {{ Request::is(['fields', 'fields/*']) ? 'active' : '' }}">
-        <a href="{{ route('fields.index') }}" class="menu-link">
-            <i class='menu-icon tf-icons bx bxl-foursquare'></i>
-            <div data-i18n="Dashboards">Lapangan</div>
+    <li class="menu-item {{ Request::is(['admin/fields', 'admin/fields/*']) ? 'open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-user"></i>
+            <div class="text-truncate" data-i18n="Logistics">Pengguna</div>
         </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+                <a href="{{ route('fields.index') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Dashboard">Admin</div>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('schedules.index') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Fleet">Pelanggan </div>
+                </a>
+            </li>
+        </ul>
     </li>
 
-
-    <li class="menu-item {{ Request::is(['schedules', 'schedules/*']) ? 'active' : '' }}">
-        <a href="{{ route('schedules.index') }}" class="menu-link">
-            <i class='menu-icon tf-icons bx bx-time'></i>
-            <div data-i18n="Dashboards">Jadwal Main</div>
+    <li class="menu-item {{ Request::is(['admin/fields', 'admin/fields/*', 'admin/schedules', 'admin/schedules/*']) ? 'open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bxl-foursquare"></i>
+            <div class="text-truncate" data-i18n="Logistics">Futsal</div>
         </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+                <a href="{{ route('fields.index') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Dashboard">Lapangan</div>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('schedules.index') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Fleet">Jadwal </div>
+                </a>
+            </li>
+        </ul>
     </li>
 
-    <li class="menu-item {{ Request::is(['settings', 'settings/*']) ? 'active' : '' }}">
-        <a href="{{ route('settings.index') }}" class="menu-link">
-            <i class='menu-icon tf-icons bx bx-cog'></i>
-            <div data-i18n="Dashboards">Pengaturan</div>
+    <li class="menu-item {{ Request::is(['admin/settings', 'admin/settings/*', 'admin/schedules', 'admin/schedules/*']) ? 'open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-cog"></i>
+            <div class="text-truncate" data-i18n="Logistics">Pengaturan</div>
         </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+                <a href="{{ route('settings.index') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Dashboard">Profil</div>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('schedules.index') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Fleet">Rekening Pembayaran </div>
+                </a>
+            </li>
+        </ul>
     </li>
 
-    <li class="menu-item {{ Request::is(['transactions', 'transactions/*']) ? 'active' : '' }}">
+    <li class="menu-item {{ Request::is(['admin/transactions', 'admin/transactions/*']) ? 'active' : '' }}">
         <a href="{{ route('transactions.index') }}" class="menu-link">
             <i class='menu-icon tf-icons bx bx-home-alt'></i>
             <div data-i18n="Dashboards">Transaksi</div>
         </a>
     </li>
 
-    <li class="menu-item {{ Request::is(['reports', 'reports/*']) ? 'active' : '' }}">
+    <li class="menu-item {{ Request::is(['admin/reports', 'admin/reports/*']) ? 'active' : '' }}">
         <a href="{{ route('reports.index') }}" class="menu-link">
             <i class='menu-icon tf-icons bx bx-transfer'></i>
             <div data-i18n="Dashboards">Laporan Transaksi</div>
         </a>
     </li>
-
 </ul>
-
-{{-- <ul class="menu-sub">
-    <li class="menu-item active">
-        <a href="index.html" class="menu-link">
-            <div class="text-truncate" data-i18n="Analytics">Analytics</div>
-        </a>
-    </li>
-    <li class="menu-item">
-        <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/dashboards-crm.html"
-            target="_blank" class="menu-link">
-            <div class="text-truncate" data-i18n="CRM">CRM</div>
-            <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro
-            </div>
-        </a>
-    </li>
-    <li class="menu-item">
-        <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-ecommerce-dashboard.html"
-            target="_blank" class="menu-link">
-            <div class="text-truncate" data-i18n="eCommerce">eCommerce</div>
-            <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro
-            </div>
-        </a>
-    </li>
-    <li class="menu-item">
-        <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-logistics-dashboard.html"
-            target="_blank" class="menu-link">
-            <div class="text-truncate" data-i18n="Logistics">Logistics</div>
-            <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro
-            </div>
-        </a>
-    </li>
-    <li class="menu-item">
-        <a href="app-academy-dashboard.html" target="_blank" class="menu-link">
-            <div class="text-truncate" data-i18n="Academy">Academy</div>
-            <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro
-            </div>
-        </a>
-    </li>
-</ul> --}}

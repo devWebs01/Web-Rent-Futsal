@@ -126,19 +126,19 @@ $create = function () {
                     </div>
                 </div>
 
-                <div class="card-body">
-                    @if ($images)
-                        <div class="mb-3 row d-flex flex-nowrap gap-1 overflow-auto">
+                @if ($images)
+                    <div class="card-body">
+                        <div class="d-flex flex-nowrap gap-3 overflow-auto" style="white-space: nowrap;">
                             @foreach ($images as $key => $image)
-                                <div class="col-3">
-                                    <div class="card position-relative mt-6" style="width: 200px;">
+                                <div class="position-relative" style="width: 200px; flex: 0 0 auto;">
+                                    <div class="card mt-5">
                                         <div class="card-img-top">
                                             <img src="{{ $image->temporaryUrl() }}" class="img"
                                                 style="object-fit: cover;" width="200px" height="200px" alt="preview">
                                             <a type="button" class="position-absolute top-0 start-100 translate-middle p-2"
                                                 wire:click.prevent='removeItem({{ json_encode($key) }})'>
                                                 <i
-                                                    class="ri-close-large-line p-2 rounded-circle ri-20px text-white bg-danger"></i>
+                                                    class="bx bx-x p-2 rounded-circle ri-20px text-white bg-danger"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -149,9 +149,10 @@ $create = function () {
                                 </div>
                             @endforeach
                         </div>
-                    @endif
+                    </div>
+                @endif
 
-                </div>
+
 
                 <div class="card-body">
                     <form wire:submit="create">
