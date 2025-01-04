@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 uses([LivewireAlert::class]);
 
-name('transactions.edit');
+name('transactions.show');
 
 state([
     'user' => fn() => $this->booking->user,
@@ -150,6 +150,33 @@ $alertError = function () {
     ]);
 };
 
+$cancelBooking = function () {
+    $booking = $this->booking;
+    $booking->update([
+        'status' => 'CANCEL',
+    ]);
+
+    if ($this->payment && $this->payment->records) {
+        foreach ($this->payment->records as $record) {
+            $record->update([
+                'status' => 'CANCEL',
+            ]);
+        }
+
+        foreach ($booking->times as $time) {
+            $time->update([
+                'status' => 'CANCEL',
+            ]);
+        }
+    }
+
+    $this->alert('warning', 'Booking telah dibatalkan!', [
+        'position' => 'center',
+        'timer' => 5000,
+        'toast' => true,
+    ]);
+};
+
 ?>
 
 <x-admin-layout>
@@ -158,8 +185,6 @@ $alertError = function () {
     @volt
         <div>
             <x-slot name="title">Booking {{ $invoice }}</x-slot>
-
-            {{ $booking->status }}
 
             <div class="card">
                 <div class="card-header bg-light  justify-content-between align-items-center">
@@ -316,7 +341,13 @@ $alertError = function () {
 
                             </tbody>
                         </table>
-                        <div class="d-flex justify-content-end mt-5">
+                        <div class="d-flex justify-content-end mt-5 gap-2">
+
+                            <button wire:confirm="Yakin untuk membatalkan booking ini?" wire:click="cancelBooking"
+                                class="btn btn-danger {{ in_array($booking->status, ['CONFIRM', 'CANCEL']) ? 'd-none' : '' }}">
+                                Batalkan booking
+                            </button>
+
                             <button wire:confirm="Yakin untuk mengkonfirmasi booking ini?" wire:click="confirmBooking"
                                 class="btn btn-primary {{ $booking->status === 'PAID' ?: 'd-none' }}">
                                 Konfirmasi Booking

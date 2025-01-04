@@ -54,10 +54,22 @@ $markComplete = function ($id) {
 };
 
 $monitoring_bookings = computed(function () {
-    return $this->bookings = BookingTime::with('field', 'booking.user')
-        // ->whereHas('booking', function ($query) {
-        //     $query->where('status', 'CONFIRM'); // Atur status booking yang ingin dimonitor
-        // })
+    $now = Carbon::now();
+
+    return BookingTime::with('field', 'booking.user')
+        ->whereIn('status', ['WAITING', 'CONFIRM', 'STOP', 'CANCEL'])
+        ->selectRaw(
+            "
+        *,
+        CASE
+            WHEN ? BETWEEN CONCAT(booking_date, ' ', start_time) AND CONCAT(booking_date, ' ', end_time) THEN 1
+            WHEN ? < CONCAT(booking_date, ' ', start_time) THEN 2
+            ELSE 3
+        END AS priority
+    ",
+            [$now, $now],
+        )
+        ->orderBy('priority')
         ->paginate(5);
 });
 
@@ -70,19 +82,35 @@ $monitoring_bookings = computed(function () {
         <div>
 
             <div class="card mt-4">
-                <h5 class="card-header fw-bold text-center">
-                    Monitoring Pemesanan
-                    <br>
-                    <div wire:loading wire:target='markComplete' class="d-none spinner-border spinner-border-sm"
-                        wire:loading.class.remove="d-none" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </h5>
                 <div class="card-body">
+                    <div class="alert alert-primary" role="alert">
+                        <h5 class="fw-bold text-center text-primary">
+                            Monitoring Pemesanan
+                            <br>
+                            <div wire:loading wire:target='markComplete' class="d-none spinner-border spinner-border-sm"
+                                wire:loading.class.remove="d-none" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h5>
+                        <ul>
+                            <li>
+                                Waktu booking yang akan segera habis, harap segera memperbarui
+                                status menjadi
+                                <strong>Selesai</strong> untuk menghindari masalah.
+                            </li>
+                            <li>
+                                Waktu booking berikutnya akan otomatis diperbarui menjadi Berjalan
+                                setelah status
+                                <strong>booking dikonfirmasi</strong>.
+                            </li>
+                        </ul>
+                    </div>
+
                     <div class="table-responsive rounded">
                         <table class="table table-bordered table-striped text-center table-sm">
                             <thead class="fw-bold">
                                 <tr>
+                                    <th>Pelanggan</th>
                                     <th>Lapangan</th>
                                     <th>Tanggal</th>
                                     <th>Waktu</th>
@@ -94,14 +122,25 @@ $monitoring_bookings = computed(function () {
                             <tbody>
                                 @foreach ($this->monitoring_bookings() as $item)
                                     <tr>
+                                        <td>{{ $item->booking->user->name }}</td>
                                         <td>{{ $item->field->field_name }}</td>
                                         <td>{{ Carbon::parse($item->booking_date)->format('d M Y') }}</td>
                                         <td>{{ $item->start_time }} - {{ $item->end_time }}</td>
-                                        <td>{{ __('status.' . $item->status) }}</td>
+                                        <td>
+                                            @if ($item->booking->status === 'CANCEL')
+                                                Batal
+                                            @else
+                                                {{ __('status.' . $item->status) }}
+                                            @endif
+                                        </td>
                                         <td>
                                             @if ($item->status === 'STOP')
                                                 <button class="badge bg-success py-2 rounded">
                                                     Selesai
+                                                </button>
+                                            @elseif ($item->booking->status === 'CANCEL')
+                                                <button class="badge bg-danger py-2 rounded">
+                                                    Batal
                                                 </button>
                                             @elseif ($this->isOvertime($item))
                                                 <button class="badge bg-danger py-2 rounded">
@@ -109,27 +148,32 @@ $monitoring_bookings = computed(function () {
                                                     Overtime!
                                                 </button>
                                             @else
-                                                @php
-                                                    $remainingTime = $this->getRemainingTime($item);
-                                                @endphp
-                                                @if (is_string($remainingTime))
+                                                @if (is_string($this->getRemainingTime($item)))
                                                     <button class="badge bg-secondary py-2 rounded">
-                                                        {{ $remainingTime }}
+                                                        {{ $this->getRemainingTime($item) }}
                                                     </button>
                                                 @else
                                                     <button wire:poll.visible.1s class="badge bg-primary py-2 rounded">
-                                                        {{ $remainingTime->format('%h jam, %i menit, %s detik') }}
+                                                        {{ $this->getRemainingTime($item)->format('%h jam, %i menit, %s detik') }}
                                                     </button>
                                                 @endif
                                             @endif
                                         </td>
-
                                         <td>
-                                            <button wire:click="markComplete({{ $item->id }})"
-                                                class="btn btn-primary btn-sm {{ $item->status === 'START' ?: 'd-none' }}">
-                                                Tandai Selesai
-                                            </button>
+                                            @if ($item->status === 'WAITING')
+                                                <a href="{{ route('transactions.show', ['booking' => $item->booking->id]) }}"
+                                                    class="btn btn-sm btn-warning">Cek</a>
+                                            @elseif (
+                                                $item->status === 'CONFIRM' &&
+                                                    Carbon::now()->between(Carbon::parse($item->booking_date . ' ' . $item->start_time),
+                                                        Carbon::parse($item->booking_date . ' ' . $item->end_time)))
+                                                <button wire:click="markComplete({{ $item->id }})"
+                                                    class="btn btn-primary btn-sm">
+                                                    Tandai Selesai
+                                                </button>
+                                            @endif
                                         </td>
+
                                     </tr>
                                 @endforeach
                             </tbody>

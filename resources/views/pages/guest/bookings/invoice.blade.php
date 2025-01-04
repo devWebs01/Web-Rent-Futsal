@@ -140,7 +140,7 @@ state([
                                 </div>
                             </div>
                         </div>
-                        @if ($loop->first && empty($item->receipt))
+                        @if ($loop->first && empty($item->receipt) && $booking->status !== 'CANCEL')
                             <a class="btn btn-dark d-grid"
                                 href="{{ route('payment_record.show', ['paymentRecord' => $item->id]) }}"
                                 role="button">Input Pembayaran</a>

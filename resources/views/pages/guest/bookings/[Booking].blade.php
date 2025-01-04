@@ -93,6 +93,21 @@ $save_booking = function () {
     }
 };
 
+$cancelBooking = function () {
+    $booking = $this->booking;
+    $booking->update([
+        'status' => 'CANCEL',
+    ]);
+
+    $this->alert('warning', 'Booking telah dibatalkan!', [
+        'position' => 'center',
+        'timer' => 5000,
+        'toast' => true,
+    ]);
+
+    $this->redirectRoute('bookings.index');
+};
+
 ?>
 
 <x-guest-layout>
@@ -226,10 +241,21 @@ $save_booking = function () {
                                                 @enderror
                                             </div>
 
-                                            <button type="submit"
-                                                class="w-100 btn btn-danger {{ $booking->status !== 'PROCESS' ?: 'd-none' }}">
-                                                Submit
-                                            </button>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <button type="button" wire:click='cancelBooking'
+                                                        class="w-100 btn btn-dark {{ $booking->status !== 'PROCESS' ?: 'd-none' }}">
+                                                        Batal
+                                                    </button>
+                                                </div>
+                                                <div class="col-6">
+                                                    <button type="submit"
+                                                        class="w-100 btn btn-danger {{ $booking->status !== 'PROCESS' ?: 'd-none' }}">
+                                                        Submit
+                                                    </button>
+                                                </div>
+                                            </div>
+
                                         </form>
                                     </div>
                                 </div>
@@ -239,7 +265,7 @@ $save_booking = function () {
                 </section>
             @else
                 <div class="container">
-                    @include('pages.guest.bookings.invoice')
+                    @include('pages.guest.bookings.invoice', ['booking' => $booking])
                 </div>
             @endif
 

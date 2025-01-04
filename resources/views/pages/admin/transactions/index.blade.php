@@ -73,7 +73,7 @@ $bookings = computed(function () {
                                             <td>{{ __('status.' . $item->status) }}</td>
                                             <td>
                                                 <div>
-                                                    <a href="{{ route('transactions.edit', ['booking' => $item->id]) }}"
+                                                    <a href="{{ route('transactions.show', ['booking' => $item->id]) }}"
                                                         class="btn btn-sm btn-primary">Detail</a>
                                                 </div>
                                             </td>

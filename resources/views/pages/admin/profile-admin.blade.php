@@ -40,7 +40,7 @@ $edit = function () {
     }
     $user->update($validateData);
 
-    $this->alert('success', 'Data klinik berhasil diedit!', [
+    $this->alert('success', 'Proses berhasil!', [
         'position' => 'center',
         'timer' => 3000,
         'toast' => true,

@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('end_time');
             $table->string('price');
             $table->string('type');
-            $table->enum('status', ['WAITING', 'START', 'STOP'])->default('WAITING');
+            $table->enum('status', ['WAITING', 'START', 'STOP', 'CANCEL'])->default('WAITING');
             $table->timestamps();
         });
     }

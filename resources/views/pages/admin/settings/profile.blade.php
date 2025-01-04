@@ -44,16 +44,18 @@ $save = function () {
 @volt
     <div>
         <div class="alert alert-primary mt-3" role="alert">
-            <strong>Profil Tempat</strong>
-            <p>Bagian di mana informasi penting tentang tempat kamu disimpan. Pastikan informasi ini diperbarui dengan benar
-                untuk
-                memastikan kelancaran proses pengiriman.</p>
+            <i class='bx bxs-bell-ring pr-2' ></i> <strong>Pemberitahuan Penting</strong>
+            <p>
+                Sebagai admin, Anda memiliki akses penuh untuk mengelola pengguna
+                dan konten. Harap pastikan bahwa semua tindakan yang Anda lakukan sesuai dengan kebijakan dan prosedur yang
+                berlaku. Jika Anda menemukan masalah atau memerlukan bantuan, silakan hubungi tim dukungan.
+            </p>
         </div>
 
         <form wire:submit="save">
             @csrf
             <div class="mb-3">
-                <label for="name" class="form-label">Nama Tempat</label>
+                <label for="name" class="form-label">Nama Lengkap</label>
                 <input type="text" class="form-control @error('name') is-invalid @enderror" wire:model="name" id="name"
                     aria-describedby="nameId" placeholder="Enter name" />
                 @error('name')
