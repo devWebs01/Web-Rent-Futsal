@@ -49,7 +49,7 @@ $addToCart = function ($slot) {
 
     if ($checkCart) {
         $this->alert('warning', 'Waktu sudah ada didaftar!', [
-            'position' => 'top',
+            'position' => 'center',
             'timer' => '2000',
             'toast' => true,
             'timerProgressBar' => true,
@@ -69,7 +69,7 @@ $addToCart = function ($slot) {
         $this->dispatch('cart-updated');
 
         $this->alert('success', 'Waktu berhasil ditambahkan ke daftar', [
-            'position' => 'top',
+            'position' => 'center',
             'timer' => '2000',
             'toast' => true,
             'timerProgressBar' => true,

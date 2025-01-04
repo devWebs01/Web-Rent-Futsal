@@ -8,7 +8,9 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Demo : Dashboard - Analytics | sneat - Bootstrap Dashboard PRO</title>
+    <title>{{ $title ?? '' }} | Alpama Futsal</title>
+
+    @livewireStyles
 
     <meta name="description" content="" />
 
@@ -43,7 +45,6 @@
     <script src="{{ asset('../assets/js/config.js') }}"></script>
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    @livewireStyles
 
     @stack('styles')
 
@@ -276,7 +277,7 @@
 
     @livewireScripts
 
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11') }}"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <x-livewire-alert::scripts />
 </body>

@@ -54,23 +54,29 @@ $markComplete = function ($id) {
 };
 
 $monitoring_bookings = computed(function () {
-    $now = Carbon::now();
-
     return BookingTime::with('field', 'booking.user')
-        ->whereIn('status', ['WAITING', 'CONFIRM', 'STOP', 'CANCEL'])
-        ->selectRaw(
-            "
-        *,
-        CASE
-            WHEN ? BETWEEN CONCAT(booking_date, ' ', start_time) AND CONCAT(booking_date, ' ', end_time) THEN 1
-            WHEN ? < CONCAT(booking_date, ' ', start_time) THEN 2
-            ELSE 3
-        END AS priority
-    ",
-            [$now, $now],
-        )
-        ->orderBy('priority')
-        ->paginate(5);
+        ->latest()
+        ->paginate(10);
+});
+
+$totalBookings = computed(function () {
+    return \App\Models\Booking::count();
+});
+
+$totalUnpaidBookings = computed(function () {
+    return \App\Models\Booking::where('status', 'UNPAID')->count();
+});
+
+$totalCompletedBookings = computed(function () {
+    return \App\Models\BookingTime::where('status', 'STOP')->count();
+});
+
+$totalConfirmedPayments = computed(function () {
+    return \App\Models\PaymentRecord::where('status', 'CONFIRM')->sum('amount');
+});
+
+$totalPendingPayments = computed(function () {
+    return \App\Models\PaymentRecord::where('status', 'WAITING')->sum('amount');
 });
 
 ?>
@@ -82,33 +88,113 @@ $monitoring_bookings = computed(function () {
         <div>
 
             <div class="card mt-4">
+
                 <div class="card-body">
-                    <div class="alert alert-primary" role="alert">
-                        <h5 class="fw-bold text-center text-primary">
-                            Monitoring Pemesanan
-                            <br>
-                            <div wire:loading wire:target='markComplete' class="d-none spinner-border spinner-border-sm"
-                                wire:loading.class.remove="d-none" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                    <div class="row">
+                        <!-- Booking -->
+                        <div class="col-md">
+                            <div class="card">
+                                <div class="card-body py-2 row align-items-center">
+                                    <i class="bx bx-calendar-check fs-1 text-primary col-3"></i>
+                                    <div class="col">
+                                        <small class="m-0 p-0 fw-bold">Booking</small>
+                                        <h4 class="fw-bold m-0 p-0">{{ $this->totalBookings() }}</h4>
+                                    </div>
+                                </div>
                             </div>
-                        </h5>
-                        <ul>
-                            <li>
-                                Waktu booking yang akan segera habis, harap segera memperbarui
-                                status menjadi
-                                <strong>Selesai</strong> untuk menghindari masalah.
-                            </li>
-                            <li>
-                                Waktu booking berikutnya akan otomatis diperbarui menjadi Berjalan
-                                setelah status
-                                <strong>booking dikonfirmasi</strong>.
-                            </li>
-                        </ul>
+                        </div>
+                        <!-- Booking Belum Dibayar -->
+                        <div class="col-md">
+                            <div class="card">
+                                <div class="card-body py-2 row align-items-center">
+                                    <i class="bx bx-wallet fs-1 text-warning col-3"></i>
+                                    <div class="col">
+                                        <small class="m-0 p-0 fw-bold">Booking Belum Dibayar</small>
+
+                                        <h4 class="fw-bold m-0 p-0">{{ $this->totalUnpaidBookings() }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Booking Selesai -->
+                        <div class="col-md">
+                            <div class="card">
+                                <div class="card-body py-2 row align-items-center">
+                                    <i class="bx bx-check-circle fs-1 text-success col-3"></i>
+                                    <div class="col">
+                                        <small class="m-0 p-0 fw-bold">Booking Selesai</small>
+
+                                        <h4 class="fw-bold m-0 p-0">{{ $this->totalCompletedBookings() }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="table-responsive rounded">
-                        <table class="table table-bordered table-striped text-center table-sm">
-                            <thead class="fw-bold">
+                    <div class="row mt-4">
+                        <!-- Uang Dikonfirmasi -->
+                        <div class="col-md">
+                            <div class="card">
+                                <div class="card-body py-2 row align-items-center">
+                                    <i class="bx bx-money fs-1 text-success col-3"></i>
+                                    <div class="col">
+                                        <small class="m-0 p-0 fw-bold">Uang Dikonfirmasi</small>
+                                        <h4 class="fw-bold m-0 p-0">Rp
+                                            {{ number_format($this->totalConfirmedPayments(), 0, ',', '.') }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Uang Pending -->
+                        <div class="col-md">
+                            <div class="card">
+                                <div class="card-body py-2 row align-items-center">
+                                    <i class="bx bx-hourglass fs-1 text-warning col-3"></i>
+                                    <div class="col">
+                                        <small class="m-0 p-0 fw-bold">Uang Pending</small>
+                                        <h4 class="fw-bold m-0 p-0">Rp
+                                            {{ number_format($this->totalPendingPayments(), 0, ',', '.') }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="card">
+                        <div class="d-flex align-items-start row">
+                            <div class="col-sm-7">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold text-primary mb-3">Monitoring Lapangan </h5>
+
+                                    <p>
+                                        Waktu booking yang akan segera habis, harap segera memperbarui
+                                        status menjadi
+                                        <strong>Selesai</strong> untuk menghindari masalah.
+                                    </p>
+                                    <p>
+                                        Waktu booking berikutnya akan otomatis diperbarui menjadi Berjalan
+                                        setelah status
+                                        <strong>booking dikonfirmasi</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-sm-5 text-center text-sm-left">
+                                <div class="card-body pb-0 px-0 px-md-6">
+                                    <img src="{{ asset('assets/img/illustrations/man-with-laptop.png') }}" height="175"
+                                        class="scaleX-n1-rtl" alt="View Badge User">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                   
+                    <div class="table-responsive rounded-3">
+                        <table class="table table-bordered table-striped text-center table-sm small">
+                            <thead>
                                 <tr>
                                     <th>Pelanggan</th>
                                     <th>Lapangan</th>
@@ -177,10 +263,10 @@ $monitoring_bookings = computed(function () {
                                     </tr>
                                 @endforeach
                             </tbody>
-
-
-                            {{ $this->monitoring_bookings()->links() }}
                         </table>
+                        <div class="pt-5">
+                            {{ $this->monitoring_bookings()->links() }}
+                        </div>
                     </div>
                 </div>
             </div>

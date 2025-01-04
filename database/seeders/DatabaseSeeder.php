@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             ImageSeeder::class,
         ]);
 
+        \App\Models\User::factory(20)->create();
+
         \App\Models\User::factory()->create([
             'name' => 'Test User',
             'email' => 'admin@testing.com',

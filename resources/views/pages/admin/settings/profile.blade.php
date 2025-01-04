@@ -34,7 +34,7 @@ $save = function () {
     );
 
     $this->alert('success', 'Data berhasil diupdate!', [
-        'position' => 'top',
+        'position' => 'center',
         'timer' => 3000,
         'toast' => true,
     ]);

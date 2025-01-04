@@ -38,7 +38,7 @@ $submit = function () {
 
     // Set alert untuk notifikasi
     $this->alert('success', 'Bukti pembayaran berhasil diunggah!', [
-        'position' => 'top',
+        'position' => 'center',
         'timer' => 3000,
         'toast' => true,
         'width' => 500,

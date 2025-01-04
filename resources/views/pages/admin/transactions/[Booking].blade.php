@@ -355,34 +355,6 @@ $cancelBooking = function () {
                         </div>
                     </div>
 
-                    <hr>
-
-                    <!-- Timeline -->
-                    <div class="mb-4">
-                        <h5 class="fw-bold mb-3">Data Pelanggan</h5>
-                        <div class="d-flex align-items-center">
-                            <img src="https://via.placeholder.com/40" alt="Alex Jander" class="rounded-circle me-3">
-                            <div>
-                                <strong>{{ $user->name }}</strong>
-                                <p class="text-muted mb-0">Pelanggan</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Customer Details -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="mb-3">Bio Pelanggan</h6>
-                            <p class="mb-1">{{ $user->name }}</p>
-                            <p class="mb-1">{{ $user->created_at }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="mb-3">Kontak</h6>
-                            <p class="mb-1">{{ $user->email }}</p>
-                            <p class="text-muted">{{ $user->phone }}</p>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 
