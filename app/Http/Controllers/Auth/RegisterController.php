@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -70,5 +71,19 @@ class RegisterController extends Controller
             'phone' => $data['phone'],
             'password' => Hash::make($data['password']),
         ]);
+
+        // Kirim email verifikasi
+        $user->sendEmailVerificationNotification();
+
+        return $user;
+    }
+
+    protected function registered(Request $request, $user)
+    {
+        // Logout user setelah registrasi
+        auth()->logout();
+
+        // Redirect ke halaman register dengan pesan sukses
+        return redirect('/register')->with('success', 'Registration successful! Please check your email to verify your account.');
     }
 }
