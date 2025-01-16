@@ -76,6 +76,7 @@ $processBooking = function () {
             $conflictingTime = BookingTime::where('field_id', $cart->field_id)
                 ->where('booking_date', $cart->booking_date)
                 ->where('type', $cart->type) // Validasi tipe booking
+                ->where('status', '!=', 'CANCEL') // Abaikan slot yang sudah dibatalkan
                 ->where(function ($query) use ($cart) {
                     $query->where(function ($subQuery) use ($cart) {
                         // Cek apakah waktu mulai berada di dalam interval booking yang ada

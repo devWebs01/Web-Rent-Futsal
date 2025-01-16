@@ -9,7 +9,7 @@ uses([LivewireAlert::class]);
 
 state([
     'user' => fn() => $this->booking->user,
-    'totalPrice' => fn() => $this->booking->times->sum('price'),
+    'totalPrice' => fn() => $this->booking->bookingtimes->sum('price'),
     'payment' => fn() => $this->booking->payment,
     'booking',
 ]);
@@ -80,7 +80,7 @@ state([
                                 </tr>
                             </thead>
                             <tbody class="table-group-divider">
-                                @foreach ($booking->times as $time)
+                                @foreach ($booking->bookingTimes as $time)
                                     <tr>
                                         <th>{{ $time->field->field_name }}</th>
                                         <th>{{ Carbon::parse($time->booking_date)->format('d-m-Y') }}</th>

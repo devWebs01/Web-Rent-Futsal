@@ -21,7 +21,7 @@ class Booking extends Model
     ];
 
     // Relasi ke BookingTime
-    public function times()
+    public function bookingTimes()
     {
         return $this->hasMany(BookingTime::class);
     }

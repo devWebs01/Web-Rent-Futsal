@@ -15,7 +15,7 @@ name('transactions.show');
 state([
     'user' => fn() => $this->booking->user,
     'invoice' => fn() => $this->booking->invoice,
-    'totalPrice' => fn() => $this->booking->times->sum('price'),
+    'totalPrice' => fn() => $this->booking->bookingTimes->sum('price'),
     'payment' => fn() => $this->booking->payment ?? null,
     'records' => fn() => $this->booking->payment->records ?? null,
     'booking',
@@ -35,11 +35,11 @@ $canConfirm = function () {
 };
 
 $updatingStatusTimes = function () {
-    if (!$this->booking->times) {
+    if (!$this->booking->bookingTimes) {
         return false;
     }
 
-    foreach ($this->booking->times as $time) {
+    foreach ($this->booking->bookingTimes as $time) {
         $time->update([
             'status' => 'START',
         ]);
@@ -163,7 +163,7 @@ $cancelBooking = function () {
             ]);
         }
 
-        foreach ($booking->times as $time) {
+        foreach ($booking->bookingTimes as $time) {
             $time->update([
                 'status' => 'CANCEL',
             ]);
@@ -208,7 +208,7 @@ $cancelBooking = function () {
                             <p>
                                 List lapangan dan waktu yang dipilih
                             </p>
-                            @foreach ($booking->times as $time)
+                            @foreach ($booking->bookingTimes as $time)
                                 <div class="row mb-3">
 
                                     @if ($time->field->images->count() < 0)
@@ -344,7 +344,7 @@ $cancelBooking = function () {
                         <div class="d-flex justify-content-end mt-5 gap-2">
 
                             <button wire:confirm="Yakin untuk membatalkan booking ini?" wire:click="cancelBooking"
-                                class="btn btn-danger {{ in_array($booking->status, ['CONFIRM', 'CANCEL']) ? 'd-none' : '' }}">
+                                class="btn btn-danger {{ in_array($booking->status, ['CONFIRM', 'CANCEL', 'COMPLETE']) ? 'd-none' : '' }}">
                                 Batalkan booking
                             </button>
 

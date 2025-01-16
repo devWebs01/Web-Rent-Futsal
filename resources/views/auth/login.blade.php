@@ -30,7 +30,7 @@
 
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 d-flex justify-content-between">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="remember" id="remember"
                     {{ old('remember') ? 'checked' : '' }}>
@@ -39,6 +39,9 @@
                     {{ __('Remember Me') }}
                 </label>
             </div>
+            <a href="{{ route('password.request') }}" class="text-white text-decoration-none">
+                Reset Password
+            </a>
         </div>
 
         <div class="mb-0 d-grid">
