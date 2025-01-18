@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Image;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,11 +21,11 @@ class ImageSeeder extends Seeder
         ];
 
         foreach ($images as $image) {
-              // Cek apakah layanan sudah ada berdasarkan vendor dan category_id
-              $imageContents = file_get_contents(filename: $image['image_path']);
-              $imageName = basename(path: $image['image_path']);
-              $storagePath = 'fields/' . $imageName;
-              Storage::disk('public')->put($storagePath, $imageContents);
+            // Cek apakah layanan sudah ada berdasarkan vendor dan category_id
+            $imageContents = file_get_contents(filename: $image['image_path']);
+            $imageName = basename(path: $image['image_path']);
+            $storagePath = 'fields/'.$imageName;
+            Storage::disk('public')->put($storagePath, $imageContents);
 
             Image::create([
                 'field_id' => 1,

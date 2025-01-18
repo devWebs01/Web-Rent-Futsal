@@ -15,13 +15,11 @@ class Payment extends Model
         'booking_id',
         'user_name',
         'user_phone',
-        'phone_alternative'
+        'phone_alternative',
     ];
 
     /**
      * Get all of the records for the Payment
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function records(): HasMany
     {
@@ -30,8 +28,6 @@ class Payment extends Model
 
     /**
      * Get the booking that owns the Payment
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function booking(): BelongsTo
     {

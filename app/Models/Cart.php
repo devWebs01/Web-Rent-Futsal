@@ -16,8 +16,9 @@ class Cart extends Model
         'start_time',
         'end_time',
         'type',
-        'price'
+        'price',
     ];
+
     public function field()
     {
         return $this->belongsTo(Field::class);

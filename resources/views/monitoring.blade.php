@@ -1,197 +1,164 @@
 <?php
 
-use App\Models\User;
+use App\Models\Field;
+use App\Models\Schedule;
 use App\Models\Booking;
-use App\Models\BookingTime;
+use Carbon\Carbon;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use function Livewire\Volt\{state, computed, uses, usesPagination};
-use Carbon\Carbon;
 
 uses([LivewireAlert::class]);
 usesPagination();
 
-state(['id']);
+$fields = computed(function () {
+    return Field::with('bookingTimes')->get(); // Mengambil lapangan dengan jadwal yang terkait
+});
 
-$isOvertime = function ($bookingTime) {
-    $endTime = Carbon::parse($bookingTime->booking_date . ' ' . $bookingTime->end_time);
-    return Carbon::now()->greaterThan($endTime);
-};
+$types = computed(function () {
+    return Schedule::pluck('type')->unique(); // Mengambil jenis lapangan yang unik
+});
 
-$getRemainingTime = function ($bookingTime) {
-    if ($this->isOvertime($bookingTime)) {
-        return null;
-    }
+$schedules = computed(function () {
+    return Schedule::orderBy('start_time')->get(); // Mengambil semua jadwal terurut dari yang paling awal
+});
 
-    $startTime = Carbon::parse($bookingTime->booking_date . ' ' . $bookingTime->start_time);
-    $now = Carbon::now();
-
-    if ($now->diffInMinutes($startTime, false) > 30) {
-        return 'Akan datang';
-    }
-
-    return $startTime->diff($now);
-};
-
-$markComplete = function ($id) {
-    $bookingTime = BookingTime::findOrFail($id);
-    // Update status BookingTime menjadi 'STOP'
-    $bookingTime->update(['status' => 'STOP']);
-
-    // Periksa apakah semua BookingTime dalam Booking sudah selesai atau melewati waktu
-    $booking = $bookingTime->booking;
-
-    $allTimesStoppedOrOvertime = $booking->bookingTimes->every(function ($time) {
-        $endTime = Carbon::parse($time->booking_date . ' ' . $time->end_time);
-        return $time->status === 'STOP' || Carbon::now()->greaterThan($endTime);
-    });
-
-    // Jika semua BookingTime selesai atau overtime, update status Booking menjadi 'COMPLETE'
-    if ($allTimesStoppedOrOvertime) {
-        $booking->update(['status' => 'COMPLETE']);
-    }
-
-    $this->alert('success', 'Proses berhasil!', [
-        'position' => 'center',
-        'timer' => 5000,
-        'toast' => true,
-    ]);
-};
-
-$markCancel = function ($id) {
-    $bookingTime = BookingTime::findOrFail($id);
-
-    // Update status BookingTime menjadi 'CANCEL'
-    $bookingTime->update(['status' => 'CANCEL']);
-
-    // Periksa apakah semua BookingTime dalam Booking sudah dibatalkan atau melewati waktu saat ini
-    $booking = $bookingTime->booking;
-
-    $allTimesCanceledOrOvertime = $booking->bookingTimes->every(function ($time) {
-        $endTime = Carbon::parse($time->booking_date . ' ' . $time->end_time);
-        return $time->status === 'CANCEL' || Carbon::now()->greaterThan($endTime);
-    });
-
-    // Jika semua BookingTime dibatalkan atau overtime, update status Booking menjadi 'CANCEL'
-    if ($allTimesCanceledOrOvertime) {
-        $booking->update(['status' => 'CANCEL']);
-    }
-
-    $this->alert('success', 'Booking berhasil dibatalkan!', [
-        'position' => 'center',
-        'timer' => 5000,
-        'toast' => true,
-    ]);
-};
-
-$monitoring_bookings = computed(function () {
-    $bookings = BookingTime::with(['field', 'booking.user'])
-        ->whereDate('booking_date', Carbon::today()) // Filter untuk hanya mengambil data hari ini
-        ->get() // Ambil semua data
-        ->sortBy(function ($item) {
-            $now = Carbon::now();
-            $startTime = Carbon::parse($item->booking_date . ' ' . $item->start_time);
-            $endTime = Carbon::parse($item->booking_date . ' ' . $item->end_time);
-
-            if ($now->between($startTime, $endTime)) {
-                // Waktu berjalan saat ini
-                return 1;
-            } elseif ($now->diffInHours($startTime, false) <= 2 && $now->isBefore($startTime)) {
-                // Waktu akan datang dalam 2 jam
-                return 0;
-            } elseif ($now->isAfter($endTime)) {
-                // Waktu telah berlalu
-                return 2;
-            } else {
-                // Waktu akan datang di luar 2 jam
-                return 3;
-            }
-        })
-        ->values(); // Reset indeks array setelah pengurutan
-
-    // Paginasi manual
-    $perPage = 10;
-    $currentPage = request()->input('page', 1);
-    $pagedData = $bookings->slice(($currentPage - 1) * $perPage, $perPage)->all();
-
-    return new \Illuminate\Pagination\LengthAwarePaginator($pagedData, $bookings->count(), $perPage, $currentPage, ['path' => request()->url(), 'query' => request()->query()]);
+$bookings = computed(function () {
+    return Booking::get();
 });
 
 ?>
 
 @volt
-    <div>
-        <div class="card-body">
-            <div class="table-responsive rounded-3">
-                <table class="table table-bordered table-striped text-center text-nowrap">
-                    <thead>
+<div>
+    <div class="card-body mb-4">
+        <div class="table-responsive">
+            <table class="table table-striped text-center text-nowrap">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Pelanggan</th>
+                        <th>Invoice</th>
+                        <th>Status</th>
+                        <th>Total Harga</th>
+                        <th>Opsi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($this->bookings as $no => $item)
                         <tr>
-                            <th>Lapangan</th>
-                            <th>Jadwal</th>
-                            <th>Status</th>
-                            <th>Sisa Waktu</th>
-                            <th>Aksi</th>
+                            <td>{{ ++$no }}</td>
+                            <td>{{ $item->user->name }}</td>
+                            <td>{{ $item->invoice }}</td>
+                            <td>{{ formatRupiah($item->total_price) }}</td>
+                            <td>{{ __('status.' . $item->status) }}</td>
+                            <td>
+                                <div>
+                                    <a href="{{ route('transactions.show', ['booking' => $item->id]) }}"
+                                        class="btn btn-sm btn-primary">Detail</a>
+                                </div>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody wire:poll.3600s>
-                        @foreach ($this->monitoring_bookings() as $item)
-                            <tr>
-                                <td>{{ $item->field->field_name }}</td>
-                                <td>
-                                    {{ Carbon::parse($item->booking_date)->format('d M Y') }} /
-                                    {{ $item->start_time }} - {{ $item->end_time }}
-                                </td>
-                                <td>
-                                    @if ($item->booking->status === 'CANCEL')
-                                        Batal
-                                    @elseif($item->booking->status === 'PROCESS')
-                                        Menunggu Konfimasi Admin
-                                    @else
-                                        {{ __('status.' . $item->status) }}
-                                    @endif
-                                </td>
-                                <td>
-                                    @if ($item->status === 'STOP')
-                                        <span class="badge bg-success py-2 rounded">Selesai</span>
-                                    @elseif ($item->status === 'CANCEL')
-                                        <span class="badge bg-danger py-2 rounded">Batal</span>
-                                    @elseif ($this->isOvertime($item))
-                                        <span class="badge bg-danger py-2 rounded">
-                                            <i class="bx bxs-bell fs-5 bx-tada"></i> Overtime!
-                                        </span>
-                                    @else
-                                        @if (is_string($this->getRemainingTime($item)))
-                                            <span class="badge bg-secondary py-2 rounded">
-                                                {{ $this->getRemainingTime($item) }}
-                                            </span>
-                                        @else
-                                            <span wire:poll.visible.1s class="badge bg-primary py-2 rounded">
-                                                {{ $this->getRemainingTime($item)->format('%h jam, %i menit, %s detik') }}
-                                            </span>
-                                        @endif
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-2 justify-content-center">
-                                        <a href="{{ route('transactions.show', ['booking' => $item->booking->id]) }}"
-                                            class="btn btn-sm btn-primary">Detail</a>
-
-                                        @if ($item->status === 'WAITING')
-                                            <button wire:click="markCancel({{ $item->id }})"
-                                                class="btn btn-danger btn-sm">Batalkan</button>
-                                        @elseif ($item->booking->status === 'CONFIRM')
-                                            <button wire:click="markComplete({{ $item->id }})"
-                                                class="btn btn-success btn-sm">Selesai</button>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                <div class="pt-5">
-                    {{ $this->monitoring_bookings()->links() }}
-                </div>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
+
+    <br>
+
+    <div class="card-body">
+        <!-- Tab Lapangan -->
+        <ul class="nav nav-pills nav-justified justify-content-center" id="fieldTabs" role="tablist">
+            @foreach ($this->fields() as $field)
+                <li class="nav-item" role="presentation">
+                    <a class="text-uppercase nav-link @if ($loop->first) active @endif" id="tab-{{ $field->id }}"
+                        data-bs-toggle="tab" href="#content-{{ $field->id }}" role="tab"
+                        aria-controls="content-{{ $field->id }}" aria-selected="true">
+
+                        {{ ucfirst($field->field_name) }}
+
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+
+        <!-- Tab Content Lapangan -->
+        <div class="tab-content px-0" id="fieldTabsContent">
+            @foreach ($this->fields() as $field)
+                <div class="tab-pane fade @if ($loop->first) show active @endif" id="content-{{ $field->id }}"
+                    role="tabpanel" aria-labelledby="tab-{{ $field->id }}">
+                    <!-- Sub-Tab Jenis Lapangan -->
+                    <ul class="nav nav-pills nav-justified mt-3 justify-content-center" id="typeTabs-{{ $field->id }}"
+                        role="tablist">
+                        @foreach ($this->types() as $type)
+                            <li class="nav-item" role="presentation">
+                                <a class="text-uppercase nav-link @if ($loop->first) active @endif"
+                                    id="tab-{{ $field->id }}-{{ $type }}" data-bs-toggle="tab"
+                                    href="#content-{{ $field->id }}-{{ $type }}" role="tab"
+                                    aria-controls="content-{{ $field->id }}-{{ $type }}" aria-selected="true">
+                                    {{ __('type.' . ucfirst($type)) }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+
+                    <!-- Sub-Tab Content Jenis Lapangan -->
+                    <div class="tab-content px-0" id="typeTabsContent-{{ $field->id }}">
+
+                        @foreach ($this->types() as $type)
+                            <div class="tab-pane fade @if ($loop->first) show active @endif"
+                                id="content-{{ $field->id }}-{{ $type }}" role="tabpanel"
+                                aria-labelledby="tab-{{ $field->id }}-{{ $type }}">
+
+                                <div class="table-responsive rounded-3">
+
+                                    <table class="table table-bordered table-striped text-center text-nowrap">
+                                        <thead>
+                                            <tr>
+                                                <th>Lapangan</th>
+                                                <th>Jadwal</th>
+                                                <th>Biaya</th>
+                                                <th>Status</th>
+                                                <th>Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody wire:poll.3600s>
+                                            @foreach ($this->schedules() as $schedule)
+                                                @if ($schedule->type == $type)
+                                                    <tr>
+                                                        <td>{{ $field->field_name }}</td>
+                                                        <td>
+                                                            {{ Carbon::parse($schedule->start_time)->format('H:i') }}
+                                                            -
+                                                            {{ Carbon::parse($schedule->end_time)->format('H:i') }}
+                                                        </td>
+                                                        <td>{{ formatRupiah($schedule->cost) }}</td>
+                                                        <td>
+                                                            @if ($field->bookingTimes->where('start_time', $schedule->start_time)->isNotEmpty())
+                                                                <span class="badge bg-danger">Tidak Tersedia</span>
+                                                            @else
+                                                                <span class="badge bg-success">Tersedia</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if ($field->bookingTimes->where('start_time', $schedule->start_time)->isEmpty())
+                                                                <button class="btn btn-sm btn-primary">Pesan</button>
+                                                            @else
+                                                                <button class="btn btn-sm btn-secondary" disabled>Pesan</button>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</div>
 @endvolt

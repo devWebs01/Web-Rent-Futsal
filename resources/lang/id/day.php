@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'Sunday'    => 'Minggu',
-    'Monday'    => 'Senin',
-    'Tuesday'   => 'Selasa',
+    'Sunday' => 'Minggu',
+    'Monday' => 'Senin',
+    'Tuesday' => 'Selasa',
     'Wednesday' => 'Rabu',
-    'Thursday'  => 'Kamis',
-    'Friday'    => 'Jumat',
-    'Saturday'  => 'Sabtu',
+    'Thursday' => 'Kamis',
+    'Friday' => 'Jumat',
+    'Saturday' => 'Sabtu',
 ];

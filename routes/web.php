@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +20,9 @@ Route::get('/', function () {
 });
 
 Auth::routes([
-    'verify' => 'true'
+    'verify' => 'true',
 ]);
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->middleware('verified')->name('home');
+Route::get('/home', [HomeController::class, 'index'])
+    ->middleware(['verified', 'checkRole:dev,admin'])
+    ->name('home');

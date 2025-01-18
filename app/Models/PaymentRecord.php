@@ -19,8 +19,6 @@ class PaymentRecord extends Model
 
     /**
      * Get the payment that owns the PaymentRecord
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function payment(): BelongsTo
     {

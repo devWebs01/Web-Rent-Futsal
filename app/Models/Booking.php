@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Booking extends Model
@@ -34,8 +33,6 @@ class Booking extends Model
 
     /**
      * Get the payment associated with the Booking
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function payment(): HasOne
     {

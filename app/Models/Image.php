@@ -17,8 +17,6 @@ class Image extends Model
 
     /**
      * Get the field that owns the Facility
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function field(): BelongsTo
     {
