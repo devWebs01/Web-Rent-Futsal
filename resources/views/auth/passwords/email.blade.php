@@ -1,4 +1,6 @@
 <x-auth-layout>
+    <x-slot name="title">Reset Kata Sandi</x-slot>
+
     @if (session('status'))
         <div class="alert alert-light" role="alert">
             {{ session('status') }}
@@ -23,7 +25,7 @@
 
         <div class="d-grid mb-0">
             <button type="submit" class="btn btn-light">
-                {{ __('Send Password Reset Link') }}
+                Kirim Tautan Reset Kata Sandi
             </button>
         </div>
     </form>
