@@ -35,10 +35,10 @@ state([
 
             <div class="row gy-3 mb-3">
                 <div class="col-6">
-                    <h4 class="text-uppercase text-danger m-0">Invoice</h4>
+                    <h4 class="text-uppercase text-primary m-0">Invoice</h4>
                 </div>
                 <div class="col-6">
-                    <h4 class="text-uppercase text-danger text-end m-0">{{ $booking->invoice }}</h4>
+                    <h4 class="text-uppercase text-primary text-end m-0">{{ $booking->invoice }}</h4>
                 </div>
             </div>
             <div class="row mb-3">

@@ -133,7 +133,7 @@ $processBooking = function () {
 @volt
 <div>
     <nav class="fixed-top navbar navbar-expand-lg navbar-light bg-none">
-        <div class="container border rounded bg-light">
+        <div class="container-fluid mx-3 border rounded bg-light">
             <!-- Toggler Menu Utama -->
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                 aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -149,14 +149,25 @@ $processBooking = function () {
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link fw-bolder active" href="/">Beranda</a>
+                        <a class="nav-link fw-bolder {{ Request::is(['/']) ? 'active text-primary' : '' }}"
+                            href="/">Beranda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fw-bolder" href="/#fields">Lapangan</a>
+                        <a class="nav-link fw-bolder {{ Request::is(['/']) ? 'active text-primary' : '' }}"
+                            href="/#fields">Lapangan</a>
                     </li>
                     @auth
                         <li class="nav-item">
-                            <a class="nav-link fw-bolder" href="{{ route('bookings.index') }}">Pesanan</a>
+                            <a class="nav-link fw-bolder {{ Request::is(['guest/bookings']) ? 'active text-primary' : '' }}"
+                                href="{{ route('bookings.index') }}">Pesanan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-bolder {{ Request::is(['profile-guest']) ? 'active text-primary' : '' }}"
+                                href="{{ route('profile.guest') }}" class="btn btn-primary btn-lg">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-bolder {{ Request::is(['/']) ? 'active text-primary' : '' }}"
+                                wire:click='logout' class="btn btn-primary btn-lg">Keluar</a>
                         </li>
                     @endauth
                 </ul>
@@ -168,6 +179,7 @@ $processBooking = function () {
                 </a>
 
             @else
+
                 <!-- Tombol Offcanvas Menu Tambahan -->
                 <button class="btn border-0 position-relative" type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">

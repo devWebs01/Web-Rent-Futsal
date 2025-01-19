@@ -24,47 +24,47 @@ state([
     @include('layouts.datatables')
 
     @volt
-        <div>
-            <div class="container">
-                <div class="card rounded-4 mb-3">
-                    <div class="card-body">
-                        <div class="table-responsive border-0 rounded">
-                            <table class="table table-striped text-center text-nowrap">
-                                <thead>
+    <div>
+        <div class="container">
+            <div class="card rounded-4 mb-3">
+                <div class="card-body">
+                    <div class="table-responsive border-0 rounded">
+                        <table class="table table-striped text-center text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Invoice</th>
+                                    <th>Status</th>
+                                    <th>Total Bayar</th>
+                                    <th>Opsi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($bookings as $no => $item)
                                     <tr>
-                                        <th>No.</th>
-                                        <th>Invoice</th>
-                                        <th>Status</th>
-                                        <th>Total Bayar</th>
-                                        <th>Opsi</th>
+                                        <td>{{ ++$no }}</td>
+                                        <td>{{ $item->invoice }}</td>
+                                        <td>{{ __('status.' . $item->status) }}</td>
+                                        <td>{{ formatRupiah($item->total_price) }}</td>
+                                        <td>
+                                            <div>
+                                                <a href="{{ route('bookings.show', ['booking' => $item->id]) }}"
+                                                    wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
+                                                    class="btn btn-sm btn-primary">
+                                                    Detail
+                                                </a>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($bookings as $no => $item)
-                                        <tr>
-                                            <td>{{ ++$no }}</td>
-                                            <td>{{ $item->invoice }}</td>
-                                            <td>{{ __('status.' . $item->status) }}</td>
-                                            <td>{{ formatRupiah($item->total_price) }}</td>
-                                            <td>
-                                                <div>
-                                                    <a href="{{ route('bookings.show', ['booking' => $item->id]) }}"
-                                                        wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
-                                                        class="btn btn-sm btn-danger">
-                                                        Detail
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
+                                @endforeach
 
-                                </tbody>
-                            </table>
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     @endvolt
 
 </x-guest-layout>

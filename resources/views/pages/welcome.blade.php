@@ -24,10 +24,9 @@ state([
     <div>
 
         <!-- Carousel Start -->
-        <div class="header-carousel owl-carousel">
-            <div class="header-carousel-item bg-primary"
+        <div class=" rounded header-carousel owl-carousel">
+            <div class="header-carousel-item"
                 style="background-image: url('https://images.pexels.com/photos/14690057/pexels-photo-14690057.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); background-size: cover ; background-repeat: no-repeat; background-position: center;">
-                >
                 <div class="carousel-caption">
                     <div class="container">
                         <div class="row g-4 align-items-center">
@@ -126,7 +125,7 @@ state([
                                 <i class="fa fa-headphones fa-3x"></i>
                             </div>
                             <h4 class="mb-4">Dukungan Penuh</h4>
-                            <p class="mb-4 text-capitalize">Tim kami siap membantu Anda Kapan Saja memesan</p>
+                            <p class="mb-4 text-capitalize">Tim kami siap membantu Anda Kapan Saja Anda Ingin memesan</p>
 
                         </div>
                     </div>

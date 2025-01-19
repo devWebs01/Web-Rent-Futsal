@@ -31,6 +31,14 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
+        \App\Models\User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'pelanggan@testing.com',
+            'password' => Hash::make('password'),
+            'phone' => '08978301712',
+            'role' => 'customer',
+        ]);
+
         \App\Models\Bank::factory(3)->create();
     }
 }

@@ -120,7 +120,7 @@ $cancelBooking = function () {
             @if (empty($booking->payment->records))
                 <section class="container">
                     <span class="fw-bold">Invoice</span>
-                    <h4 class="display-6 fw-bold text-danger">
+                    <h4 class="display-6 fw-bold text-primary">
                         {{ $booking->invoice }}
                     </h4>
                     <p class="text-muted">
@@ -138,17 +138,17 @@ $cancelBooking = function () {
                                         <hr>
                                         <div class="row">
                                             <div class="text-muted col-5">Total Bayar</div>
-                                            <div class="fw-bold text-danger col-7">
+                                            <div class="fw-bold text-primary col-7">
                                                 {{ formatRupiah($booking->total_price) }}
                                             </div>
                                             <br>
                                             <div class="text-muted col-5">Status</div>
-                                            <div class="fw-bold text-danger col-7">
+                                            <div class="fw-bold text-primary col-7">
                                                 {{ __('status.' . $booking->status) }}
                                             </div>
                                             <br>
                                             <div class="text-muted col-5">Pelanggan</div>
-                                            <div class="fw-bold text-danger col-7">
+                                            <div class="fw-bold text-primary col-7">
                                                 {{ $booking->user->name }}
                                             </div>
                                         </div>
@@ -171,7 +171,7 @@ $cancelBooking = function () {
                                                 </div>
 
                                                 <div class="col">
-                                                    <h4 class="fw-bold text-danger">{{ $item->field->field_name }}</h4>
+                                                    <h4 class="fw-bold text-primary">{{ $item->field->field_name }}</h4>
                                                     <p class="small mb-0">
                                                         {{ Carbon::parse($item->booking_date)->format('d M Y') }}
                                                         - {{ $item->start_time . ' - ' . $item->end_time }}
@@ -207,7 +207,7 @@ $cancelBooking = function () {
                                                     </option>
                                                 </select>
                                                 @error('payment_method')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                    <small class="text-primary">{{ $message }}</small>
                                                 @enderror
                                             </div>
 
@@ -230,7 +230,7 @@ $cancelBooking = function () {
                                                     name="alternative_phone" id="alternative_phone"
                                                     {{ $booking->status !== 'PROCESS' ?: 'disabled' }} />
                                                 @error('alternative_phone')
-                                                    <small id="alternative_phoneId" class="form-text text-danger">
+                                                    <small id="alternative_phoneId" class="form-text text-primary">
                                                         {{ $message }}
                                                     </small>
                                                 @else
@@ -250,7 +250,7 @@ $cancelBooking = function () {
                                                 </div>
                                                 <div class="col-6">
                                                     <button type="submit"
-                                                        class="w-100 btn btn-danger {{ $booking->status !== 'PROCESS' ?: 'd-none' }}">
+                                                        class="w-100 btn btn-primary {{ $booking->status !== 'PROCESS' ?: 'd-none' }}">
                                                         Submit
                                                     </button>
                                                 </div>

@@ -74,13 +74,21 @@
     <!-- Spinner End -->
 
     <x-guest-nav></x-guest-nav>
-  
+
     <!-- Navbar & Hero Start -->
-    {{ $slot }}
+    <div class="pt-5 mt-5">
+        {{ $slot }}
+    </div>
     <!-- Navbar & Hero End -->
 
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary btn-lg-square rounded-circle back-to-top">
+        <i class="fa fa-arrow-up">
+        </i>
+    </a>
+
     <!-- Copyright Start -->
-    <div class="container-fluid copyright py-4 text-center">
+    <div class="fixed-bottom container-fluid copyright py-4 text-center" style="z-index: 0;">
         <span class="text-body">
             <a href="#" class="border-bottom text-white text-decoration-none">
                 <i class="fas fa-copyright text-light me-2">
@@ -91,11 +99,7 @@
     </div>
     <!-- Copyright End -->
 
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-primary btn-lg-square rounded-circle back-to-top">
-        <i class="fa fa-arrow-up">
-        </i>
-    </a>
+
 
 
     <!-- JavaScript Libraries -->
