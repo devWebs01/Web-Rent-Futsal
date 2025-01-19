@@ -87,20 +87,6 @@
         </i>
     </a>
 
-    <!-- Copyright Start -->
-    <div class="fixed-bottom container-fluid copyright py-4 text-center" style="z-index: 0;">
-        <span class="text-body">
-            <a href="#" class="border-bottom text-white text-decoration-none">
-                <i class="fas fa-copyright text-light me-2">
-                </i>
-                {{ $setting->name }},
-                {{ $setting->address }}
-        </span>
-    </div>
-    <!-- Copyright End -->
-
-
-
 
     <!-- JavaScript Libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js">
