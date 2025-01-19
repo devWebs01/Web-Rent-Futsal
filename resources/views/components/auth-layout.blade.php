@@ -11,6 +11,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
 
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
@@ -34,6 +37,9 @@
                 <div class="row justify-content-center align-items-center">
                     <div class="col-lg-6 mb-5 mb-lg-0">
                         <div class="pe-lg-3">
+                            <a class="text-muted text-decoration-none small" href="/">
+                                <i class='bx bx-arrow-back'></i>Kembali
+                            </a>
                             <h1 class="display-5 fw-bold mb-2 mb-md-3">Jadilah Juara di Setiap
                                 <span class="text-primary">Pertandingan!</span>
                             </h1>

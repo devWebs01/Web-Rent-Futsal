@@ -38,10 +38,10 @@ $bookings = computed(function () {
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
-                            <div class="col">
+                            {{-- <div class="col">
                                 <a href="{{ route('transactions.create') }}" class="btn btn-primary">Tambah
                                     booking</a>
-                            </div>
+                            </div> --}}
                             <div class="col">
                                 <input wire:model.live="search" type="search" class="form-control" name="search"
                                     id="search" aria-describedby="searchId"
