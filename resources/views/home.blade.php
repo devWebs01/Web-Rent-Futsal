@@ -102,7 +102,7 @@ state([
 
 
             <div class="card mt-4">
-                @include('monitoring')
+                {{-- @include('monitoring') --}}
             </div>
         </div>
     @endvolt
