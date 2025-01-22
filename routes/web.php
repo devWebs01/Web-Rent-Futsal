@@ -26,3 +26,6 @@ Auth::routes([
 Route::get('/home', [HomeController::class, 'index'])
     ->middleware([ 'checkRole:dev,admin'])
     ->name('home');
+
+
+    
