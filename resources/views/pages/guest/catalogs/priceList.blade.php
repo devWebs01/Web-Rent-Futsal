@@ -44,7 +44,7 @@ $addToCart = function ($slot) {
         ->where('field_id', $this->field_id)
         ->where('booking_date', $this->selectDate ?? $this->today)
         ->where('start_time', explode(' - ', $slot['time'])[0])
-        ->where('type', $slot['type']) // Periksa berdasarkan type juga
+        // ->where('type', $slot['type']) // Periksa berdasarkan type juga
         ->exists();
 
     if ($checkCart) {
