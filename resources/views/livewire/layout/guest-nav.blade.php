@@ -149,40 +149,34 @@ $processBooking = function () {
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link fw-bolder {{ Request::is(['/']) ? 'active text-primary' : '' }}"
+                        <a class="nav-link fw-bolder {{ Request::is('/') ? 'active text-primary' : '' }}"
                             href="/">Beranda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fw-bolder {{ Request::is(['/']) ? 'active text-primary' : '' }}"
+                        <a class="nav-link fw-bolder {{ Route::is('catalogs.field') ? 'active text-primary' : '' }}"
                             href="/#fields">Lapangan</a>
                     </li>
                     @auth
                         <li class="nav-item">
-                            <a class="nav-link fw-bolder {{ Request::is(['guest/bookings']) ? 'active text-primary' : '' }}"
+                            <a class="nav-link fw-bolder {{ Route::is('bookings.index') ? 'active text-primary' : '' }}"
                                 href="{{ route('bookings.index') }}">Pesanan</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-bolder {{ Request::is(['profile-guest']) ? 'active text-primary' : '' }}"
-                                href="{{ route('profile.guest') }}" class="btn btn-primary btn-lg">Profile</a>
+                            <a class="nav-link fw-bolder {{ Route::is('profile.guest') ? 'active text-primary' : '' }}"
+                                href="{{ route('profile.guest') }}">Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-bolder {{ Request::is(['/']) ? 'active text-primary' : '' }}"
-                                wire:click='logout' class="btn btn-primary btn-lg">Keluar</a>
+                            <a class="nav-link fw-bolder" wire:click='logout'>Keluar</a>
                         </li>
                     @endauth
                 </ul>
             </div>
 
             @guest
-                <a href="{{ route('login') }}" class="btn btn-primary btn-lg">
-                    Masuk Akun
-                </a>
-
+                <a href="{{ route('login') }}" class="btn btn-primary">Masuk Akun</a>
             @else
                 @if (Auth()->user()->role === 'admin')
-                    <a href="{{ route('home') }}" class="btn btn-primary btn-lg">
-                        Halaman Admin
-                    </a>
+                    <a href="{{ route('home') }}" class="btn btn-primary">Halaman Admin</a>
                 @else
                     <!-- Tombol Offcanvas Menu Tambahan -->
                     <button class="btn border-0 position-relative" type="button" data-bs-toggle="offcanvas"
@@ -198,60 +192,13 @@ $processBooking = function () {
                     </button>
                     <div class="offcanvas offcanvas-end bg-white" tabindex="-1" id="offcanvasNavbar"
                         aria-labelledby="offcanvasNavbarLabel">
-
-                        <div class="offcanvas-header row">
-                            <div class="col-4">
-                                <button type="button" class="btn-close btn-close-black m-3" data-bs-dismiss="offcanvas"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="col-8 fw-bold">
-                                JADWAL DIPILIH
-                            </div>
-                            <div class="d-grid col-12">
-                                <button @disabled($cart->isEmpty()) type="button" class="btn btn-outline-dark"
-                                    wire:click='processBooking'>
-                                    BOOKING
-                                </button>
-                            </div>
-                        </div>
-                        <div class="offcanvas-body">
-                            <div class="flex-grow-1 text-dark">
-                                @foreach ($cart as $item)
-                                    <div {{-- wire:poll.30s --}}
-                                        class="row mb-3 py-3 border-5 border-start border-black rounded-3 bg-yellow">
-                                        <div class="col-10">
-                                            <p class="fw-bold mb-0">
-                                                {{ $item->field->field_name }}
-                                            </p>
-                                            <small class="fw-bold postf mb-0">
-                                                <span class="text-primary">
-                                                    {{ Carbon::parse($item->booking_date)->format('d M Y') }}
-                                                </span>
-                                                ,
-                                                <span>{{ $item->start_time . '-' . $item->end_time }}</span>
-                                            </small>
-                                            <br>
-                                            <small class="fw-bold postf">
-                                                {{ formatRupiah($item->price) }}
-                                                -
-                                                {{ __('type.' . $item->type) }}
-                                            </small>
-                                        </div>
-                                        <div class="col-2 align-content-center">
-                                            <button class="btn border-0 text-danger" wire:click='destroy({{ $item->id }})'
-                                                wire:loading.attr='disable'>
-                                                <i class='bx bxs-trash bx-sm'></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
+                        <!-- Offcanvas Content -->
                     </div>
                 @endif
             @endguest
         </div>
     </nav>
+
 </div>
 
 @endvolt

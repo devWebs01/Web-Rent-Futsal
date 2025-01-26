@@ -25,5 +25,16 @@ class ResetPasswordController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    // protected $redirectTo = '/home';
+    protected function redirectTo()
+    {
+        // Cek apakah pengguna adalah admin
+        if (auth()->user()->role === 'admin') {
+            // Jika admin, redirect ke /home
+            return '/home';
+        }
+
+        // Jika bukan admin, redirect ke halaman default
+        return '/';
+    }
 }

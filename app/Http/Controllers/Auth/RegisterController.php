@@ -83,6 +83,6 @@ class RegisterController extends Controller
         auth()->logout();
 
         // Redirect ke halaman register dengan pesan sukses
-        return redirect('/register')->with('success', 'Registration successful! Please check your email to verify your account.');
+        return redirect('/register')->with('success', 'Registrasi berhasil! Silakan periksa email Anda untuk memverifikasi akun Anda.');
     }
 }

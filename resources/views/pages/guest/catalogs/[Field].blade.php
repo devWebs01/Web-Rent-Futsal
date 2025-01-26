@@ -20,7 +20,7 @@ state([
 ?>
 
 <x-guest-layout>
-
+    <x-slot name="title">Lapangan</x-slot>
     @volt
     <div>
         <section class="container">

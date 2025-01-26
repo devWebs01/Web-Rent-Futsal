@@ -1,9 +1,9 @@
 <x-auth-layout>
     <x-slot name="title">Register</x-slot>
 
-    @if (session('status'))
+    @if (session('success'))
         <div class="alert alert-light" role="alert">
-            {{ session('status') }}
+            {{ session('success') }}
         </div>
     @endif
 
