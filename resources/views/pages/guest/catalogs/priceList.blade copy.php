@@ -3,7 +3,7 @@
 use App\Models\Schedule;
 use App\Models\Cart;
 use App\Models\BookingTime;
-use function Livewire\Volt\{state, computed, uses, rules, on};
+use function Livewire\Volt\{state, computed, uses, rules};
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Carbon\Carbon;
 
@@ -14,8 +14,7 @@ state(['selectDate'])->url();
 state([
     'allSchedule' => fn() => Schedule::all(),
     'today' => fn() => Carbon::now()->format('Y-m-d'),
-    'activeTab' => 'student',
-    'allTournamentSelected' => false,
+    'activeTab' => 'student', // Tab default
     'field',
 
     // booking
@@ -27,84 +26,23 @@ state([
     'price',
 ]);
 
-on([
-    'allTournamentSelectedFalse' => function () {
-        // Reset allTournamentSelected ke false ketika cart diperbarui
-        $this->allTournamentSelected = false;
-    },
-]);
-
 rules([
     'user_id' => 'required|exists:users,id',
     'field_id' => 'required|exists:fields,id',
 ]);
 
-$selectAllTournamentSlots = function () {
-    // Periksa apakah user sudah login
-    if (!Auth::check()) {
-        $this->redirect('/login');
+$checkAuth = function () {
+    $user = Auth::user();
+
+    if (!$user) {
+        return false; // Tidak ada pengguna yang sedang login
     }
 
-    // Validasi data
-    $this->validate();
-
-    // Ambil semua waktu turnamen
-    $tournamentSlots = $this->slots['tournament'];
-
-    // Periksa apakah waktu saat ini sudah melewati waktu waktu yang paling awal
-    $earliestSlot = collect($tournamentSlots)->first();
-    $latestSlot = collect($tournamentSlots)->last();
-    $today = Carbon::now();
-    $selectedDate = Carbon::parse($this->selectDate ?? $this->today);
-    $now = $today->format('H:i');
-
-    if ($selectedDate->isSameDay($today) && $earliestSlot['time'] < $now) {
-        $this->alert('warning', 'Anda tidak dapat memilih waktu waktu yang sudah terlewati!', [
-            'position' => 'center',
-            'timer' => '3000',
-            'toast' => true,
-            'timerProgressBar' => true,
-        ]);
-        return;
+    if (empty($user->dob) || empty($user->identity)) {
+        return false; // Tanggal lahir atau identitas kosong
     }
 
-    // Periksa apakah ada waktu lain yang sudah dipesan untuk lapangan yang sama
-    $existingBookings = Cart::where('user_id', Auth::id())
-        ->where('field_id', $this->field_id)
-        ->where('booking_date', $this->selectDate ?? $this->today)
-        ->exists();
-
-    if ($existingBookings) {
-        $this->alert('warning', 'Anda tidak dapat memilih waktu turnamen karena waktu waktu sudah ada di keranjang!', [
-            'position' => 'center',
-            'timer' => '3000',
-            'toast' => true,
-            'timerProgressBar' => true,
-        ]);
-        return;
-    }
-
-    // Tambahkan waktu ke daftar
-    Cart::create([
-        'user_id' => Auth::id(),
-        'field_id' => $this->field_id,
-        'booking_date' => $this->selectDate ?? $this->today,
-        'start_time' => explode(' - ', $earliestSlot['time'])[0],
-        'end_time' => explode(' - ', $latestSlot['time'])[1],
-        'type' => 'TOURNAMENT',
-        'price' => $earliestSlot['cost'], // Menggunakan harga dari waktu paling awal
-    ]);
-
-    $this->allTournamentSelected = true; // Tandai bahwa semua waktu turnamen sudah dipilih
-
-    $this->dispatch('cart-updated');
-
-    $this->alert('success', 'Slot waktu turnamen berhasil ditambahkan ke keranjang', [
-        'position' => 'center',
-        'timer' => '3000',
-        'toast' => true,
-        'timerProgressBar' => true,
-    ]);
+    return true; // Semua data tersedia
 };
 
 $addToCart = function ($slot) {
@@ -116,35 +54,7 @@ $addToCart = function ($slot) {
     // Validasi data
     $this->validate();
 
-    // Cek apakah semua waktu turnamen sudah dipilih
-    if ($this->allTournamentSelected) {
-        $this->alert('warning', 'Anda tidak dapat memesan waktu lain setelah memilih semua waktu turnamen!', [
-            'position' => 'center',
-            'timer' => '3000',
-            'toast' => true,
-            'timerProgressBar' => true,
-        ]);
-        return;
-    }
-
-    // Periksa apakah ada waktu lain yang sudah dipesan untuk lapangan yang sama
-    $existingBookings = Cart::where('user_id', Auth::id())
-        ->where('field_id', $this->field_id)
-        ->where('booking_date', $this->selectDate ?? $this->today)
-        ->where('start_time', explode(' - ', $slot['time'])[0])
-        ->exists();
-
-    if ($existingBookings) {
-        $this->alert('warning', 'Anda tidak dapat memesan waktu ini karena waktu sudah ada di keranjang!', [
-            'position' => 'center',
-            'timer' => '3000',
-            'toast' => true,
-            'timerProgressBar' => true,
-        ]);
-        return;
-    }
-
-    // Periksa apakah waktu sudah ada di daftar
+    // Periksa apakah slot sudah ada di daftar
     $checkCart = Cart::where('user_id', Auth::id())
         ->where('field_id', $this->field_id)
         ->where('booking_date', $this->selectDate ?? $this->today)
@@ -152,14 +62,14 @@ $addToCart = function ($slot) {
         ->exists();
 
     if ($checkCart) {
-        $this->alert('warning', 'Waktu sudah ada di keranjang!', [
+        $this->alert('warning', 'Waktu sudah ada di daftar!', [
             'position' => 'center',
-            'timer' => '3000',
+            'timer' => '2000',
             'toast' => true,
             'timerProgressBar' => true,
         ]);
     } else {
-        // Tambahkan waktu ke daftar
+        // Tambahkan slot ke daftar
         Cart::create([
             'user_id' => Auth::id(),
             'field_id' => $this->field_id,
@@ -174,12 +84,13 @@ $addToCart = function ($slot) {
 
         $this->alert('success', 'Waktu berhasil ditambahkan ke daftar', [
             'position' => 'center',
-            'timer' => '3000',
+            'timer' => '2000',
             'toast' => true,
             'timerProgressBar' => true,
             'text' => '',
         ]);
     }
+
 };
 
 
@@ -197,7 +108,7 @@ $slots = computed(function () {
         ->get(['start_time', 'type'])
         ->toArray();
 
-    // Map waktu yang sudah dibooking
+    // Map slot yang sudah dibooking
     $bookedMap = collect($bookedSlots)->mapWithKeys(function ($slot) {
         return [$slot['start_time'] => $slot['type']];
     });
@@ -218,9 +129,9 @@ $slots = computed(function () {
                 $slotStart = $start->format('H:i');
                 $slotEnd = $start->addHour()->format('H:i');
 
-                // Periksa apakah waktu ini di masa lalu
+                // Periksa apakah slot ini di masa lalu
                 $isPast = $selectedDate->isSameDay($today) && $slotStart < $now;
-                $isBooked = isset($bookedMap[$slotStart]); // Tidak perlu memeriksa type, cukup cek jika waktu sudah dibooking
+                $isBooked = isset($bookedMap[$slotStart]); // Tidak perlu memeriksa type, cukup cek jika slot sudah dibooking
 
                 $slots[] = [
                     'time' => "$slotStart - $slotEnd",
@@ -293,7 +204,7 @@ $setActiveTab = function ($tab) {
                             <h5 class="mt-3 text-primary fw-bold">{{ $slot['time'] }}</h5>
                             <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                             <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
-                                                                                                                                            {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
+                                                                    {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                 wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                 <span wire:loading.class='d-none'>
                                     PILIH
@@ -318,7 +229,7 @@ $setActiveTab = function ($tab) {
                             <h5 class="mt-3 text-primary fw-bold">{{ $slot['time'] }}</h5>
                             <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                             <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
-                                                                                                                                            {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
+                                                                    {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                 wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                 <span wire:loading.class='d-none'>
                                     PILIH
@@ -336,18 +247,22 @@ $setActiveTab = function ($tab) {
         <!-- Tab Turnamen/Keramaian -->
         <div class="tab-pane fade @if ($this->activeTab === 'tournament') show active @endif" id="pills-tournament"
             role="tabpanel">
-
-            <div class="text-center">
-                <button class="btn btn-primary btn-lg mb-3" wire:click.prevent="selectAllTournamentSlots">Pilih Semua
-                    waktu</button>
-            </div>
-
             <div class="row gap-3 justify-content-evenly">
                 @foreach ($this->slots['tournament'] as $slot)
                     <div class="col-md-3 col-sm-4 card p-0 border-0">
                         <div class="card-body text-center shadow rounded-4">
                             <h5 class="mt-3 text-primary fw-bold">{{ $slot['time'] }}</h5>
                             <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
+                            <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
+                                                                    {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
+                                wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
+                                <span wire:loading.class='d-none'>
+                                    PILIH
+                                </span>
+                                <span wire:loading.class.remove='d-none' class="spinner-border spinner-border-sm d-none">
+                                </span>
+                            </a>
+
                         </div>
                     </div>
                 @endforeach

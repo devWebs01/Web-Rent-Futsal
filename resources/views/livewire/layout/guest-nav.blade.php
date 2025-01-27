@@ -32,7 +32,21 @@ on([
 
 $destroy = function (Cart $cart) {
     try {
+        // Simpan tipe dari item yang akan dihapus
+        $isTournament = $cart->type === 'TOURNAMENT';
+
+        // Hapus item dari keranjang
         $cart->delete();
+
+
+        // Jika item yang dihapus adalah slot turnamen, setel allTournamentSelected ke false
+        if ($isTournament) {
+            $this->allTournamentSelected = false;
+            
+            // Dispatch event untuk memperbarui cart
+            $this->dispatch('allTournamentSelectedFalse');
+        }
+
         $this->alert('success', 'Jadwal berhasil dihapus!', [
             'position' => 'center',
             'timer' => 3000,
