@@ -125,7 +125,8 @@ state([
                                 <i class="fa fa-headphones fa-3x"></i>
                             </div>
                             <h4 class="mb-4">Dukungan Penuh</h4>
-                            <p class="mb-4 text-capitalize">Tim kami siap membantu Anda Kapan Saja Anda Ingin memesan</p>
+                            <p class="mb-4 text-capitalize">Tim kami siap membantu Anda Kapan Saja Anda Ingin memesan
+                            </p>
 
                         </div>
                     </div>
@@ -148,35 +149,39 @@ state([
                 <div class="row g-4 justify-content-center">
                     @foreach ($fields as $field)
                         <div class="col-md wow fadeInUp" data-wow-delay="0.2s">
-                            <div class="service-item">
-                                <div class="service-img">
-                                    @if ($field->images->count() < 0)
-                                        <img src="https://images.pexels.com/photos/29388472/pexels-photo-29388472.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                                            class="card-omg-top rounded-4 w-100" width="200px" height="200px"
-                                            style="object-fit: cover;">
-                                    @else
-                                        <img src="{{ Storage::url($field->images->first()->image_path) }}"
-                                            class="card-omg-top rounded-4 w-100" width="200px" height="200px"
-                                            style="object-fit: cover;">
-                                    @endif
-                                    <div class="service-icon p-3">
-                                        <i class="fa fa-users fa-2x"></i>
+                            <a href="{{ route('catalogs.field', ['field' => $field->id]) }}">
+                                <div class="service-item">
+
+
+                                    <div class="service-img">
+                                        @if ($field->images->count() < 0)
+                                            <img src="https://images.pexels.com/photos/29388472/pexels-photo-29388472.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                                                class="card-omg-top rounded-4 w-100" width="200px" height="200px"
+                                                style="object-fit: cover;">
+                                        @else
+                                            <img src="{{ Storage::url($field->images->first()->image_path) }}"
+                                                class="card-omg-top rounded-4 w-100" width="200px" height="200px"
+                                                style="object-fit: cover;">
+                                        @endif
+                                        <div class="service-icon p-3">
+                                            <i class="fa fa-users fa-2x"></i>
+                                        </div>
+                                    </div>
+                                    <div class="service-content p-4">
+                                        <div class="service-content-inner">
+                                            <span class="d-inline-block h4 mb-4 fw-bold">
+                                                {{ $field->field_name }}
+                                            </span>
+                                            <p class="mb-4">
+                                                {{ $field->description }}
+                                            </p>
+                                            <a class="btn btn-primary rounded-pill py-2 px-4"
+                                                href="{{ route('catalogs.field', ['field' => $field->id]) }}">Lihat
+                                                Selengkapnya</a>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="service-content p-4">
-                                    <div class="service-content-inner">
-                                        <a href="#" class="d-inline-block h4 mb-4 fw-bold">
-                                            {{ $field->field_name }}
-                                        </a>
-                                        <p class="mb-4">
-                                            {{ $field->description }}
-                                        </p>
-                                        <a class="btn btn-primary rounded-pill py-2 px-4"
-                                            href="{{ route('catalogs.field', ['field' => $field->id]) }}">Lihat
-                                            Selengkapnya</a>
-                                    </div>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                     @endforeach
 

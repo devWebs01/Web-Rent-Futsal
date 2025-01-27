@@ -7,7 +7,6 @@ use function Laravel\Folio\{name, middleware};
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 uses([LivewireAlert::class]);
-middleware(['auth']);
 
 name('profile.admin');
 

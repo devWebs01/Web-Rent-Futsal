@@ -31,52 +31,79 @@ rules([
     'field_id' => 'required|exists:fields,id',
 ]);
 
+$checkAuth = function () {
+    $user = Auth::user();
+
+    if (!$user) {
+        return false; // Tidak ada pengguna yang sedang login
+    }
+
+    if (empty($user->dob) || empty($user->identity)) {
+        return false; // Tanggal lahir atau identitas kosong
+    }
+
+    return true; // Semua data tersedia
+};
+
 $addToCart = function ($slot) {
     // Periksa apakah user sudah login
     if (!Auth::check()) {
         $this->redirect('/login');
     }
 
-    $this->validate();
-
-    // Periksa apakah slot sudah ada di daftar
-    $checkCart = Cart::where('user_id', Auth::id())
-        ->where('field_id', $this->field_id)
-        ->where('booking_date', $this->selectDate ?? $this->today)
-        ->where('start_time', explode(' - ', $slot['time'])[0])
-        // ->where('type', $slot['type']) // Periksa berdasarkan type juga
-        ->exists();
-
-    if ($checkCart) {
-        $this->alert('warning', 'Waktu sudah ada didaftar!', [
+    // Periksa apakah data diri user sudah lengkap
+    $user = Auth::user();
+    if (!$user->name || !$user->email || !$user->phone_number || !$this->checkAuth) { // Ganti atribut sesuai kebutuhan
+        $this->alert('warning', 'Silakan lengkapi data diri Anda sebelum melanjutkan!', [
             'position' => 'center',
-            'timer' => '2000',
+            'timer' => '3000',
             'toast' => true,
-            'timerProgressBar' => true,
         ]);
+        $this->redirectRoute('profile.guest'); // Arahkan ke halaman pengisian data diri
     } else {
-        // Tambahkan slot ke daftar
-        Cart::create([
-            'user_id' => Auth::id(),
-            'field_id' => $this->field_id,
-            'booking_date' => $this->selectDate ?? $this->today,
-            'start_time' => explode(' - ', $slot['time'])[0],
-            'end_time' => explode(' - ', $slot['time'])[1],
-            'type' => $slot['type'], // Simpan type ke daftar
-            'price' => $slot['cost'],
-        ]);
 
-        $this->dispatch('cart-updated');
+        // Validasi data
+        $this->validate();
 
-        $this->alert('success', 'Waktu berhasil ditambahkan ke daftar', [
-            'position' => 'center',
-            'timer' => '2000',
-            'toast' => true,
-            'timerProgressBar' => true,
-            'text' => '',
-        ]);
+        // Periksa apakah slot sudah ada di daftar
+        $checkCart = Cart::where('user_id', Auth::id())
+            ->where('field_id', $this->field_id)
+            ->where('booking_date', $this->selectDate ?? $this->today)
+            ->where('start_time', explode(' - ', $slot['time'])[0])
+            ->exists();
+
+        if ($checkCart) {
+            $this->alert('warning', 'Waktu sudah ada di daftar!', [
+                'position' => 'center',
+                'timer' => '2000',
+                'toast' => true,
+                'timerProgressBar' => true,
+            ]);
+        } else {
+            // Tambahkan slot ke daftar
+            Cart::create([
+                'user_id' => Auth::id(),
+                'field_id' => $this->field_id,
+                'booking_date' => $this->selectDate ?? $this->today,
+                'start_time' => explode(' - ', $slot['time'])[0],
+                'end_time' => explode(' - ', $slot['time'])[1],
+                'type' => $slot['type'],
+                'price' => $slot['cost'],
+            ]);
+
+            $this->dispatch('cart-updated');
+
+            $this->alert('success', 'Waktu berhasil ditambahkan ke daftar', [
+                'position' => 'center',
+                'timer' => '2000',
+                'toast' => true,
+                'timerProgressBar' => true,
+                'text' => '',
+            ]);
+        }
     }
 };
+
 
 $slots = computed(function () {
     $schedules = $this->allSchedule;
@@ -188,7 +215,7 @@ $setActiveTab = function ($tab) {
                             <h5 class="mt-3 text-primary fw-bold">{{ $slot['time'] }}</h5>
                             <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                             <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
-                                        {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
+                                                                {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                 wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                 <span wire:loading.class='d-none'>
                                     PILIH
@@ -213,7 +240,7 @@ $setActiveTab = function ($tab) {
                             <h5 class="mt-3 text-primary fw-bold">{{ $slot['time'] }}</h5>
                             <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                             <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
-                                        {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
+                                                                {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                 wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                 <span wire:loading.class='d-none'>
                                     PILIH
@@ -238,7 +265,7 @@ $setActiveTab = function ($tab) {
                             <h5 class="mt-3 text-primary fw-bold">{{ $slot['time'] }}</h5>
                             <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                             <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
-                                        {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
+                                                                {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                 wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                 <span wire:loading.class='d-none'>
                                     PILIH
