@@ -128,19 +128,7 @@ $processBooking = function () {
     });
 };
 
-$checkAuth = function () {
-    $user = Auth::user();
 
-    if (!$user) {
-        return false; // Tidak ada pengguna yang sedang login
-    }
-
-    if (empty($user->dob) || empty($user->identity)) {
-        return false; // Tanggal lahir atau identitas kosong
-    }
-
-    return true; // Semua data tersedia
-};
 
 ?>
 
@@ -176,17 +164,9 @@ $checkAuth = function () {
                                 href="{{ route('bookings.index') }}">Pesanan</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-bolder {{ Route::is('profile.guest') ? 'active text-primary' : '' }} position-relative"
+                            <a class="nav-link fw-bolder {{ Route::is('profile.guest') ? 'active text-primary' : '' }}"
                                 href="{{ route('profile.guest') }}">
-                                <span>
-                                    Profile
-                                </span>
-                                @if (!$this->checkAuth())
-                                    <span
-                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        !
-                                    </span>
-                                @endif
+                                Profile
                             </a>
                         </li>
                         <li class="nav-item">
