@@ -42,7 +42,7 @@ $destroy = function (Cart $cart) {
         // Jika item yang dihapus adalah slot turnamen, setel allTournamentSelected ke false
         if ($isTournament) {
             $this->allTournamentSelected = false;
-            
+
             // Dispatch event untuk memperbarui cart
             $this->dispatch('allTournamentSelectedFalse');
         }
@@ -64,6 +64,7 @@ $destroy = function (Cart $cart) {
 };
 
 $processBooking = function () {
+
     $userId = $this->userId;
 
     DB::transaction(function () use ($userId) {
@@ -97,8 +98,7 @@ $processBooking = function () {
             // Validasi slot waktu
             $conflictingTime = BookingTime::where('field_id', $cart->field_id)
                 ->where('booking_date', $cart->booking_date)
-                ->where('type', $cart->type) // Validasi tipe booking
-                ->where('status', '!=', 'CANCEL') // Abaikan slot yang sudah dibatalkan
+                ->where('status', '!==', 'CANCEL') // Abaikan slot yang sudah dibatalkan
                 ->where(function ($query) use ($cart) {
                     $query->where(function ($subQuery) use ($cart) {
                         // Cek apakah waktu mulai berada di dalam interval booking yang ada

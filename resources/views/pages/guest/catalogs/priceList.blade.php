@@ -68,16 +68,33 @@ $selectAllTournamentSlots = function () {
         return;
     }
 
-    // Periksa apakah ada waktu lain yang sudah dipesan untuk lapangan yang sama
-    $existingBookings = Cart::where('user_id', Auth::id())
+    // Periksa apakah ada slot lain yang sudah dipesan untuk lapangan yang sama pada tanggal yang sama
+    $existingBookings = BookingTime::where('field_id', $this->field_id)
+        ->where('booking_date', $selectedDate->format('Y-m-d'))
+        ->where('status', '!=', 'CANCEL') // Abaikan slot yang sudah dibatalkan
+        ->exists();
+
+    if ($existingBookings) {
+        $this->alert('warning', 'Anda tidak dapat memilih slot turnamen karena sudah ada slot yang dibooking untuk lapangan ini pada tanggal yang sama!', [
+            'position' => 'center',
+            'timer' => '5000',
+            'width' => '500px', // Atur lebar sesuai kebutuhan
+            'toast' => true,
+            'timerProgressBar' => true,
+        ]);
+        return;
+    }
+
+    $checkCart = Cart::where('user_id', Auth::id())
         ->where('field_id', $this->field_id)
         ->where('booking_date', $this->selectDate ?? $this->today)
         ->exists();
 
-    if ($existingBookings) {
+    if ($checkCart) {
         $this->alert('warning', 'Anda tidak dapat memilih waktu turnamen karena waktu waktu sudah ada di keranjang!', [
             'position' => 'center',
-            'timer' => '3000',
+            'timer' => '5000',
+            'width' => '500px', // Atur lebar sesuai kebutuhan
             'toast' => true,
             'timerProgressBar' => true,
         ]);
@@ -120,7 +137,7 @@ $addToCart = function ($slot) {
     if ($this->allTournamentSelected) {
         $this->alert('warning', 'Anda tidak dapat memesan waktu lain setelah memilih semua waktu turnamen!', [
             'position' => 'center',
-            'timer' => '3000',
+            'timer' => '5000',
             'toast' => true,
             'timerProgressBar' => true,
         ]);
@@ -137,7 +154,8 @@ $addToCart = function ($slot) {
     if ($existingBookings) {
         $this->alert('warning', 'Anda tidak dapat memesan waktu ini karena waktu sudah ada di keranjang!', [
             'position' => 'center',
-            'timer' => '3000',
+            'width' => '500px', // Atur lebar sesuai kebutuhan
+            'timer' => '5000',
             'toast' => true,
             'timerProgressBar' => true,
         ]);
@@ -282,7 +300,7 @@ $setActiveTab = function ($tab) {
 
 
     <!-- Tabs Content -->
-    <div class="tab-content mb-3" id="pills-tabContent" wire:poll.10s>
+    <div class="tab-content mb-3" id="pills-tabContent" wire:poll.30s>
         <!-- Tab Pelajar -->
         <div class="tab-pane fade @if ($this->activeTab === 'student') show active @endif" id="pills-student"
             role="tabpanel">
@@ -293,7 +311,7 @@ $setActiveTab = function ($tab) {
                             <h5 class="mt-3 text-primary fw-bold">{{ $slot['time'] }}</h5>
                             <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                             <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
-                                                                                                                                            {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
+                                                                                                                                                            {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                 wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                 <span wire:loading.class='d-none'>
                                     PILIH
@@ -318,7 +336,7 @@ $setActiveTab = function ($tab) {
                             <h5 class="mt-3 text-primary fw-bold">{{ $slot['time'] }}</h5>
                             <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                             <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
-                                                                                                                                            {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
+                                                                                                                                                            {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                 wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                 <span wire:loading.class='d-none'>
                                     PILIH

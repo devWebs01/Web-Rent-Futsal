@@ -76,7 +76,7 @@
     <x-guest-nav></x-guest-nav>
 
     <!-- Navbar & Hero Start -->
-    <div class="pt-5 mt-5">
+    <div class="py-5 my-5">
         {{ $slot }}
     </div>
     <!-- Navbar & Hero End -->

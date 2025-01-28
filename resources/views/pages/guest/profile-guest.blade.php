@@ -17,13 +17,17 @@ state([
     'name' => fn() => $this->user->name ?? '',
     'email' => fn() => $this->user->email ?? '',
     'phone' => fn() => $this->user->phone ?? '',
+    'identity' => fn() => $this->user->identity,
+    'dob' => fn() => $this->user->identity->dob ?? '',
     'password',
+    'document',
+
 ]);
 
 $edit = function () {
     $user = $this->user;
 
-    $validateData = $this->validate([
+    $validateProfile = $this->validate([
         'name' => 'required|min:5',
         'email' => 'required|min:5|' . Rule::unique(User::class)->ignore($user->id),
         'password' => 'min:5|nullable',
@@ -34,14 +38,36 @@ $edit = function () {
 
     // Jika wire:model password terisi, lakukan update password
     if (!empty($this->password)) {
-        $validateData['password'] = bcrypt($this->password);
+        $validateProfile['password'] = bcrypt($this->password);
     } else {
         // Jika wire:model password tidak terisi, gunakan password yang lama
-        $validateData['password'] = $user->password;
+        $validateProfile['password'] = $user->password;
     }
 
+    if (!empty($this->identity)) {
+        $validateIdentity = $this->validate([
+            'dob' => 'required|date',
+            'document' => 'required|image',
+        ]);
+
+        // Hapus file lama jika ada
+        if ($this->document && $user->identity && $user->identity->document && Storage::exists($user->identity->document)) {
+            Storage::delete($user->identity->document);
+        }
+
+        // Simpan file baru
+        if ($this->document) {
+            $path = $this->document->store('identity', 'public');
+            $validateIdentity['document'] = $path;
+        }
+
+        // Update data identity
+        $user->identity->update($validateIdentity);
+    }
+
+
     // Perbarui data pengguna
-    $user->update($validateData);
+    $user->update($validateProfile);
 
     // Tampilkan notifikasi
     $this->alert('success', 'Proses berhasil!', [
@@ -61,7 +87,6 @@ $edit = function () {
 
     @volt
     <div>
-
         <div class="container">
             <div class="card border-0">
                 <div class="alert alert-primary border-0 shadow" role="alert">
@@ -75,6 +100,23 @@ $edit = function () {
 
                 <div class="card-body shadow rounded">
 
+                    @if ($document)
+                        {{-- Jika $document adalah file sementara --}}
+                        <div class="card-img-top mb-5 rounded">
+                            <a href="{{ $document->temporaryUrl() }}" data-fancybox data-caption="Identitas baru">
+                                <img src="{{ $document->temporaryUrl() }}" class="img" style="object-fit: cover;"
+                                    width="100%" height="200px" alt="Temporary Preview">
+                            </a>
+                        </div>
+                    @elseif (!empty($user->identity->document))
+                        {{-- Jika $identity adalah path file dari storage --}}
+                        <div class="card-img-top mb-5 rounded">
+                            <a href="{{ Storage::url($user->identity->document) }}" data-fancybox data-caption="Identitas user">
+                                <img src="{{ Storage::url($user->identity->document) }}" class="img" style="object-fit: cover;"
+                                    width="100%" height="200px" alt="Existing Identity">
+                            </a>
+                        </div>
+                    @endif
                     <form wire:submit="edit">
                         @csrf
                         <div class="row">
@@ -125,6 +167,33 @@ $edit = function () {
                                     @enderror
                                 </div>
                             </div>
+
+                            @if (!empty($identity))
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="dob" class="form-label">Tanggal Lahir</label>
+                                        <input type="date" class="form-control @error('dob') is-invalid @enderror"
+                                            wire:model="dob" id="dob" aria-describedby="dobId"
+                                            placeholder="Enter user dob" />
+                                        @error('dob')
+                                            <small id="dobId" class="form-text text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="document" class="form-label">Dokumen Identitas</label>
+                                        <input type="file"
+                                            class="form-control bg-white @error('document') is-invalid @enderror"
+                                            wire:model="document" accept="image/*" id="document"
+                                            aria-describedby="documentId" placeholder="Enter user document" />
+                                        @error('document')
+                                            <small id="documentId" class="form-text text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            @endif
 
                             <div class="col-md-6">
                                 <span wire:loading class="spinner-border spinner-border-sm"></span>

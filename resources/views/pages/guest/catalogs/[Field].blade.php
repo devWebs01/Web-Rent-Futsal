@@ -1,10 +1,7 @@
 <?php
 
 use App\Models\Setting;
-use App\Models\schedule;
-use App\Models\Field;
-use function Livewire\Volt\{state, computed, uses};
-use Illuminate\Validation\Rule;
+use function Livewire\Volt\{state, uses};
 use function Laravel\Folio\{name};
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
