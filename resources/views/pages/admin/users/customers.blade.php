@@ -50,7 +50,15 @@ $destroy = function (User $user) {
 
 <x-admin-layout>
     <div>
-        <x-slot name="title">Pelanggan</x-slot>
+        <x-slot name="title">Data Pelanggan</x-slot>
+
+        <x-slot name="header">
+            <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
+            <li class="breadcrumb-item">
+                <a href="{{ route('customers') }}">Pelanggan</a>
+            </li>
+
+        </x-slot>
 
         @volt
             <div>

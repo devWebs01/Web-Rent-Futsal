@@ -77,6 +77,17 @@
 
     <!-- Navbar & Hero Start -->
     <div class="py-5 my-5">
+
+        @if(session('error'))
+            <div class="container-fluid">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    {{ session('error') }}
+                </div>
+            </div>
+        @endif
+
+
         {{ $slot }}
     </div>
     <!-- Navbar & Hero End -->

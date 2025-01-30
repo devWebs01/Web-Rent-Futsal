@@ -49,67 +49,72 @@ $destroy = function (User $user) {
 ?>
 <x-admin-layout>
     <div>
-        <x-slot name="title">Admin</x-slot>
+        <x-slot name="title">Data Admin</x-slot>
 
+        <x-slot name="header">
+            <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
+            <li class="breadcrumb-item">
+                <a href="{{ route('users.index') }}">Admin</a>
+            </li>
 
+        </x-slot>
         @volt
-            <div>
-                <div class="card">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col">
-                                <a href="{{ route('users.create') }}" class="btn btn-primary">Tambah
-                                    Admin</a>
-                            </div>
-                            <div class="col">
-                                <input wire:model.live="search" type="search" class="form-control" name=""
-                                    id="" aria-describedby="helpId" placeholder="Masukkan nama pengguna" />
-                            </div>
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">
+                            <a href="{{ route('users.create') }}" class="btn btn-primary">Tambah
+                                Admin</a>
                         </div>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="table-responsive border rounded px-3">
-                            <table class="table text-center text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>No.</th>
-                                        <th>Nama</th>
-                                        <th>Email</th>
-                                        <th>phone</th>
-                                        <th>Opsi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($this->users as $no => $user)
-                                        <tr>
-                                            <td>{{ ++$no }}</td>
-                                            <td>{{ $user->name }}</td>
-                                            <td>{{ $user->email }}</td>
-                                            <td>{{ $user->phone }}</td>
-                                            <td>
-                                                <div class="">
-                                                    <a href="{{ route('users.edit', ['user' => $user->id]) }}"
-                                                        class="btn btn-sm btn-warning">Edit</a>
-                                                    <button wire:loading.attr='disabled'
-                                                        wire:click='destroy({{ $user->id }})'
-                                                        class="btn btn-sm btn-danger">
-                                                        {{ __('Hapus') }}
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-
-                                </tbody>
-                            </table>
-
-                            {{ $this->users->links() }}
+                        <div class="col">
+                            <input wire:model.live="search" type="search" class="form-control" name="" id=""
+                                aria-describedby="helpId" placeholder="Masukkan nama pengguna" />
                         </div>
-
                     </div>
                 </div>
+
+                <div class="card-body">
+                    <div class="table-responsive border rounded px-3">
+                        <table class="table text-center text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Nama</th>
+                                    <th>Email</th>
+                                    <th>phone</th>
+                                    <th>Opsi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($this->users as $no => $user)
+                                    <tr>
+                                        <td>{{ ++$no }}</td>
+                                        <td>{{ $user->name }}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ $user->phone }}</td>
+                                        <td>
+                                            <div class="">
+                                                <a href="{{ route('users.edit', ['user' => $user->id]) }}"
+                                                    class="btn btn-sm btn-warning">Edit</a>
+                                                <button wire:loading.attr='disabled' wire:click='destroy({{ $user->id }})'
+                                                    class="btn btn-sm btn-danger">
+                                                    {{ __('Hapus') }}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+
+                            </tbody>
+                        </table>
+
+                        {{ $this->users->links() }}
+                    </div>
+
+                </div>
             </div>
+        </div>
         @endvolt
 
     </div>

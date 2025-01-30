@@ -138,13 +138,7 @@
 
                     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                         <!-- Search -->
-                        <div class="navbar-nav align-items-center">
-                            <div class="nav-item d-flex align-items-center">
-                                <i class="bx bx-search bx-md"></i>
-                                <input type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2"
-                                    placeholder="Search..." aria-label="Search..." />
-                            </div>
-                        </div>
+
                         <!-- /Search -->
 
                         <ul class="navbar-nav flex-row align-items-center ms-auto">
@@ -155,8 +149,8 @@
                                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);"
                                     data-bs-toggle="dropdown">
                                     <div class="avatar avatar-online">
-                                        <img src="{{ asset('/assets/img/avatars/1.png') }}" alt
-                                            class="w-px-40 h-auto rounded-circle" />
+                                        <img src="https://api.dicebear.com/9.x/notionists-neutral/svg?seed={{ Auth::user()->name ?? '' }}"
+                                            alt class="w-px-40 h-auto rounded-circle border" />
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
@@ -165,8 +159,8 @@
                                             <div class="d-flex">
                                                 <div class="flex-shrink-0 me-3">
                                                     <div class="avatar avatar-online">
-                                                        <img src="{{ asset('/assets/img/avatars/1.png') }}" alt
-                                                            class="w-px-40 h-auto rounded-circle" />
+                                                        <img src="https://api.dicebear.com/9.x/notionists-neutral/svg?seed={{ Auth::user()->name ?? '' }}"
+                                                            alt class="w-px-40 h-auto rounded-circle border" />
                                                     </div>
                                                 </div>
                                                 <div class="flex-grow-1">
@@ -181,8 +175,7 @@
                                         <div class="dropdown-divider my-1"></div>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('logout') }}"
-                                            onclick="event.preventDefault();
+                                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
                                                           document.getElementById('logout-form').submit();">
                                             <i class="bx bx-power-off bx-md me-3"></i><span>Log Out</span>
                                         </a>
@@ -206,6 +199,16 @@
                     <!-- Content -->
 
                     <div class="container-xxl flex-grow-1 container-p-y">
+                        <nav class="d-print-none"
+                            style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);"
+                            aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                @if (isset($header))
+                                    {{ $header }}
+                                @endif
+                            </ol>
+                        </nav>
+
                         {{ $slot }}
                     </div>
                     <!-- / Content -->
@@ -227,8 +230,8 @@
                                 <div class="d-none d-lg-inline-block">
                                     <a href="https://themeselection.com/license/" class="footer-link me-4"
                                         target="_blank">License</a>
-                                    <a href="https://themeselection.com/" target="_blank"
-                                        class="footer-link me-4">More Themes</a>
+                                    <a href="https://themeselection.com/" target="_blank" class="footer-link me-4">More
+                                        Themes</a>
 
                                     <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/documentation/"
                                         target="_blank" class="footer-link me-4">Documentation</a>

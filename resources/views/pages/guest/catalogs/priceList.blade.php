@@ -267,16 +267,15 @@ $setActiveTab = function ($tab) {
 
 @volt
 <div>
+
     <div class="row justify-content-center">
         <div class="col-8 mb-3 ">
             <label for="selectDate" class="form-label">Pilih Tanggal</label>
             <input type="date" wire:model.live='selectDate' class="form-control" name="selectDate" id="selectDate"
                 min="{{ $today }}" value="{{ $today }}" placeholder="Please select date" />
         </div>
-
     </div>
-    <!-- Tabs Navigation -->
-    <!-- Tabs Navigation -->
+
     <ul class="nav nav-pills mb-5 justify-content-center" id="pills-tab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link  @if ($this->activeTab === 'student') active @endif"
@@ -304,14 +303,14 @@ $setActiveTab = function ($tab) {
         <!-- Tab Pelajar -->
         <div class="tab-pane fade @if ($this->activeTab === 'student') show active @endif" id="pills-student"
             role="tabpanel">
-            <div class="row gap-3 justify-content-evenly">
+            <div class="row gap-3 justify-content-evenly feature">
                 @foreach ($this->slots['student'] as $slot)
-                    <div class="col-md-3 col-sm-4 card p-0 border-0">
-                        <div class="card-body text-center shadow rounded-4">
-                            <h5 class="mt-3 text-primary fw-bold">{{ $slot['time'] }}</h5>
+                    <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
+                        <div class="card-body text-center shadow rounded">
+                            <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
                             <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                             <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
-                                                                                                                                                            {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
+                                                                                                                                                                        {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                 wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                 <span wire:loading.class='d-none'>
                                     PILIH
@@ -329,14 +328,14 @@ $setActiveTab = function ($tab) {
         <!-- Tab Umum -->
         <div class="tab-pane fade @if ($this->activeTab === 'general') show active @endif" id="pills-general"
             role="tabpanel">
-            <div class="row gap-3 justify-content-evenly">
+            <div class="row gap-3 justify-content-evenly feature">
                 @foreach ($this->slots['general'] as $slot)
-                    <div class="col-md-3 col-sm-4 card p-0 border-0">
-                        <div class="card-body text-center shadow rounded-4">
-                            <h5 class="mt-3 text-primary fw-bold">{{ $slot['time'] }}</h5>
+                    <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
+                        <div class="card-body text-center shadow rounded">
+                            <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
                             <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                             <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
-                                                                                                                                                            {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
+                                                                                                                                                                        {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
                                 wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
                                 <span wire:loading.class='d-none'>
                                     PILIH
@@ -360,11 +359,11 @@ $setActiveTab = function ($tab) {
                     waktu</button>
             </div>
 
-            <div class="row gap-3 justify-content-evenly">
+            <div class="row gap-3 justify-content-evenly feature">
                 @foreach ($this->slots['tournament'] as $slot)
-                    <div class="col-md-3 col-sm-4 card p-0 border-0">
-                        <div class="card-body text-center shadow rounded-4">
-                            <h5 class="mt-3 text-primary fw-bold">{{ $slot['time'] }}</h5>
+                    <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
+                        <div class="card-body text-center shadow rounded">
+                            <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
                             <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                         </div>
                     </div>

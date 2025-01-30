@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('payment_method', ['draf', 'fullpayment', 'downpayment'])->default('draf');
             $table->string('total_price');
             $table->string('alternative_phone')->nullable();
+            $table->string('snapToken')->nullable();
             $table->timestamps();
         });
     }

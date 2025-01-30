@@ -19,7 +19,8 @@ class CheckRole
 
         if (! $user || ! in_array($user->role, $roles)) {
             // Redirect or abort if the user doesn't have the required role
-            return abort(403, 'Unauthorized action.');
+            return redirect()->back()->with('error', 'Akses ditolak! Anda tidak memiliki izin.');
+
         }
 
         return $next($request);

@@ -17,6 +17,7 @@ class Booking extends Model
         'total_price',
         'payment_method',
         'alternative_phone',
+        'snapToken'
     ];
 
     // Relasi ke BookingTime

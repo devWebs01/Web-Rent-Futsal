@@ -151,13 +151,14 @@ $processBooking = function () {
     <nav class="fixed-top navbar navbar-expand-lg navbar-light bg-none">
         <div class="container-fluid mx-3 border rounded bg-light">
             <!-- Toggler Menu Utama -->
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-                aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler border-0" style="box-shadow: none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false"
+                aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <!-- Logo -->
-            <a class="navbar-brand fw-bolder" href="/">
+            <a class="h5 text-dark fw-bolder" href="/">
                 {{ $setting->name }}
             </a>
 
@@ -171,6 +172,9 @@ $processBooking = function () {
                     <li class="nav-item">
                         <a class="nav-link fw-bolder {{ Route::is('catalogs.field') ? 'active text-primary' : '' }}"
                             href="/#fields">Lapangan</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link fw-bolder" href="{{ route('login') }}">Masuk Akun</a>
                     </li>
                     @auth
                         <li class="nav-item">
@@ -191,7 +195,7 @@ $processBooking = function () {
             </div>
 
             @guest
-                <a href="{{ route('login') }}" class="btn btn-primary btn-lg">
+                <a href="{{ route('login') }}" class="h5 d-none d-lg-block fw-bolder text-dark">
                     Masuk Akun
                 </a>
 
