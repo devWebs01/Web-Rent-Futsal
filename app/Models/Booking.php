@@ -17,8 +17,27 @@ class Booking extends Model
         'total_price',
         'payment_method',
         'alternative_phone',
-        'snapToken'
+        'snapToken',
+        'expired_at',
     ];
+
+    // Sinkronkan waktu dengan middleware AutoCancelBooking
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Set expired_at otomatis saat booking dibuat
+        static::creating(function ($booking) {
+            if (! $booking->expired_at) {
+                $booking->expired_at = now()->addMinutes(1);
+            }
+        });
+    }
+
+    public function getTimeRemainingAttribute()
+    {
+        return $this->expired_at ? max(0, $this->expired_at->diffInSeconds(now())) : null;
+    }
 
     // Relasi ke BookingTime
     public function bookingTimes()

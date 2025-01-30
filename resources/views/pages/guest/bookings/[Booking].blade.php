@@ -20,6 +20,7 @@ state([
     'fullpayment' => fn() => $this->booking->total_price,
     'downpayment' => fn() => $this->booking->total_price / 2,
     'payment_method' => fn() => $this->booking->payment_method ?? '',
+    'expired_at' => fn() => $this->booking->expired_at ?? '',
     'booking',
 
     // user
@@ -61,7 +62,6 @@ $validateIdentity = function () {
     ]);
 
     $this->redirectRoute('bookings.show', ['booking' => $this->booking->id]);
-
 };
 
 $gap_dp = fn() => $this->booking->total_price - $this->total_downpayment;
@@ -149,13 +149,28 @@ $cancelBooking = function () {
     $this->redirectRoute('bookings.index');
 };
 
+$getTimeRemainingAttribute = function(){
+$now = Carbon::now();
+$expiry = Carbon::parse($this->expired_at);
+
+if ($expiry->isPast()) {
+return "Expired";
+}
+
+$diffInSeconds = $expiry->diffInSeconds($now);
+$minutes = floor($diffInSeconds / 60);
+$seconds = $diffInSeconds % 60;
+
+return "{$minutes}m {$seconds}s";
+};
+
 ?>
 
 <x-guest-layout>
 
     @include('layouts.fancybox')
     @volt
-    <div>
+    <div class="container-fluid">
         <x-slot name="title">Booking {{ $booking->invoice }}</x-slot>
 
         @if (empty($booking->payment->records))
@@ -170,9 +185,9 @@ $cancelBooking = function () {
         </section>
 
         <div class="container mb-3">
-            <div class="card mt-3">
+            @if ($requires_identity_validation)
+            <div class="card mt-3 bg-light">
                 <div class="card-body">
-                    @if ($requires_identity_validation)
                     @if (empty($identity))
                     <h5 class="mb-3 fw-bold">Validasi Identitas</h5>
                     <form wire:submit="validateIdentity">
@@ -195,42 +210,38 @@ $cancelBooking = function () {
                     @else
                     <div class="row justify-content-between">
                         <div class="col-md-5">
-                            <div class="">
-                                <div class="row mb-3">
-                                    <div class="col-5 text-center">
-                                        <img class="img rounded-circle border"
-                                            src="https://api.dicebear.com/9.x/notionists-neutral/svg?seed={{ $user->name }}"
-                                            alt="image user profile" width="100px">
-                                    </div>
-                                    <div class="col-auto">
-                                        <p class="small mb-0">Nama Lengkap</p>
-                                        <h5 class="fw-bold">{{ $user->name }}</h5>
-                                        <p class="small mb-0">Tanggal Lahir</p>
-                                        <h5 class="fw-bold">{{ Carbon::parse($user->identity->dob)->format('d-m-Y') }}</h5>
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="px-2 row">
+                            <h5 class="mb-3 fw-bold">Profil Pelanggan</h5>
+                            <div class="pb-3">
+                                <p class="small mb-0">Nama Lengkap</p>
+                                <p class="h6">{{ $user->name }}</p>
+                                <p class="small mb-0">Tanggal Lahir</p>
+                                <p class="h6">{{ Carbon::parse($user->identity->dob)->format('d-m-Y') }}
+                                </p>
                                 <p class="small mb-0">Email</p>
-                                <h5 class="fw-bold">{{ $user->email }}</h5>
+                                <p class="h6">{{ $user->email }}</p>
                                 <p class="small mb-0">Telepon</p>
-                                <h5 class="fw-bold">{{ $user->phone }}</h5>
+                                <p class="h6">{{ $user->phone }}</p>
                                 <p class="small mb-0">Mendaftar Pada</p>
-                                <h5 class="fw-bold">{{ Carbon::parse($user->created_at)->format('d-m-Y h:i:s') }}</h5>
+                                <p class="h6">
+                                    {{ Carbon::parse($user->created_at)->format('d-m-Y h:i:s') }}</p>
+
+                                <a class="icon-link" href="{{ route('profile.guest') }}">
+                                    Edit Profile ->
+                                </a>
                             </div>
                         </div>
-                        <div class="col-md-7 text-end">
+                        <div class="col-md-7 text-md-end">
+                            <h5 class="mb-3 fw-bold">Identitas Pelajar</h5>
                             <a href="{{ Storage::url($identity->document) }}" data-fancybox>
-                                <img src="{{ Storage::url($identity->document) }}" class="w-75 h-100 rounded" style="object-fit:cover"
-                                    alt="ducument identity user" />
+                                <img src="{{ Storage::url($identity->document) }}" class="img-fluid rounded"
+                                    style="object-fit:cover; height: 300px;" alt="ducument identity user" />
                             </a>
                         </div>
                     </div>
                     @endif
-                    @endif
                 </div>
             </div>
+            @endif
         </div>
 
 
@@ -270,10 +281,17 @@ $cancelBooking = function () {
                         </div>
                     </div>
 
-                    <div class="col-lg-5">
+                    <div class="col-lg-5" @if(now()->lessThan(\Carbon\Carbon::parse($expired_at)))
+                        wire:poll.1s
+                        @endif>
                         <div class="card-body">
                             <h5 class="mb-3 fw-bold">Pembayaran</h5>
                             <div class="row mb-3">
+                                <div class="col-5">Kadaluarsa</div>
+                                <div class="col-7">
+                                    : {{ $this->getTimeRemainingAttribute() }}
+                                </div>
+                                <br>
                                 <div class="col-5">Total Bayar</div>
                                 <div class="col-7">
                                     : {{ formatRupiah($booking->total_price) }}
@@ -292,7 +310,7 @@ $cancelBooking = function () {
 
 
 
-                            <form wire:submit='save_booking' class="{{ $booking->status !== 'CANCEL' ? : 'd-none'  }}">
+                            <form wire:submit='save_booking' class="{{ $booking->status !== 'CANCEL' ?: 'd-none' }}">
                                 <div class="border-top py-3">
                                     <label for="payment_method" class="form-label">
                                         Metode Pembayaran

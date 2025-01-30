@@ -71,7 +71,7 @@ $selectAllTournamentSlots = function () {
     // Periksa apakah ada slot lain yang sudah dipesan untuk lapangan yang sama pada tanggal yang sama
     $existingBookings = BookingTime::where('field_id', $this->field_id)
         ->where('booking_date', $selectedDate->format('Y-m-d'))
-        ->where('status', '!=', 'CANCEL') // Abaikan slot yang sudah dibatalkan
+        ->where('status', '!==', 'CANCEL') // Abaikan slot yang sudah dibatalkan
         ->exists();
 
     if ($existingBookings) {
@@ -210,7 +210,7 @@ $slots = computed(function () {
     $bookedSlots = BookingTime::where('field_id', $this->field_id)
         ->where('booking_date', $selectedDate->format('Y-m-d'))
         ->whereHas('booking', function ($query) {
-            $query->where('status', '!=', 'CANCEL');
+            $query->where('status', '!==', 'CANCEL');
         })
         ->get(['start_time', 'type'])
         ->toArray();
@@ -305,22 +305,22 @@ $setActiveTab = function ($tab) {
             role="tabpanel">
             <div class="row gap-3 justify-content-evenly feature">
                 @foreach ($this->slots['student'] as $slot)
-                    <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
-                        <div class="card-body text-center shadow rounded">
-                            <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
-                            <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                            <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
+                <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
+                    <div class="card-body text-center shadow rounded">
+                        <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
+                        <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
+                        <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
                                                                                                                                                                         {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
-                                wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
-                                <span wire:loading.class='d-none'>
-                                    PILIH
-                                </span>
-                                <span wire:loading.class.remove='d-none' class="spinner-border spinner-border-sm d-none">
-                                </span>
-                            </a>
+                            wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
+                            <span wire:loading.class='d-none'>
+                                PILIH
+                            </span>
+                            <span wire:loading.class.remove='d-none' class="spinner-border spinner-border-sm d-none">
+                            </span>
+                        </a>
 
-                        </div>
                     </div>
+                </div>
                 @endforeach
             </div>
         </div>
@@ -330,22 +330,22 @@ $setActiveTab = function ($tab) {
             role="tabpanel">
             <div class="row gap-3 justify-content-evenly feature">
                 @foreach ($this->slots['general'] as $slot)
-                    <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
-                        <div class="card-body text-center shadow rounded">
-                            <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
-                            <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                            <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
+                <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
+                    <div class="card-body text-center shadow rounded">
+                        <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
+                        <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
+                        <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
                                                                                                                                                                         {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
-                                wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
-                                <span wire:loading.class='d-none'>
-                                    PILIH
-                                </span>
-                                <span wire:loading.class.remove='d-none' class="spinner-border spinner-border-sm d-none">
-                                </span>
-                            </a>
+                            wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
+                            <span wire:loading.class='d-none'>
+                                PILIH
+                            </span>
+                            <span wire:loading.class.remove='d-none' class="spinner-border spinner-border-sm d-none">
+                            </span>
+                        </a>
 
-                        </div>
                     </div>
+                </div>
                 @endforeach
             </div>
         </div>
@@ -361,12 +361,12 @@ $setActiveTab = function ($tab) {
 
             <div class="row gap-3 justify-content-evenly feature">
                 @foreach ($this->slots['tournament'] as $slot)
-                    <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
-                        <div class="card-body text-center shadow rounded">
-                            <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
-                            <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                        </div>
+                <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
+                    <div class="card-body text-center shadow rounded">
+                        <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
+                        <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
                     </div>
+                </div>
                 @endforeach
             </div>
         </div>

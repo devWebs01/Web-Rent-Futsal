@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('total_price');
             $table->string('alternative_phone')->nullable();
             $table->string('snapToken')->nullable();
+            $table->timestamp('expired_at')->nullable();
             $table->timestamps();
         });
     }
