@@ -12,9 +12,7 @@ name('bookings.index');
 state(['search'])->url();
 state([
     'auth' => fn() => Auth::user(),
-    'bookings' => fn() => booking::where('user_id', $this->auth->id)
-        ->latest()
-        ->get(),
+    'bookings' => fn() => booking::where('user_id', $this->auth->id)->latest()->get(),
 ]);
 
 ?>
@@ -24,47 +22,52 @@ state([
     @include('layouts.datatables')
 
     @volt
-    <div>
-        <div class="container">
-            <div class="card rounded-4 mb-3">
-                <div class="card-body">
-                    <div class="table-responsive border-0 rounded">
-                        <table class="table table-striped text-center text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th>No.</th>
-                                    <th>Invoice</th>
-                                    <th>Status</th>
-                                    <th>Total Bayar</th>
-                                    <th>Opsi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($bookings as $no => $item)
+        <div>
+            <div class="container">
+                <div class="card rounded-4 mb-3">
+                    <div class="card-body">
+                        <div class="table-responsive border-0 rounded">
+                            <table class="table table-striped text-center text-nowrap">
+                                <thead>
                                     <tr>
-                                        <td>{{ ++$no }}</td>
-                                        <td>{{ $item->invoice }}</td>
-                                        <td>{{ __('status.' . $item->status) }}</td>
-                                        <td>{{ formatRupiah($item->total_price) }}</td>
-                                        <td>
-                                            <div>
-                                                <a href="{{ route('bookings.show', ['booking' => $item->id]) }}"
-                                                    wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
-                                                    class="btn btn-sm btn-primary">
-                                                    Detail
-                                                </a>
-                                            </div>
-                                        </td>
+                                        <th>No.</th>
+                                        <th>Invoice</th>
+                                        <th>Status</th>
+                                        <th>Total Bayar</th>
+                                        <th>Opsi</th>
                                     </tr>
-                                @endforeach
+                                </thead>
+                                <tbody>
+                                    @foreach ($bookings as $no => $item)
+                                        <tr>
+                                            <td>{{ ++$no }}</td>
+                                            <td>{{ $item->invoice }}</td>
+                                            <td>
+                                                <span class="btn btn-light">
+                                                    {{ __('booking.' . $item->status) }}
+                                                </span>
 
-                            </tbody>
-                        </table>
+                                            </td>
+                                            <td>{{ formatRupiah($item->total_price) }}</td>
+                                            <td>
+                                                <div>
+                                                    <a href="{{ route('bookings.show', ['booking' => $item->id]) }}"
+                                                        wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
+                                                        class="btn btn-primary">
+                                                        Detail
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     @endvolt
 
 </x-guest-layout>

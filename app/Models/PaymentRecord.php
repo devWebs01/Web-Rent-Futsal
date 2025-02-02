@@ -12,9 +12,14 @@ class PaymentRecord extends Model
 
     protected $fillable = [
         'payment_id',
+        'snapToken',
+        'order_id',
+        'gross_amount',
+        'payment_time',
+        'payment_type',
+        'payment_detail',
+        'status_message',
         'status',
-        'amount',
-        'receipt',
     ];
 
     /**

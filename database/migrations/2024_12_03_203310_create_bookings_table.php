@@ -12,6 +12,7 @@ return new class extends Migration
      * 'invoice',
      * 'status',
      * 'total_price',
+     *
      */
     public function up(): void
     {
@@ -19,11 +20,25 @@ return new class extends Migration
             $table->id();
             $table->string('invoice');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->enum('status', ['PAID', 'UNPAID', 'DOWNPAYMENT', 'CANCEL', 'PROCESS', 'CONFIRM', 'COMPLETE'])->default('UNPAID');
-            $table->enum('payment_method', ['draf', 'fullpayment', 'downpayment'])->default('draf');
+            $table->enum('status', [
+                'PAID',
+                'UNPAID',
+                'CANCEL',
+                'PROCESS',
+                'CONFIRM',
+                'COMPLETE',
+                'PENDING',
+                'VERIFICATION',
+            ])->default('UNPAID');
+            $table->enum(
+                'payment_method',
+                [
+                    'draf',
+                    'fullpayment',
+                    'downpayment'
+                ]
+            )->default('draf');
             $table->string('total_price');
-            $table->string('alternative_phone')->nullable();
-            $table->string('snapToken')->nullable();
             $table->timestamp('expired_at')->nullable();
             $table->timestamps();
         });

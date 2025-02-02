@@ -14,9 +14,14 @@ return new class extends Migration
         Schema::create('payment_records', function (Blueprint $table) {
             $table->id();
             $table->foreignId('payment_id')->constrained()->cascadeOnDelete();
-            $table->enum('status', ['DRAF', 'WAITING', 'CONFIRM', 'REJECT', 'CANCEL', 'CASH'])->default('DRAF');
-            $table->string('amount');
-            $table->string('receipt')->nullable();
+            $table->string('snapToken')->nullable();
+            $table->string('order_id')->nullable();
+            $table->string('gross_amount')->nullable();
+            $table->string('payment_time')->nullable();
+            $table->string('payment_type')->nullable();
+            $table->longText('payment_detail')->nullable();
+            $table->longText('status_message')->nullable();
+            $table->enum('status', ['DRAF', 'PAID', 'UNPAID', 'FAILED', 'PROCESS', 'VERIFICATION', 'CASH'])->default('UNPAID');
             $table->timestamps();
         });
     }

@@ -1,9 +1,11 @@
 <?php
 
-use App\Models\Booking;
+use Carbon\Carbon;
+use Midtrans\Snap;
+use Midtrans\Config;
+use App\Models\PaymentRecord;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use function Livewire\Volt\{state, uses, rules};
-use Carbon\Carbon;
 
 uses([LivewireAlert::class]);
 
@@ -11,144 +13,245 @@ state([
     'user' => fn() => $this->booking->user,
     'totalPrice' => fn() => $this->booking->bookingtimes->sum('price'),
     'payment' => fn() => $this->booking->payment,
+    'expired_at' => fn() => $this->booking->expired_at ?? '',
+    'fullpayment' => fn() => $this->booking->total_price,
+    'downpayment' => fn() => $this->booking->total_price / 2,
     'booking',
 ]);
+
+$getTimeRemainingAttribute = function () {
+    $now = Carbon::now();
+    $expiry = Carbon::parse($this->expired_at);
+
+    if ($expiry->isPast()) {
+        return 'Expired';
+    }
+
+    $diffInSeconds = $expiry->diffInSeconds($now);
+    $minutes = floor($diffInSeconds / 60);
+    $seconds = $diffInSeconds % 60;
+
+    return "{$minutes}m {$seconds}s";
+};
+
+$processPayment = function ($id) {
+    Config::$serverKey = config('midtrans.server_key');
+    Config::$isProduction = config('midtrans.is_production');
+    Config::$isSanitized = true;
+    Config::$is3ds = true;
+
+    $record = PaymentRecord::whereId($id)->first();
+
+    // Data transaksi
+    $params = [
+        'transaction_details' => [
+            'order_id' => $record->order_id,
+            'gross_amount' => $this->booking->payment_method === 'fullpayment' ? $this->fullpayment : $this->downpayment,
+        ],
+        'customer_details' => [
+            'first_name' => $this->user->name,
+            'email' => $this->user->email,
+            'phone' => $this->user->telp,
+        ],
+    ];
+
+    try {
+        $snapToken = Snap::getSnapToken($params);
+
+        // Simpan snapToken ke dalam booking
+        $record->update(['snapToken' => $snapToken]);
+
+        $this->redirectRoute('payment_record.show', [
+            'paymentRecord' => $this->booking,
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Payment Error: ' . $e->getMessage());
+
+        $this->alert('error', 'Ada yang salah pada input data! Payment Error: ' . $e->getMessage(), [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => true,
+        ]);
+    }
+};
+
 ?>
 
 
 @volt
+    @push('scripts')
+        <script>
+            document.getElementById('printInvoiceBtn').addEventListener('click', function() {
+                window.print(); // Fungsi bawaan browser untuk mencetak halaman
+            });
+        </script>
+    @endpush
+
     <div>
-        <!-- Invoice 1 - Bootstrap Brain Component -->
-        <section class="py-3 py-md-5">
-            <div class="row mb-4">
-                <div class="col-12 text-end">
-                    <button type="button" class="btn btn-dark mb-3 d-print-none" id="printInvoiceBtn">Download
-                        Invoice</button>
-                </div>
-            </div>
+        <div class="alert alert-danger text-center {{ $booking->status === 'UNPAID' ?: 'd-none' }}" role="alert">
+            Selesaikan proses penyewaan lapangan dalam
+            <strong @if (now()->lessThan(\Carbon\Carbon::parse($expired_at))) wire:poll.1s @endif>
+                {{ $this->getTimeRemainingAttribute() }}
+            </strong>
+        </div>
 
-            <script>
-                document.getElementById('printInvoiceBtn').addEventListener('click', function() {
-                    window.print(); // Fungsi bawaan browser untuk mencetak halaman
-                });
-            </script>
+        <div class="card">
+            <div class="card-body">
 
-            <div class="row gy-3 mb-3">
-                <div class="col-6">
-                    <h4 class="text-uppercase text-primary m-0">Invoice</h4>
-                </div>
-                <div class="col-6">
-                    <h4 class="text-uppercase text-primary text-end m-0">{{ $booking->invoice }}</h4>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-12 col-sm-6 col-md-8">
-                    <small class="text-muted">Pemesanan</small>
-                    <address>
-                        <strong>
-                            {{ $user->name }} <br>
-                            {{ __('status.' . $booking->status) }} <br>
-                            {{ $booking->created_at }}
-                        </strong>
-                    </address>
-                </div>
-                <div class="col-12 col-sm-6 col-md-4 text-end">
-                    <small class="text-muted">
-                        Pembayaran
-                    </small>
-                    <address>
-                        <strong>
-                            Metode : {{ __('status.' . $booking->payment_method) }} <br>
-                            Telp. Alternatif : {{ $booking->alternative_phone }} <br>
-                        </strong>
+                <!-- Invoice 1 - Bootstrap Brain Component -->
+                <section class="py-3 py-md-5">
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <button class="btn btn-primary btn-lg text-uppercase">
+                                {{ __('booking.' . $booking->status) }}
+                            </button>
 
-                    </address>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped text-center">
-                            <thead>
-                                <tr>
-                                    <th scope="col" class="text-uppercase">Lapangan</th>
-                                    <th scope="col" class="text-uppercase">Hari</th>
-                                    <th scope="col" class="text-uppercase">Jam</th>
-                                    <th scope="col" class="text-uppercase text-end">Type</th>
-                                    <th scope="col" class="text-uppercase text-end">Harga</th>
-                                </tr>
-                            </thead>
-                            <tbody class="table-group-divider">
-                                @foreach ($booking->bookingTimes as $time)
-                                    <tr>
-                                        <th>{{ $time->field->field_name }}</th>
-                                        <th>{{ Carbon::parse($time->booking_date)->format('d-m-Y') }}</th>
-                                        <td>{{ $time->start_time . ' - ' . $time->end_time }}</td>
-                                        <td class="text-end">
-                                            {{ __('type.' . $time->type) }}
-                                        </td>
-                                        <td class="text-end">
-                                            {{ formatRupiah($time->price) }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-
-                                <tr>
-                                    <th scope="row" colspan="4" class="text-uppercase text-end">Total</th>
-                                    <td class="text-end">
-                                        {{ formatRupiah($totalPrice) }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        </div>
+                        <div class="col-6 text-end">
+                            <button type="button" class="btn btn-dark btn-lg mb-3 d-print-none"
+                                id="printInvoiceBtn">Download
+                                Invoice</button>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="row">
-                @foreach ($payment->records as $item)
-                    <div class="col-md">
-                        <div class="card text-start mb-3">
-                            @if ($item->receipt)
-                                <img class="card-img-top" style="height: 250px; width: 100%; object-fit: cover;"
-                                    src="{{ Storage::url($item->receipt) }}" alt="Title" />
-                            @else
-                                <div class="card placeholder" style="height: 250px; width: 100%">
+                    <div class="row gy-3 mb-3">
+                        <div class="col-6">
+                            <h4 class="text-uppercase text-primary m-0">Invoice</h4>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-uppercase text-primary text-end m-0">{{ $booking->invoice }}</h4>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12 col-sm-6 col-md-8">
+                            <small class="h5 fw-bold">Penyewaan</small>
+                            <address>
+                                <div>{{ $user->name }}</div>
+                                <div>{{ $booking->created_at->format('d m Y h:i:s') }}</div>
+                            </address>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 text-end">
+                            <small class="h5 fw-bold">
+                                Pembayaran
+                            </small>
+                            <address>
+                                <div>
+                                    {{ __('status.' . $booking->payment_method) }}
                                 </div>
-                            @endif
-                            <div class="card-body">
-                                <div class="row mb-3">
-                                    <div class="col-6">
-                                        Status
-                                    </div>
-                                    <div class="col-6 text-end">
-                                        {{ __('status.' . $item->status) }}
-                                    </div>
-                                    <div class="col-6">
-                                        Jumlah
-                                    </div>
-                                    <div class="col-6 text-end">
-                                        {{ formatRupiah($item->amount) }}
-                                    </div>
-                                    <div class="col-6">
-                                        Dibayar pada
-                                    </div>
-                                    <div class="col-6 text-end">
-                                        {{ $item->updated_at }}
-                                    </div>
-                                </div>
+                                <div>{{ $booking->alternative_phone ?? '-' }} </div>
+
+                            </address>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-striped text-center">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="text-uppercase">Lapangan</th>
+                                            <th scope="col" class="text-uppercase">Hari</th>
+                                            <th scope="col" class="text-uppercase">Jam</th>
+                                            <th scope="col" class="text-uppercase text-end">Type</th>
+                                            <th scope="col" class="text-uppercase text-end">Harga</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-group-divider">
+                                        @foreach ($booking->bookingTimes as $time)
+                                            <tr>
+                                                <th>{{ $time->field->field_name }}</th>
+                                                <th>{{ Carbon::parse($time->booking_date)->format('d-m-Y') }}</th>
+                                                <td>{{ $time->start_time . ' - ' . $time->end_time }}</td>
+                                                <td class="text-end">
+                                                    {{ __('type.' . $time->type) }}
+                                                </td>
+                                                <td class="text-end">
+                                                    {{ formatRupiah($time->price) }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+
+                                        <tr>
+                                            <th scope="row" colspan="4" class="text-uppercase text-end">Total</th>
+                                            <td class="text-end">
+                                                {{ formatRupiah($totalPrice) }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        @if ($loop->first && empty($item->receipt) && $booking->status !== 'CANCEL')
-                            <a class="btn btn-dark d-grid"
-                                href="{{ route('payment_record.show', ['paymentRecord' => $item->id]) }}"
-                                role="button">Input Pembayaran</a>
-                        @endif
                     </div>
-                @endforeach
-            </div>
 
-        </section>
+                    <div class="row">
+                        @foreach ($payment->records as $item)
+                            <div class="col-md-6">
+                                <div class="card text-start mb-3">
+                                    <div class="card-body">
+                                        <div class="row mb-3">
+                                            <div class="col-6">
+                                                Status
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ __('record.' . $item->status) }}
+                                            </div>
+                                            <div class="col-6">
+                                                Jumlah harus dibayar
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $booking->payment_method === 'fullpayment' ? formatRupiah($fullpayment) : formatRupiah($downpayment) }}
+                                            </div>
+                                            <div class="col-6">
+                                                Jumlah yang diterima
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $item->gross_amount ?? '-' }}
+                                            </div>
+                                            <div class="col-6">
+                                                Waktu pembayaran
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $item->payment_time ?? '-' }}
+                                            </div>
+                                            <div class="col-6">
+                                                Jenis pembayaran
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $item->payment_type ?? '-' }}
+                                            </div>
+                                            <div class="col-6">
+                                                Detail pembayaran
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $item->payment_detail ?? '-' }}
+                                            </div>
+                                            <div class="col-6">
+                                                Pesan pembayaran
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $item->status_message ?? '-' }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if ($loop->first && $booking->status !== 'CANCEL')
+                                    <button type="button" wire:click='processPayment({{ $item->id }})'
+                                        class="btn btn-dark w-100 mb-3 {{ $item->status === 'UNPAID' ?: 'd-none' }}"
+                                        role="button">
+                                        <span>Lakukan Pembayaran</span>
+                                        <div wire:loading wire:target='processPayment'
+                                            class="spinner-border spinner-border-sm ms-2" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </button>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                </section>
+            </div>
+        </div>
     </div>
 @endvolt
