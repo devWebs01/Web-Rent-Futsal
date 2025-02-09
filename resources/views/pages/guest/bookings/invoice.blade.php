@@ -40,7 +40,7 @@ $processPayment = function ($id) {
     Config::$isSanitized = true;
     Config::$is3ds = true;
 
-    $record = PaymentRecord::whereId($id)->first();
+    $record = PaymentRecord::find($id);
 
     // Data transaksi
     $params = [
@@ -53,16 +53,20 @@ $processPayment = function ($id) {
             'email' => $this->user->email,
             'phone' => $this->user->telp,
         ],
+        'expiry' => [
+            'start_time' => $this->booking->expired_at ? Carbon::parse($this->booking->expired_at)->format('Y-m-d H:i:s O') : Carbon::now()->format('Y-m-d H:i:s O'),
+            'unit' => 'minutes',
+            'duration' => $this->booking->expired_at ? Carbon::now()->diffInMinutes(Carbon::parse($this->booking->expired_at)) : 5, // Menghitung durasi kedaluwarsa dalam menit
+        ],
     ];
 
     try {
         $snapToken = Snap::getSnapToken($params);
 
-        // Simpan snapToken ke dalam booking
         $record->update(['snapToken' => $snapToken]);
 
         $this->redirectRoute('payment_record.show', [
-            'paymentRecord' => $this->booking,
+            'paymentRecord' => $id,
         ]);
     } catch (\Exception $e) {
         \Log::error('Payment Error: ' . $e->getMessage());
@@ -123,22 +127,25 @@ $processPayment = function ($id) {
                         </div>
                     </div>
                     <div class="row mb-3">
+                        <small class="h5 fw-bold">Penyewaan</small>
                         <div class="col-12 col-sm-6 col-md-8">
-                            <small class="h5 fw-bold">Penyewaan</small>
                             <address>
                                 <div>{{ $user->name }}</div>
-                                <div>{{ $booking->created_at->format('d m Y h:i:s') }}</div>
+                                <div>{{ $user->email }}</div>
+                                <div>{{ $user->phone }}</div>
                             </address>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4 text-end">
-                            <small class="h5 fw-bold">
-                                Pembayaran
-                            </small>
                             <address>
+                                <div>{{ $booking->created_at->format('d m Y h:i:s') }}</div>
                                 <div>
+                                    Metode Pembayaran :
                                     {{ __('status.' . $booking->payment_method) }}
                                 </div>
-                                <div>{{ $booking->alternative_phone ?? '-' }} </div>
+                                <div>
+                                    No. Telp Alternatif :
+                                    {{ $booking->alternative_phone ?? '-' }}
+                                </div>
 
                             </address>
                         </div>
@@ -185,8 +192,11 @@ $processPayment = function ($id) {
                     </div>
 
                     <div class="row">
+                        <small class="h5 fw-bold">
+                            Pembayaran
+                        </small>
                         @foreach ($payment->records as $item)
-                            <div class="col-md-6">
+                            <div class="col-md">
                                 <div class="card text-start mb-3">
                                     <div class="card-body">
                                         <div class="row mb-3">
@@ -206,7 +216,7 @@ $processPayment = function ($id) {
                                                 Jumlah yang diterima
                                             </div>
                                             <div class="col-6 text-end">
-                                                {{ $item->gross_amount ?? '-' }}
+                                                {{ formatRupiah($item->gross_amount) ?? '-' }}
                                             </div>
                                             <div class="col-6">
                                                 Waktu pembayaran
@@ -235,9 +245,9 @@ $processPayment = function ($id) {
                                         </div>
                                     </div>
                                 </div>
-                                @if ($loop->first && $booking->status !== 'CANCEL')
+                                @if ($booking->status !== 'CANCEL')
                                     <button type="button" wire:click='processPayment({{ $item->id }})'
-                                        class="btn btn-dark w-100 mb-3 {{ $item->status === 'UNPAID' ?: 'd-none' }}"
+                                        class="btn btn-dark w-100 mb-3 {{ $item->status === 'DRAF' ?: 'd-none' }}"
                                         role="button">
                                         <span>Lakukan Pembayaran</span>
                                         <div wire:loading wire:target='processPayment'

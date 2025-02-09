@@ -6,4 +6,5 @@ return [
     'UNPAID' => 'Belum Dibayar',
     'FAILED' => 'Gagal',
     'PROCESS' => 'Sedang Diproses',
+    'CASH' => 'Bayar Ditempat',
 ];

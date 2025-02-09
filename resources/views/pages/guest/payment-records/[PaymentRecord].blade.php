@@ -39,7 +39,7 @@ $getTimeRemainingAttribute = function () {
     return "{$minutes}m {$seconds}s";
 };
 
-$checkStatus = function () {
+$updateStatus = function () {
     Config::$serverKey = config('midtrans.server_key');
     Config::$isProduction = config('midtrans.is_production');
     Config::$isSanitized = true;
@@ -140,22 +140,8 @@ $checkStatus = function () {
     @volt
         <div class="container">
             <section>
-                <div class="alert alert-primary" role="alert">
-                    <p class="text-muted" @if (now()->lessThan(Carbon::parse($expired_at))) wire:poll.1s @endif>
-                        Anda telah sampai di tahap akhir proses penyewaan, pastikan memilih jenis pembayaran dan
-                        menyelesaikan
-                        nya sebelum
-                        <strong>
-                            {{ $this->getTimeRemainingAttribute() }}
-                        </strong>
-                    </p>
-                </div>
-
-            </section>
-
-            <section>
-                <div>
-                    <div class="card my-3">
+                <div class="row">
+                    <div class="col-md card">
 
                         <div class="card-body">
                             <h2 id="font-custom" style="color: #f35525">
@@ -169,7 +155,7 @@ $checkStatus = function () {
                                     </h1>
                                 </div>
                                 <div class="col-6 text-end">
-                                    <div wire:loading wire:target='checkStatus'
+                                    <div wire:loading wire:target='updateStatus'
                                         class="spinner-border spinner-border-sm ms-2" role="status">
                                         <span class="visually-hidden">Loading...</span>
                                     </div>
@@ -220,16 +206,17 @@ $checkStatus = function () {
                                             {{ $paymentRecord->status_message ?? '-' }}
                                         </div>
                                     </div>
-
                                     <div class="row gap-3">
                                         <div class="col-md">
                                             <button type="button" id="pay-button" href="{{ $snapToken }}"
-                                                class="btn btn-light border btn-lg w-100">Lanjutkan
-                                                Pembayaran</button>
+                                                class="btn btn-light border btn-lg w-100">
+                                                Pilih
+                                                Metode
+                                            </button>
                                         </div>
                                         <div class="col-md">
-                                            <button class="btn btn-outline-dark btn-lg w-100" wire:click='checkStatus'>
-                                                Check Status
+                                            <button class="btn btn-outline-dark btn-lg w-100" wire:click='updateStatus'>
+                                                Perbarui Status
                                             </button>
                                         </div>
                                     </div>
@@ -238,42 +225,64 @@ $checkStatus = function () {
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md">
+                        <div class="card">
+                            <div class="card-body w-100" id="snap-container"></div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
             @push('styles')
                 <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
-                    data-client-key="SB-Mid-server-yh7So1dkVPwD99Z4icKqvCX4"></script>
+                    data-client-key="{{ config('midtrans.client_key') }}"></script>
             @endpush
 
             @push('scripts')
                 <script type="text/javascript">
                     document.addEventListener('DOMContentLoaded', function() {
                         var payButton = document.getElementById('pay-button');
-                        if (payButton) {
-                            payButton.addEventListener('click', function() {
-                                window.snap.pay(@json($snapToken), {
-                                    onSuccess: function(result) {
-                                        alert("Payment success!");
-                                        console.log(result);
-                                        location.reload(); // Refresh halaman setelah sukses
-                                    },
-                                    onPending: function(result) {
-                                        alert("Waiting for your payment!");
-                                        console.log(result);
-                                        location.reload(); // Refresh halaman setelah pending
-                                    },
-                                    onError: function(result) {
-                                        alert("Payment failed!");
-                                        console.log(result);
-                                        location.reload(); // Refresh halaman setelah gagal
-                                    },
-                                    onClose: function() {
-                                        alert('You closed the popup without finishing the payment');
-                                    }
-                                });
-                            });
+
+                        // Cek apakah payButton ada di DOM
+                        if (!payButton) {
+                            console.error("Tombol bayar tidak ditemukan!");
+                            return;
                         }
+
+                        // Debugging: Cek apakah snapToken tersedia
+                        var snapToken = @json($snapToken);
+                        console.log("Snap Token:", snapToken);
+
+                        if (!snapToken) {
+                            alert("Snap Token tidak tersedia, pastikan token dibuat di backend.");
+                            return;
+                        }
+
+                        // Tambahkan event listener ke tombol
+                        payButton.addEventListener('click', function() {
+                            window.snap.embed(snapToken, {
+                                embedId: 'snap-container',
+                                onSuccess: function(result) {
+                                    alert("Pembayaran sukses!");
+                                    console.log(result);
+                                    location.reload();
+                                },
+                                onPending: function(result) {
+                                    alert("Menunggu pembayaran!");
+                                    console.log(result);
+                                    location.reload();
+                                },
+                                onError: function(result) {
+                                    alert("Pembayaran gagal!");
+                                    console.log(result);
+                                    location.reload();
+                                },
+                                onClose: function() {
+                                    alert('Anda menutup pembayaran sebelum selesai.');
+                                }
+                            });
+                        });
                     });
                 </script>
             @endpush

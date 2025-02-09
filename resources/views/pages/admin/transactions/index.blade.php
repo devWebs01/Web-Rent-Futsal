@@ -64,7 +64,7 @@ $bookings = computed(function () {
                                     <th>Pelanggan</th>
                                     <th>Invoice</th>
                                     <th>Status</th>
-                                    <th>Total Harga</th>
+                                    <th>Total</th>
                                     <th>Opsi</th>
                                 </tr>
                             </thead>
@@ -74,8 +74,8 @@ $bookings = computed(function () {
                                         <td>{{ ++$no }}</td>
                                         <td>{{ $item->user->name }}</td>
                                         <td>{{ $item->invoice }}</td>
+                                        <td>{{ __('booking.' . $item->status) }}</td>
                                         <td>{{ formatRupiah($item->total_price) }}</td>
-                                        <td>{{ __('status.' . $item->status) }}</td>
                                         <td>
                                             <div>
                                                 <a href="{{ route('transactions.show', ['booking' => $item->id]) }}"

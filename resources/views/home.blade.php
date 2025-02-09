@@ -10,8 +10,8 @@ state([
     'totalBookings' => Booking::count(),
     'totalUnpaidBookings' => Booking::where('status', 'UNPAID')->count(),
     'totalCompletedBookings' => BookingTime::where('status', 'STOP')->count(),
-    'totalConfirmedPayments' => PaymentRecord::where('status', 'CONFIRM')->sum('amount'),
-    'totalPendingPayments' => PaymentRecord::where('status', 'WAITING')->sum('amount'),
+    'totalConfirmedPayments' => PaymentRecord::where('status', 'PAID')->sum('gross_amount'),
+    'totalPendingPayments' => PaymentRecord::where('status', 'DRAF')->sum('gross_amount'),
 ]);
 
 ?>
