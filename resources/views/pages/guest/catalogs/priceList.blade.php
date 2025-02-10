@@ -200,7 +200,6 @@ $addToCart = function ($slot) {
     }
 };
 
-
 $slots = computed(function () {
     $schedules = $this->allSchedule;
     $selectedDate = Carbon::parse($this->selectDate ?? $this->today); // Tanggal yang dipilih
@@ -210,7 +209,7 @@ $slots = computed(function () {
     $bookedSlots = BookingTime::where('field_id', $this->field_id)
         ->where('booking_date', $selectedDate->format('Y-m-d'))
         ->whereHas('booking', function ($query) {
-            $query->where('status', '!==', 'CANCEL');
+            $query->whereNotIn('status', ['CANCEL']);
         })
         ->get(['start_time', 'type'])
         ->toArray();
@@ -258,7 +257,6 @@ $slots = computed(function () {
     ];
 });
 
-
 $setActiveTab = function ($tab) {
     $this->activeTab = $tab;
 };
@@ -266,111 +264,113 @@ $setActiveTab = function ($tab) {
 ?>
 
 @volt
-<div>
+    <div>
 
-    <div class="row justify-content-center">
-        <div class="col-8 mb-3 ">
-            <label for="selectDate" class="form-label">Pilih Tanggal</label>
-            <input type="date" wire:model.live='selectDate' class="form-control" name="selectDate" id="selectDate"
-                min="{{ $today }}" value="{{ $today }}" placeholder="Please select date" />
+        <div class="row justify-content-center">
+            <div class="col-8 mb-3 ">
+                <label for="selectDate" class="form-label">Pilih Tanggal</label>
+                <input type="date" wire:model.live='selectDate' class="form-control" name="selectDate" id="selectDate"
+                    min="{{ $today }}" value="{{ $today }}" placeholder="Please select date" />
+            </div>
         </div>
-    </div>
 
-    <ul class="nav nav-pills mb-5 justify-content-center" id="pills-tab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link  @if ($this->activeTab === 'student') active @endif"
-                wire:click.prevent="setActiveTab('student')" type="button" role="tab">
-                <strong>PELAJAR</strong>
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link  @if ($this->activeTab === 'general') active @endif"
-                wire:click.prevent="setActiveTab('general')" type="button" role="tab">
-                <strong>UMUM</strong>
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link  @if ($this->activeTab === 'tournament') active @endif"
-                wire:click.prevent="setActiveTab('tournament')" type="button" role="tab">
-                <strong>TURNAMEN/KERAMAIAN</strong>
-            </button>
-        </li>
-    </ul>
+        <ul class="nav nav-pills mb-5 justify-content-center" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link  @if ($this->activeTab === 'student') active @endif"
+                    wire:click.prevent="setActiveTab('student')" type="button" role="tab">
+                    <strong>PELAJAR</strong>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link  @if ($this->activeTab === 'general') active @endif"
+                    wire:click.prevent="setActiveTab('general')" type="button" role="tab">
+                    <strong>UMUM</strong>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link  @if ($this->activeTab === 'tournament') active @endif"
+                    wire:click.prevent="setActiveTab('tournament')" type="button" role="tab">
+                    <strong>TURNAMEN/KERAMAIAN</strong>
+                </button>
+            </li>
+        </ul>
 
 
-    <!-- Tabs Content -->
-    <div class="tab-content mb-3" id="pills-tabContent" wire:poll.30s>
-        <!-- Tab Pelajar -->
-        <div class="tab-pane fade @if ($this->activeTab === 'student') show active @endif" id="pills-student"
-            role="tabpanel">
-            <div class="row gap-3 justify-content-evenly feature">
-                @foreach ($this->slots['student'] as $slot)
-                <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
-                    <div class="card-body text-center shadow rounded">
-                        <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
-                        <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                        <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
+        <!-- Tabs Content -->
+        <div class="tab-content mb-3" id="pills-tabContent" wire:poll.30s>
+            <!-- Tab Pelajar -->
+            <div class="tab-pane fade @if ($this->activeTab === 'student') show active @endif" id="pills-student"
+                role="tabpanel">
+                <div class="row gap-3 justify-content-evenly feature">
+                    @foreach ($this->slots['student'] as $slot)
+                        <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
+                            <div class="card-body text-center shadow rounded">
+                                <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
+                                <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
+                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
                                                                                                                                                                         {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
-                            wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
-                            <span wire:loading.class='d-none'>
-                                PILIH
-                            </span>
-                            <span wire:loading.class.remove='d-none' class="spinner-border spinner-border-sm d-none">
-                            </span>
-                        </a>
+                                    wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
+                                    <span wire:loading.class='d-none'>
+                                        PILIH
+                                    </span>
+                                    <span wire:loading.class.remove='d-none'
+                                        class="spinner-border spinner-border-sm d-none">
+                                    </span>
+                                </a>
 
-                    </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
-                @endforeach
             </div>
-        </div>
 
-        <!-- Tab Umum -->
-        <div class="tab-pane fade @if ($this->activeTab === 'general') show active @endif" id="pills-general"
-            role="tabpanel">
-            <div class="row gap-3 justify-content-evenly feature">
-                @foreach ($this->slots['general'] as $slot)
-                <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
-                    <div class="card-body text-center shadow rounded">
-                        <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
-                        <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                        <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
+            <!-- Tab Umum -->
+            <div class="tab-pane fade @if ($this->activeTab === 'general') show active @endif" id="pills-general"
+                role="tabpanel">
+                <div class="row gap-3 justify-content-evenly feature">
+                    @foreach ($this->slots['general'] as $slot)
+                        <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
+                            <div class="card-body text-center shadow rounded">
+                                <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
+                                <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
+                                <a class="d-flex justify-content-center align-items-center gap-2 btn btn-outline-dark mb-3
                                                                                                                                                                         {{ $slot['isBooked'] || $slot['isPast'] ? 'd-none' : '' }}"
-                            wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
-                            <span wire:loading.class='d-none'>
-                                PILIH
-                            </span>
-                            <span wire:loading.class.remove='d-none' class="spinner-border spinner-border-sm d-none">
-                            </span>
-                        </a>
+                                    wire:click.prevent="addToCart({{ json_encode($slot) }})" role="button">
+                                    <span wire:loading.class='d-none'>
+                                        PILIH
+                                    </span>
+                                    <span wire:loading.class.remove='d-none'
+                                        class="spinner-border spinner-border-sm d-none">
+                                    </span>
+                                </a>
 
-                    </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
-                @endforeach
+            </div>
+
+            <!-- Tab Turnamen/Keramaian -->
+            <div class="tab-pane fade @if ($this->activeTab === 'tournament') show active @endif" id="pills-tournament"
+                role="tabpanel">
+
+                <div class="text-center">
+                    <button class="btn btn-primary btn-lg mb-3" wire:click.prevent="selectAllTournamentSlots">Pilih Semua
+                        waktu</button>
+                </div>
+
+                <div class="row gap-3 justify-content-evenly feature">
+                    @foreach ($this->slots['tournament'] as $slot)
+                        <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
+                            <div class="card-body text-center shadow rounded">
+                                <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
+                                <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
 
-        <!-- Tab Turnamen/Keramaian -->
-        <div class="tab-pane fade @if ($this->activeTab === 'tournament') show active @endif" id="pills-tournament"
-            role="tabpanel">
-
-            <div class="text-center">
-                <button class="btn btn-primary btn-lg mb-3" wire:click.prevent="selectAllTournamentSlots">Pilih Semua
-                    waktu</button>
-            </div>
-
-            <div class="row gap-3 justify-content-evenly feature">
-                @foreach ($this->slots['tournament'] as $slot)
-                <div class="col-md-3 col-sm-4 card p-0 border-0 feature-item">
-                    <div class="card-body text-center shadow rounded">
-                        <p class="mt-3 h5 fw-bold">{{ $slot['time'] }}</p>
-                        <p class="fw-bold">{{ formatRupiah($slot['cost']) }}</p>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
     </div>
-
-</div>
 @endvolt
