@@ -17,6 +17,7 @@ class Booking extends Model
         'total_price',
         'payment_method',
         'expired_at',
+        'message',
     ];
 
     // Sinkronkan waktu dengan middleware AutoCancelBooking

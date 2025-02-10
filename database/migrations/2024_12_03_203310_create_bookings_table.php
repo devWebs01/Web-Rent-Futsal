@@ -39,6 +39,7 @@ return new class extends Migration
                 ]
             )->default('draf');
             $table->string('total_price');
+            $table->longText('message');
             $table->timestamp('expired_at')->nullable();
             $table->timestamps();
         });

@@ -1,10 +1,8 @@
 <?php
 
-use App\Models\Booking;
 use App\Models\PaymentRecord;
-use Illuminate\Validation\Rule;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-use function Livewire\Volt\{state, rules, uses};
+use function Livewire\Volt\{state, uses};
 use function Laravel\Folio\name;
 use Carbon\Carbon;
 
@@ -20,6 +18,8 @@ state([
     'records' => fn() => $this->booking->payment->records ?? null,
     'fullpayment' => fn() => $this->booking->total_price,
     'downpayment' => fn() => $this->booking->total_price / 2,
+    'requires_identity_validation' => fn() => $this->booking->bookingTimes->contains(fn($item) => $item->type === 'STUDENT'),
+
     'booking',
     'id',
 ]);
@@ -121,10 +121,31 @@ $cashPayment = function ($id) {
     @volt
         <div>
 
-            <div class="card">
-                <div class="card-body">
+            @if ($requires_identity_validation)
+                <div class="alert alert-primary" role="alert">
+                    <strong>Pesan Penting</strong>
+                    <p>Penyewaan ini membutuhkan konfirmasi lebih lanjut tentang harga dan identitas penyewa. Lakukan
+                        pengecekan identitas pelajar sebelum mengkonfimasi. </p>
+                </div>
+            @endif
 
-                    <!-- Invoice 1 - Bootstrap Brain Component -->
+            <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-invoice-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-invoice" type="button" role="tab" aria-controls="pills-invoice"
+                        aria-selected="true">Invoice</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile"
+                        type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Profile
+                        Pelanggan</button>
+                </li>
+
+            </ul>
+            <div class="tab-content bg-white rounded" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-invoice" role="tabpanel"
+                    aria-labelledby="pills-invoice-tab" tabindex="0">
+
                     <section class="py-3 py-md-5">
                         <div class="row mb-4">
                             <div class="col-6">
@@ -190,7 +211,8 @@ $cashPayment = function ($id) {
                                             @foreach ($booking->bookingTimes as $time)
                                                 <tr>
                                                     <th>{{ $time->field->field_name }}</th>
-                                                    <th>{{ Carbon::parse($time->booking_date)->format('d-m-Y') }}</th>
+                                                    <th>{{ Carbon::parse($time->booking_date)->format('d-m-Y') }}
+                                                    </th>
                                                     <td>{{ $time->start_time . ' - ' . $time->end_time }}</td>
                                                     <td class="text-end">
                                                         {{ __('type.' . $time->type) }}
@@ -202,7 +224,9 @@ $cashPayment = function ($id) {
                                             @endforeach
 
                                             <tr>
-                                                <th scope="row" colspan="4" class="text-uppercase text-end">Total</th>
+                                                <th scope="row" colspan="4" class="text-uppercase text-end">
+                                                    Total
+                                                </th>
                                                 <td class="text-end">
                                                     {{ formatRupiah($totalPrice) }}
                                                 </td>
@@ -280,25 +304,35 @@ $cashPayment = function ($id) {
                         </div>
 
                     </section>
+
+                    <section class="card-footer {{ $booking->status === 'PROCESS' ?: 'd-none' }}">
+                        <div class="row">
+                            <div class="col-md">
+                                <button wire:click='cancelBooking' class="btn btn-danger w-100">
+                                    Batalkan
+                                </button>
+                            </div>
+                            <div class="col-md">
+
+                                <button wire:click='confirmBooking' class="btn btn-primary w-100">
+                                    Konfirmasi
+                                </button>
+                            </div>
+                        </div>
+                    </section>
                 </div>
 
 
-                <section class="card-footer {{ $booking->status === 'PROCESS' ?: 'd-none' }}">
-                    <div class="row">
-                        <div class="col-md">
-                            <button wire:click='cancelBooking' class="btn btn-danger w-100">
-                                Batalkan
-                            </button>
-                        </div>
-                        <div class="col-md">
+                <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
+                    tabindex="0">
 
-                            <button wire:click='confirmBooking' class="btn btn-primary w-100">
-                                Konfirmasi
-                            </button>
-                        </div>
-                    </div>
-                </section>
+                    @include('pages.admin.transactions.profile-customer', ['booking' => $booking])
+                 
+                </div>
+
             </div>
+
+
 
         </div>
     @endvolt
