@@ -121,12 +121,13 @@ $updateStatus = function () {
         if ($e instanceof ValidationException) {
             $errorMessages = implode('<br>', $e->validator->errors()->all());
         } else {
-            $errorMessages = 'Terjadi kesalahan pada sistem. Silakan coba lagi.';
+            $errorMessages = 'Terjadi kesalahan pada sistem. Selesaikan pembayaran mu dan coba lagi.';
         }
 
         $this->alert('error', 'Error dalam pengecekan status Midtrans! <br>' . $errorMessages, [
             'position' => 'center',
             'timer' => 4000,
+            'width' => 500,
             'toast' => true,
             'timerProgressBar' => true,
         ]);
@@ -140,94 +141,104 @@ $updateStatus = function () {
     @volt
         <div class="container">
             <section>
+                <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                    <strong>Setelah pembayaran selesai!</strong> Silakan perbarui status pembayaran dengan mengklik
+                    tombol di
+                    bawah ini.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </section>
+
+            <section>
                 <div class="row">
-                    <div class="col-md card">
-
-                        <div class="card-body">
-                            <h2 id="font-custom" style="color: #f35525">
-                                {{ $payment->payment_type }}
-                            </h2>
-                            <h6>Total Pembayaran:</h6>
-                            <div class="row">
-                                <div class="col-6">
-                                    <h1 class="text-primary">
-                                        {{ $booking->payment_method === 'fullpayment' ? formatRupiah($fullpayment) : formatRupiah($downpayment) }}
-                                    </h1>
-                                </div>
-                                <div class="col-6 text-end">
-                                    <div wire:loading wire:target='updateStatus'
-                                        class="spinner-border spinner-border-sm ms-2" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </div>
-
-                                <div class="my-3">
-                                    <div class="row mb-3">
-                                        <div class="col-6">
-                                            Status
-                                        </div>
-                                        <div class="col-6 text-end">
-                                            {{ __('record.' . $paymentRecord->status) }}
-                                        </div>
-                                        <div class="col-6">
-                                            Jumlah harus dibayar
-                                        </div>
-                                        <div class="col-6 text-end">
+                    <div class="col-md">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h2 id="font-custom" style="color: #f35525">
+                                    {{ $payment->payment_type }}
+                                </h2>
+                                <h6>Total Pembayaran:</h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h1 class="text-primary">
                                             {{ $booking->payment_method === 'fullpayment' ? formatRupiah($fullpayment) : formatRupiah($downpayment) }}
-                                        </div>
-                                        <div class="col-6">
-                                            Jumlah yang diterima
-                                        </div>
-                                        <div class="col-6 text-end">
-                                            {{ $paymentRecord->gross_amount ?? '-' }}
-                                        </div>
-                                        <div class="col-6">
-                                            Waktu pembayaran
-                                        </div>
-                                        <div class="col-6 text-end">
-                                            {{ $paymentRecord->payment_time ?? '-' }}
-                                        </div>
-                                        <div class="col-6">
-                                            Jenis pembayaran
-                                        </div>
-                                        <div class="col-6 text-end">
-                                            {{ $paymentRecord->payment_type ?? '-' }}
-                                        </div>
-                                        <div class="col-6">
-                                            Detail pembayaran
-                                        </div>
-                                        <div class="col-6 text-end">
-                                            {{ $paymentRecord->payment_detail ?? '-' }}
-                                        </div>
-                                        <div class="col-6">
-                                            Pesan pembayaran
-                                        </div>
-                                        <div class="col-6 text-end">
-                                            {{ $paymentRecord->status_message ?? '-' }}
+                                        </h1>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <div wire:loading class="spinner-border spinner-border-sm ms-2" role="status">
+                                            <span class="visually-hidden">Loading...</span>
                                         </div>
                                     </div>
-                                    <div class="row gap-3">
-                                        <div class="col-md">
-                                            <button type="button" id="pay-button" href="{{ $snapToken }}"
-                                                class="btn btn-light border btn-lg w-100">
-                                                Pilih
-                                                Metode
-                                            </button>
-                                        </div>
-                                        <div class="col-md">
-                                            <button class="btn btn-outline-dark btn-lg w-100" wire:click='updateStatus'>
-                                                Perbarui Status
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
 
+                                    <div class="my-3">
+                                        <div class="row mb-3">
+                                            <div class="col-6">
+                                                Status
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ __('record.' . $paymentRecord->status) }}
+                                            </div>
+                                            <div class="col-6">
+                                                Jumlah harus dibayar
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $booking->payment_method === 'fullpayment' ? formatRupiah($fullpayment) : formatRupiah($downpayment) }}
+                                            </div>
+                                            <div class="col-6">
+                                                Jumlah yang diterima
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $paymentRecord->gross_amount ?? '-' }}
+                                            </div>
+                                            <div class="col-6">
+                                                Waktu pembayaran
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $paymentRecord->payment_time ?? '-' }}
+                                            </div>
+                                            <div class="col-6">
+                                                Jenis pembayaran
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $paymentRecord->payment_type ?? '-' }}
+                                            </div>
+                                            <div class="col-6">
+                                                Detail pembayaran
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $paymentRecord->payment_detail ?? '-' }}
+                                            </div>
+                                            <div class="col-6">
+                                                Pesan pembayaran
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ $paymentRecord->status_message ?? '-' }}
+                                            </div>
+                                        </div>
+                                        <div class="row gap-3">
+                                            <div class="col-md">
+                                                <button type="button" id="pay-button" href="{{ $snapToken }}"
+                                                    class="btn btn-light border btn-lg w-100">
+                                                    Pilih
+                                                    Metode
+                                                </button>
+                                            </div>
+                                            <div class="col-md">
+                                                <button class="btn btn-outline-dark btn-lg w-100" wire:click='updateStatus'>
+                                                    Perbarui Status
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
+
                     </div>
 
                     <div class="col-md">
-                        <div class="card">
+                        <div class="card h-100">
                             <div class="card-body w-100" id="snap-container"></div>
                         </div>
                     </div>

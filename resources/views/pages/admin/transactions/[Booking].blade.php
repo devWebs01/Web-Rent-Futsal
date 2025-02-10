@@ -300,9 +300,6 @@ $cashPayment = function ($id) {
                 </section>
             </div>
 
-
-
-
         </div>
     @endvolt
 </x-admin-layout>

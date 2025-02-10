@@ -35,47 +35,53 @@ $getTimeRemainingAttribute = function () {
 };
 
 $processPayment = function ($id) {
-    Config::$serverKey = config('midtrans.server_key');
-    Config::$isProduction = config('midtrans.is_production');
-    Config::$isSanitized = true;
-    Config::$is3ds = true;
-
     $record = PaymentRecord::find($id);
 
-    // Data transaksi
-    $params = [
-        'transaction_details' => [
-            'order_id' => $record->order_id,
-            'gross_amount' => $this->booking->payment_method === 'fullpayment' ? $this->fullpayment : $this->downpayment,
-        ],
-        'customer_details' => [
-            'first_name' => $this->user->name,
-            'email' => $this->user->email,
-            'phone' => $this->user->telp,
-        ],
-        'expiry' => [
-            'start_time' => $this->booking->expired_at ? Carbon::parse($this->booking->expired_at)->format('Y-m-d H:i:s O') : Carbon::now()->format('Y-m-d H:i:s O'),
-            'unit' => 'minutes',
-            'duration' => $this->booking->expired_at ? Carbon::now()->diffInMinutes(Carbon::parse($this->booking->expired_at)) : 5, // Menghitung durasi kedaluwarsa dalam menit
-        ],
-    ];
-
-    try {
-        $snapToken = Snap::getSnapToken($params);
-
-        $record->update(['snapToken' => $snapToken]);
-
+    if (!empty($record->snapToken)) {
         $this->redirectRoute('payment_record.show', [
             'paymentRecord' => $id,
         ]);
-    } catch (\Exception $e) {
-        \Log::error('Payment Error: ' . $e->getMessage());
+    } else {
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
 
-        $this->alert('error', 'Ada yang salah pada input data! Payment Error: ' . $e->getMessage(), [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => true,
-        ]);
+        // Data transaksi
+        $params = [
+            'transaction_details' => [
+                'order_id' => $record->order_id,
+                'gross_amount' => $this->booking->payment_method === 'fullpayment' ? $this->fullpayment : $this->downpayment,
+            ],
+            'customer_details' => [
+                'first_name' => $this->user->name,
+                'email' => $this->user->email,
+                'phone' => $this->user->telp,
+            ],
+            'expiry' => [
+                'start_time' => $this->booking->expired_at ? Carbon::parse($this->booking->expired_at)->format('Y-m-d H:i:s O') : Carbon::now()->format('Y-m-d H:i:s O'),
+                'unit' => 'minutes',
+                'duration' => $this->booking->expired_at ? Carbon::now()->diffInMinutes(Carbon::parse($this->booking->expired_at)) : 5, // Menghitung durasi kedaluwarsa dalam menit
+            ],
+        ];
+
+        try {
+            $snapToken = Snap::getSnapToken($params);
+
+            $record->update(['snapToken' => $snapToken]);
+
+            $this->redirectRoute('payment_record.show', [
+                'paymentRecord' => $id,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Payment Error: ' . $e->getMessage());
+
+            $this->alert('error', 'Ada yang salah pada input data! Payment Error: ' . $e->getMessage(), [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => true,
+            ]);
+        }
     }
 };
 
@@ -191,13 +197,17 @@ $processPayment = function ($id) {
                         </div>
                     </div>
 
+                    <div class="alert alert-primary d-print-none" role="alert">
+                        <strong>Pemberitahuan Pembayaran</strong><br>
+                        Setelah pembayaran DP, Anda dapat melakukan pembayaran akhir di tempat/melunasi nya langsung dengan
+                        sistem pembayaran yang tersedia. Untuk pembayaran penuh,
+                        harap segera diselesaikan.
+                    </div>
+
                     <div class="row">
-                        <small class="h5 fw-bold">
-                            Pembayaran
-                        </small>
                         @foreach ($payment->records as $item)
-                            <div class="col-md">
-                                <div class="card text-start mb-3">
+                            <div class="col-md mb-3">
+                                <div class="card text-start mb-3 h-100">
                                     <div class="card-body">
                                         <div class="row mb-3">
                                             <div class="col-6">
@@ -231,13 +241,13 @@ $processPayment = function ($id) {
                                                 {{ $item->payment_type ?? '-' }}
                                             </div>
                                             <div class="col-6">
-                                                Detail pembayaran
+                                                Detail
                                             </div>
                                             <div class="col-6 text-end">
                                                 {{ $item->payment_detail ?? '-' }}
                                             </div>
                                             <div class="col-6">
-                                                Pesan pembayaran
+                                                Info
                                             </div>
                                             <div class="col-6 text-end">
                                                 {{ $item->status_message ?? '-' }}

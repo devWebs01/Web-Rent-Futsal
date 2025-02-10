@@ -46,23 +46,11 @@
         </ul>
     </li>
 
-    <li class="menu-item {{ Route::is(['settings.index', 'schedules.index']) ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
+    <li class="menu-item {{ Route::is(['settings.index']) ? 'active' : '' }}">
+        <a href="{{ route('settings.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-cog"></i>
-            <div class="text-truncate" data-i18n="Logistics">Pengaturan</div>
+            <div data-i18n="Dashboards">Profil Website</div>
         </a>
-        <ul class="menu-sub">
-            <li class="menu-item">
-                <a href="{{ route('settings.index') }}" class="menu-link">
-                    <div class="text-truncate" data-i18n="Dashboard">Profil</div>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="{{ route('schedules.index') }}" class="menu-link">
-                    <div class="text-truncate" data-i18n="Fleet">Rekening Pembayaran </div>
-                </a>
-            </li>
-        </ul>
     </li>
 
     <li class="menu-item {{ Route::is(['transactions.index']) ? 'active' : '' }}">
