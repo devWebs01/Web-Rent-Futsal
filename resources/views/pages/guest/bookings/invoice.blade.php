@@ -254,18 +254,21 @@ $processPayment = function ($id) {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                @if ($booking->status !== 'CANCEL')
-                                    <button type="button" wire:click='processPayment({{ $item->id }})'
-                                        class="btn btn-dark w-100 mb-3 {{ $item->status === 'DRAF' ?: 'd-none' }}"
-                                        role="button">
-                                        <span>Lakukan Pembayaran</span>
-                                        <div wire:loading wire:target='processPayment'
-                                            class="spinner-border spinner-border-sm ms-2" role="status">
-                                            <span class="visually-hidden">Loading...</span>
+                                    @if ($booking->status !== 'CANCEL')
+                                        <div class="card-footer bg-white border-0">
+
+                                            <button type="button" wire:click='processPayment({{ $item->id }})'
+                                                class="btn btn-dark w-100 mb-3 {{ $item->status === 'DRAF' ?: 'd-none' }}"
+                                                role="button">
+                                                <span>Lakukan Pembayaran</span>
+                                                <div wire:loading wire:target='processPayment'
+                                                    class="spinner-border spinner-border-sm ms-2" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </button>
                                         </div>
-                                    </button>
-                                @endif
+                                    @endif
+                                </div>
                             </div>
                         @endforeach
                     </div>

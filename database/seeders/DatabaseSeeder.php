@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -19,6 +20,8 @@ class DatabaseSeeder extends Seeder
             ScheduleSeeder::class,
             FacilitySeeder::class,
             ImageSeeder::class,
+            GallerySeeder::class,
+            BlogSeeder::class,
         ]);
 
         \App\Models\User::factory(20)->create();

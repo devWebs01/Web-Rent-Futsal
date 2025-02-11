@@ -98,7 +98,7 @@
 
     <!-- footer -->
     <footer class="pt-5 d-print-none">
-        <div class="container">
+        <div class="container-fluid px-5">
             <div class="row justify-content-center text-center align-items-center">
 
                 <div class="col-12 col-md-12 col-xxl-6 px-0 ">
@@ -108,33 +108,7 @@
                             dari banyak pelanggan puas. Kami berkomitmen untuk memberikan layanan
                             terbaik dan pengalaman bermain yang menyenangkan.</p>
                     </div>
-                    <nav class="nav nav-footer justify-content-center">
-                        <a class="nav-link" href="/">Beranda</a>
-                        <span class="my-2 vr opacity-50">
-                        </span>
 
-                        <a class="nav-link" href="/#fields">Lapangan</a>
-                        <span class="my-2 vr opacity-50">
-                        </span>
-
-                        @auth
-                            <a class="nav-link" href="{{ route('bookings.index') }}">Riwayat</a>
-                            <span class="my-2 vr opacity-50">
-                            </span>
-
-                            <a class="nav-link" href="{{ route('profile.guest') }}">Profil</a>
-                            <span class="my-2 vr opacity-50">
-                            </span>
-                        @else
-                            <a class="nav-link" href="{{ route('login') }}">Login</a>
-                            <span class="my-2 vr opacity-50">
-                            </span>
-
-                            <a class="nav-link" href="{{ route('register') }}">Register</a>
-                            <span class="my-2 vr opacity-50">
-                            </span>
-                        @endauth
-                    </nav>
                 </div>
             </div>
             <!-- Desc -->

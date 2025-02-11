@@ -12,7 +12,6 @@ return new class extends Migration
      * 'invoice',
      * 'status',
      * 'total_price',
-     *
      */
     public function up(): void
     {
@@ -35,11 +34,11 @@ return new class extends Migration
                 [
                     'draf',
                     'fullpayment',
-                    'downpayment'
+                    'downpayment',
                 ]
             )->default('draf');
             $table->string('total_price');
-            $table->longText('message');
+            $table->longText('message')->nullable();
             $table->timestamp('expired_at')->nullable();
             $table->timestamps();
         });

@@ -19,7 +19,7 @@ state([
 <x-guest-layout>
     <x-slot name="title">Lapangan</x-slot>
     @volt
-        <div class="container-fluid">
+        <div class="container-fluid px-3">
             <section>
                 <div id="carouselExampleIndicators" class="carousel slide">
                     <div class="carousel-indicators">
@@ -60,8 +60,8 @@ state([
                 </div>
             </section>
 
-            <section class="container-fluid mb-5">
-                <div class="card border-0 bg-light">
+            <section class="mb-5">
+                <div class="card border-0">
                     <div class="row card-body">
                         <h1 class="fw-bolder">
                             {{ $field->field_name }}
@@ -272,7 +272,7 @@ state([
 
             </section>
 
-            <section class="container wow fadeInUp">
+            <section class="container-fluid px-3 wow fadeInUp">
                 @include('pages.guest.catalogs.priceList')
 
             </section>

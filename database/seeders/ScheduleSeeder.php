@@ -143,6 +143,15 @@ class ScheduleSeeder extends Seeder
         ];
 
         foreach ($data as $shedule) {
+            // Efek animasi titik-titik di terminal
+            for ($i = 0; $i < 5; $i++) {
+                echo '.';
+                usleep(300000); // Tunggu 300ms
+            }
+            echo "\r"; // Kembali ke awal baris
+            echo 'Loading'; // Cetak ulang teks "Loading"
+            usleep(300000); // Tunggu sebelum mengulang titik
+
             Schedule::create($shedule);
         }
     }

@@ -36,43 +36,6 @@ state([
                                         {{ $setting->name }}
                                     </h5>
                                     <h1 class="display-1 text-white mb-4 col-6">Sewa Lapangan Futsal Terbaik</h1>
-                                    <div class="row g-4 justify-content-center">
-                                        <div class="col-12">
-                                            <div class="rounded bg-light">
-                                                <img src="img/about-1.png" class="img-fluid rounded w-100" alt="">
-                                            </div>
-                                        </div>
-                                        <div class="col-md">
-                                            <div class="counter-item bg-light rounded p-3 h-100">
-                                                <div class="counter-counting">
-                                                    <span class="text-primary fs-2 fw-bold"
-                                                        data-toggle="counter-up">3</span>
-                                                    <span class="h1 fw-bold text-primary">+</span>
-                                                </div>
-                                                <h4 class="mb-0 text-dark">Tahun Pengalaman</h4>
-                                            </div>
-                                        </div>
-                                        <div class="col-md">
-                                            <div class="counter-item bg-light rounded p-3 h-100">
-                                                <div class="counter-counting">
-                                                    <span class="text-primary fs-2 fw-bold"
-                                                        data-toggle="counter-up">500</span>
-                                                    <span class="h1 fw-bold text-primary">+</span>
-                                                </div>
-                                                <h4 class="mb-0 text-dark">Pelanggan Puas</h4>
-                                            </div>
-                                        </div>
-                                        <div class="col-md">
-                                            <div class="counter-item bg-light rounded p-3 h-100">
-                                                <div class="counter-counting">
-                                                    <span class="text-primary fs-2 fw-bold"
-                                                        data-toggle="counter-up">500</span>
-                                                    <span class="h1 fw-bold text-primary">+</span>
-                                                </div>
-                                                <h4 class="mb-0 text-dark">Pertandingan</h4>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 

@@ -21,6 +21,15 @@ class ImageSeeder extends Seeder
         ];
 
         foreach ($images as $image) {
+            // Efek animasi titik-titik di terminal
+            for ($i = 0; $i < 5; $i++) {
+                echo '.';
+                usleep(300000); // Tunggu 300ms
+            }
+            echo "\r"; // Kembali ke awal baris
+            echo 'Loading'; // Cetak ulang teks "Loading"
+            usleep(300000); // Tunggu sebelum mengulang titik
+
             // Cek apakah layanan sudah ada berdasarkan vendor dan category_id
             $imageContents = file_get_contents(filename: $image['image_path']);
             $imageName = basename(path: $image['image_path']);
@@ -36,6 +45,5 @@ class ImageSeeder extends Seeder
                 'image_path' => $storagePath,
             ]);
         }
-
     }
 }

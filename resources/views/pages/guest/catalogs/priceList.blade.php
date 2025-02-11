@@ -265,7 +265,6 @@ $setActiveTab = function ($tab) {
 
 @volt
     <div>
-
         <div class="row justify-content-center">
             <div class="col-8 mb-3 ">
                 <label for="selectDate" class="form-label">Pilih Tanggal</label>

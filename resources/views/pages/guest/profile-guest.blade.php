@@ -84,136 +84,134 @@ $edit = function () {
     @include('layouts.fancybox')
 
     @volt
-        <div>
-            <div class="container">
-                <div class="card border-0">
-                    <div class="row justify-content-between align-items-center mb-3">
-                        <div class="col-md">
-                            <h3 class="mb-3">Profile Akun Anda</h3>
-                            <p class="text-muted">
-                                Pada halaman edit pengguna, kamu dapat mengubah informasi pengguna.
-                                Kamu tidak perlu menginputkan ulang kata sandi mu jika tidak ingin mengubah kata sandi.
-                            </p>
-                        </div>
-                        <div class="col-md text-end d-none d-lg-block">
-                            <img src="https://cdn.dribbble.com/userupload/11360455/file/original-5bd8c59dc9d53a039fa05f12a0496157.png"
-                                class="img rounded" width="400" height="250" style="object-fit: cover" alt="image" />
-                        </div>
+        <div class="container-fluid px-3">
+            <div class="card border-0">
+                <div class="row justify-content-between align-items-center mb-3">
+                    <div class="col-md">
+                        <h3 class="mb-3">Profile Akun Anda</h3>
+                        <p class="text-muted">
+                            Pada halaman edit pengguna, kamu dapat mengubah informasi pengguna.
+                            Kamu tidak perlu menginputkan ulang kata sandi mu jika tidak ingin mengubah kata sandi.
+                        </p>
                     </div>
-
-                    <div class="card-body shadow rounded">
-
-                        @if ($document)
-                            {{-- Jika $document adalah file sementara --}}
-                            <div class="card-img-top mb-5 rounded">
-                                <a href="{{ $document->temporaryUrl() }}" data-fancybox data-caption="Identitas baru">
-                                    <img src="{{ $document->temporaryUrl() }}" class="img" style="object-fit: cover;"
-                                        width="100%" height="200px" alt="Temporary Preview">
-                                </a>
-                            </div>
-                        @elseif (!empty($user->identity->document))
-                            {{-- Jika $identity adalah path file dari storage --}}
-                            <div class="card-img-top mb-5 rounded">
-                                <a href="{{ Storage::url($user->identity->document) }}" data-fancybox
-                                    data-caption="Identitas user">
-                                    <img src="{{ Storage::url($user->identity->document) }}" class="img"
-                                        style="object-fit: cover;" width="100%" height="200px" alt="Existing Identity">
-                                </a>
-                            </div>
-                        @endif
-                        <form wire:submit="edit">
-                            @csrf
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="name" class="form-label">Nama Lengkap</label>
-                                        <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                            wire:model="name" id="name" aria-describedby="nameId"
-                                            placeholder="Enter user name" autofocus autocomplete="name" />
-                                        @error('name')
-                                            <small id="nameId" class="form-text text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                            wire:model="email" id="email" aria-describedby="emailId"
-                                            placeholder="Enter user email" />
-                                        @error('email')
-                                            <small id="emailId" class="form-text text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="phone" class="form-label">Telepon</label>
-                                        <input type="number" class="form-control @error('phone') is-invalid @enderror"
-                                            wire:model="phone" id="phone" aria-describedby="phoneId"
-                                            placeholder="Enter user phone" />
-                                        @error('phone')
-                                            <small id="phoneId" class="form-text text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Kata Sandi</label>
-                                        <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                            wire:model="password" id="password" aria-describedby="passwordId"
-                                            placeholder="Enter user password" />
-                                        @error('password')
-                                            <small id="passwordId" class="form-text text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                @if (!empty($identity))
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="dob" class="form-label">Tanggal Lahir</label>
-                                            <input type="date" class="form-control @error('dob') is-invalid @enderror"
-                                                wire:model="dob" id="dob" aria-describedby="dobId"
-                                                placeholder="Enter user dob" />
-                                            @error('dob')
-                                                <small id="dobId" class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="document" class="form-label">Dokumen Identitas</label>
-                                            <input type="file"
-                                                class="form-control bg-white @error('document') is-invalid @enderror"
-                                                wire:model="document" accept="image/*" id="document"
-                                                aria-describedby="documentId" placeholder="Enter user document" />
-                                            @error('document')
-                                                <small id="documentId"
-                                                    class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                @endif
-
-                                <div class="col-md-6">
-                                    <span wire:loading class="spinner-border spinner-border-sm"></span>
-                                </div>
-
-                                <div class="col-md-6 align-self-center text-end">
-                                    <button type="submit" class="btn btn-primary">
-                                        Submit
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                    <div class="col-md text-end d-none d-lg-block">
+                        <img src="https://cdn.dribbble.com/userupload/11360455/file/original-5bd8c59dc9d53a039fa05f12a0496157.png"
+                            class="img rounded" width="400" height="250" style="object-fit: cover" alt="image" />
                     </div>
                 </div>
+
+                <div class="card-body shadow rounded">
+
+                    @if ($document)
+                        {{-- Jika $document adalah file sementara --}}
+                        <div class="card-img-top mb-5 rounded">
+                            <a href="{{ $document->temporaryUrl() }}" data-fancybox data-caption="Identitas baru">
+                                <img src="{{ $document->temporaryUrl() }}" class="img" style="object-fit: cover;"
+                                    width="100%" height="200px" alt="Temporary Preview">
+                            </a>
+                        </div>
+                    @elseif (!empty($user->identity->document))
+                        {{-- Jika $identity adalah path file dari storage --}}
+                        <div class="card-img-top mb-5 rounded">
+                            <a href="{{ Storage::url($user->identity->document) }}" data-fancybox
+                                data-caption="Identitas user">
+                                <img src="{{ Storage::url($user->identity->document) }}" class="img"
+                                    style="object-fit: cover;" width="100%" height="200px" alt="Existing Identity">
+                            </a>
+                        </div>
+                    @endif
+                    <form wire:submit="edit">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Nama Lengkap</label>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        wire:model="name" id="name" aria-describedby="nameId"
+                                        placeholder="Enter user name" autofocus autocomplete="name" />
+                                    @error('name')
+                                        <small id="nameId" class="form-text text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                        wire:model="email" id="email" aria-describedby="emailId"
+                                        placeholder="Enter user email" />
+                                    @error('email')
+                                        <small id="emailId" class="form-text text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Telepon</label>
+                                    <input type="number" class="form-control @error('phone') is-invalid @enderror"
+                                        wire:model="phone" id="phone" aria-describedby="phoneId"
+                                        placeholder="Enter user phone" />
+                                    @error('phone')
+                                        <small id="phoneId" class="form-text text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Kata Sandi</label>
+                                    <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                        wire:model="password" id="password" aria-describedby="passwordId"
+                                        placeholder="Enter user password" />
+                                    @error('password')
+                                        <small id="passwordId" class="form-text text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            @if (!empty($identity))
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="dob" class="form-label">Tanggal Lahir</label>
+                                        <input type="date" class="form-control @error('dob') is-invalid @enderror"
+                                            wire:model="dob" id="dob" aria-describedby="dobId"
+                                            placeholder="Enter user dob" />
+                                        @error('dob')
+                                            <small id="dobId" class="form-text text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="document" class="form-label">Dokumen Identitas</label>
+                                        <input type="file"
+                                            class="form-control bg-white @error('document') is-invalid @enderror"
+                                            wire:model="document" accept="image/*" id="document"
+                                            aria-describedby="documentId" placeholder="Enter user document" />
+                                        @error('document')
+                                            <small id="documentId" class="form-text text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="col-md-6">
+                                <span wire:loading class="spinner-border spinner-border-sm"></span>
+                            </div>
+
+                            <div class="col-md-6 align-self-center text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
+
         </div>
     @endvolt
 </x-guest-layout>

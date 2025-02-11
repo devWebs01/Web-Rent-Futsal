@@ -149,11 +149,13 @@ $processBooking = function () {
                 <button class="navbar-toggler border-0" style="box-shadow: none" type="button" data-bs-toggle="collapse"
                     data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false"
                     aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                    <span class="navbar-toggler-icon">
+
+                    </span>
                 </button>
 
                 <!-- Logo -->
-                <a class="h5 text-dark fw-bolder" href="/">
+                <a class="h5 text-dark fw-bolder mt-2" href="/">
                     {{ $setting->name }}
                 </a>
 
@@ -168,20 +170,54 @@ $processBooking = function () {
                             <a class="nav-link fw-bolder {{ Route::is('catalogs.field') ? 'active text-primary' : '' }}"
                                 href="/#fields">Lapangan</a>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fw-bolder {{ Route::is(['informations.gallery', 'informations.blog']) ? 'active text-primary' : '' }}"
+                                href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Informasi
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('informations.blog') }}">Berita </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('informations.gallery') }}">Gallery
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
                         @auth
-                            <li class="nav-item">
-                                <a class="nav-link fw-bolder {{ Route::is('bookings.index') ? 'active text-primary' : '' }}"
-                                    href="{{ route('bookings.index') }}">Riwayat</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link fw-bolder {{ Route::is('profile.guest') ? 'active text-primary' : '' }}"
-                                    href="{{ route('profile.guest') }}">
-                                    Profile
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle fw-bolder {{ Route::is(['bookings.index', 'profile.guest']) ? 'active text-primary' : '' }}"
+                                    href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Pengguna
                                 </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('profile.guest') }}">Akun Profil</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('bookings.index') }}">Transaksi</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" wire:click='logout'>Keluar</a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link fw-bolder" wire:click='logout'>Keluar</a>
+                            <li class="nav-item d-lg-none">
+                                <a class="nav-link fw-bolder" type="button" data-bs-toggle="offcanvas"
+                                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                                    <span class="position-relative pe-3">
+                                        Keranjang
+
+                                        @if ($cart->count() > 0)
+                                            <span
+                                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                                                {{ $cart->count() }}
+                                            </span>
+                                        @endif
+                                    </span>
+                                </a>
                             </li>
                         @else
                             <li class="nav-item d-lg-none">
@@ -197,10 +233,12 @@ $processBooking = function () {
                     </a>
                 @else
                     <!-- Tombol Offcanvas Menu Tambahan -->
-                    <button class="btn border-0 position-relative" type="button" data-bs-toggle="offcanvas"
+                    <button class="btn border-0 position-relative d-none d-lg-block" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
                         <span class="navabar-toggler-icon">
-                            <i class='bx bx-shopping-bag fs-2'></i>
+                            <i class='bx bx-shopping-bag fs-2 mt-2'>
+
+                            </i>
                         </span>
                         @if ($cart->count() > 0)
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
@@ -214,7 +252,8 @@ $processBooking = function () {
                         <div class="offcanvas-header row">
                             <div class="col-4">
                                 <button type="button" class="btn-close btn-close-black m-3" data-bs-dismiss="offcanvas"
-                                    aria-label="Close"></button>
+                                    aria-label="Close">
+                                </button>
                             </div>
                             <div class="col-8 fw-bold">
                                 JADWAL DIPILIH
@@ -252,7 +291,9 @@ $processBooking = function () {
                                         <div class="col-2 align-content-center">
                                             <button class="btn border-0 text-danger" wire:click='destroy({{ $item->id }})'
                                                 wire:loading.attr='disable'>
-                                                <i class='bx bxs-trash bx-sm'></i>
+                                                <i class='bx bxs-trash bx-sm'>
+
+                                                </i>
                                             </button>
                                         </div>
                                     </div>
@@ -263,5 +304,6 @@ $processBooking = function () {
                 @endguest
             </div>
         </nav>
+
     </div>
 @endvolt

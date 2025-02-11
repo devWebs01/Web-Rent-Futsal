@@ -170,12 +170,12 @@ $getTimeRemainingAttribute = function () {
 
     @include('layouts.fancybox')
     @volt
-        <div class="container-fluid">
+        <div class="container-fluid px-3">
             <x-slot name="title">Booking {{ $booking->invoice }}</x-slot>
 
             @if (empty($booking->payment->records))
 
-                <div class="container mb-3">
+                <div class="mb-3">
                     @if ($requires_identity_validation)
                         <div class="card mt-3 bg-light">
                             <div class="card-body">
@@ -236,7 +236,7 @@ $getTimeRemainingAttribute = function () {
                     @endif
                 </div>
 
-                 <section class="container">
+                 <section >
                     <span class="fw-bold">Invoice</span>
                     <h4 class="display-6 fw-bold text-primary">
                         {{ $booking->invoice }}
@@ -246,7 +246,7 @@ $getTimeRemainingAttribute = function () {
                     </p>
                 </section>
 
-                <section class="container">
+                <section >
                     <div class="card">
                         <div class="row g-2">
                             <div class="col">
@@ -383,7 +383,7 @@ $getTimeRemainingAttribute = function () {
                     </div>
                 </section>
             @else
-                <div class="container">
+                <div >
                     @include('pages.guest.bookings.invoice', ['booking' => $booking])
                 </div>
             @endif
