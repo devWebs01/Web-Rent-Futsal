@@ -174,15 +174,6 @@ $getTimeRemainingAttribute = function () {
             <x-slot name="title">Booking {{ $booking->invoice }}</x-slot>
 
             @if (empty($booking->payment->records))
-                <section class="container">
-                    <span class="fw-bold">Invoice</span>
-                    <h4 class="display-6 fw-bold text-primary">
-                        {{ $booking->invoice }}
-                    </h4>
-                    <p class="text-muted">
-                        Silakan lanjutkan ke tahap pembayaran untuk memastikan tempat bermain Anda.
-                    </p>
-                </section>
 
                 <div class="container mb-3">
                     @if ($requires_identity_validation)
@@ -245,6 +236,15 @@ $getTimeRemainingAttribute = function () {
                     @endif
                 </div>
 
+                 <section class="container">
+                    <span class="fw-bold">Invoice</span>
+                    <h4 class="display-6 fw-bold text-primary">
+                        {{ $booking->invoice }}
+                    </h4>
+                    <p class="text-muted">
+                        Silakan lanjutkan ke tahap pembayaran untuk memastikan tempat bermain Anda.
+                    </p>
+                </section>
 
                 <section class="container">
                     <div class="card">
@@ -298,7 +298,7 @@ $getTimeRemainingAttribute = function () {
                                         <br>
                                         <div class="col-5">Status</div>
                                         <div class="col-7">
-                                            : {{ __('status.' . $booking->status) }}
+                                            : {{ __('booking.' . $booking->status) }}
                                         </div>
                                         <br>
                                         <div class="col-5">Pelanggan</div>
