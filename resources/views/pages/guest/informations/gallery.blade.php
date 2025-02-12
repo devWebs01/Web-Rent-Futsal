@@ -17,10 +17,10 @@ state([
     @include('layouts.fancybox')
     @volt
         <div>
-            <div class="container-fluid px-5">
+            <div class="container-fluid px-3">
                 <div class="row justify-content-center text-center mb-3 mb-md-5">
                     <div class="col-lg-8 col-xxl-7">
-                        <span class="text-muted">Showcase</span>
+                        <span class="text-primary">Showcase</span>
                         <h2 class="display-5 fw-bold mb-3">Galeri Kami</h2>
                         <p class="lead">Nikmati fasilitas modern dan suasana yang menyenangkan saat bermain futsal bersama
                             teman-teman atau rekan kerja.</p>

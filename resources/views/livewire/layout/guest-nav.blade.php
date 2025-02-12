@@ -171,16 +171,16 @@ $processBooking = function () {
                                 href="/#fields">Lapangan</a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle fw-bolder {{ Route::is(['informations.gallery', 'informations.blog']) ? 'active text-primary' : '' }}"
+                            <a class="nav-link dropdown-toggle fw-bolder {{ Route::is(['informations.gallery', 'informations.index']) ? 'active text-primary' : '' }}"
                                 href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Informasi
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('informations.blog') }}">Berita </a>
+                                    <a class="dropdown-item" href="{{ route('informations.index') }}">Blog </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('informations.gallery') }}">Gallery
+                                    <a class="dropdown-item" href="{{ route('informations.gallery') }}">Galeri
                                     </a>
                                 </li>
                             </ul>
@@ -228,7 +228,7 @@ $processBooking = function () {
                 </div>
 
                 @guest
-                    <a href="{{ route('login') }}" class="h5 d-none d-lg-block fw-bolder text-dark">
+                    <a href="{{ route('login') }}" class="h5 d-none d-lg-block fw-bolder text-dark mt-2">
                         Masuk Akun
                     </a>
                 @else
