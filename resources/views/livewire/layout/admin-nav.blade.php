@@ -46,6 +46,26 @@
         </ul>
     </li>
 
+    <li class="menu-item {{ Route::is(['users.index', 'blogs.index']) ? 'open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-news"></i>
+            <div class="text-truncate" data-i18n="Logistics">Informasi</div>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+                <a href="{{ route('galleries.index') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Dashboard">Galeri</div>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('blogs.index') }}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Fleet">Blog </div>
+                </a>
+            </li>
+        </ul>
+    </li>
+
+
     <li class="menu-item {{ Route::is(['settings.index']) ? 'active' : '' }}">
         <a href="{{ route('settings.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-cog"></i>

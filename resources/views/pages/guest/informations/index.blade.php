@@ -7,7 +7,7 @@ use function Laravel\Folio\{name};
 name('informations.index');
 
 state([
-    'blogs' => fn() => Blog::get(),
+    'blogs' => fn() => Blog::latest()->get(),
 ]);
 
 ?>

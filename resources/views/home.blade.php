@@ -3,15 +3,15 @@
 use App\Models\Booking;
 use App\Models\BookingTime;
 use App\Models\PaymentRecord;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Component;
 use function Livewire\Volt\{state, computed};
 
 state([
-    'totalBookings' => Booking::count(),
-    'totalUnpaidBookings' => Booking::where('status', 'UNPAID')->count(),
-    'totalCompletedBookings' => BookingTime::where('status', 'STOP')->count(),
-    'totalConfirmedPayments' => PaymentRecord::where('status', 'PAID')->sum('gross_amount'),
-    'totalPendingPayments' => PaymentRecord::where('status', 'DRAF')->sum('gross_amount'),
+    'totalBookings' => Booking::count() ?: 0,
+    'totalUnpaidBookings' => Booking::where('status', 'UNPAID')->count() ?: 0,
+    'totalCompletedBookings' => BookingTime::where('status', 'STOP')->count() ?: 0,
+    'totalConfirmedPayments' => PaymentRecord::where('status', 'PAID')->sum('gross_amount') ?: 0,
+    'totalPendingPayments' => PaymentRecord::where('status', 'DRAF')->sum('gross_amount') ?: 0,
 ]);
 
 ?>
@@ -23,92 +23,79 @@ state([
         <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
     </x-slot>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
     @volt
-    <div>
+        <div class="container-fluid">
+            <!-- Grafik Booking -->
 
-        <div class="row mb-3">
-            <!-- Booking -->
-            <div class="col-md mb-4">
-                <div class="card">
-                    <div class="card-body row align-items-center">
-                        <i class="bx bx-calendar-check fs-1 text-primary col-3"></i>
-                        <div class="col">
-                            <small class="m-0 p-0 fw-bold">Booking</small>
-                            <h4 class="fw-bold m-0 p-0">
-                                {{ $totalBookings }}
-                            </h4>
-                        </div>
+            <div class="row gap-2">
+                <div class="col-md-8 card mb-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-center">Statistik Booking</h5>
+                        <canvas id="bookingChart"></canvas>
                     </div>
                 </div>
-            </div>
-            <!-- Booking Belum Dibayar -->
-            <div class="col-md mb-4">
-                <div class="card">
-                    <div class="card-body row align-items-center">
-                        <i class="bx bx-wallet fs-1 text-warning col-3"></i>
-                        <div class="col">
-                            <small class="m-0 p-0 fw-bold">Booking Belum Dibayar</small>
 
-                            <h4 class="fw-bold m-0 p-0">
-                                {{ $totalUnpaidBookings }}
-                            </h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Booking Selesai -->
-            <div class="col-md mb-4">
-                <div class="card">
-                    <div class="card-body row align-items-center">
-                        <i class="bx bx-check-circle fs-1 text-success col-3"></i>
-                        <div class="col">
-                            <small class="m-0 p-0 fw-bold">Booking Selesai</small>
-
-                            <h4 class="fw-bold m-0 p-0">
-                                {{ $totalCompletedBookings }}
-                            </h4>
-                        </div>
+                <!-- Grafik Pembayaran -->
+                <div class="col-md card mb-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-center">Statistik Pembayaran</h5>
+                        <canvas id="paymentChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-3">
-            <!-- Uang Dikonfirmasi -->
-            <div class="col-md mb-4">
-                <div class="card">
-                    <div class="card-body row align-items-center">
-                        <i class="bx bx-money fs-1 text-success col-3"></i>
-                        <div class="col">
-                            <small class="m-0 p-0 fw-bold">Uang Dikonfirmasi</small>
-                            <h4 class="fw-bold m-0 p-0">
-                                {{ formatRupiah($totalConfirmedPayments) }}
-                            </h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Uang Pending -->
-            <div class="col-md mb-4">
-                <div class="card">
-                    <div class="card-body row align-items-center">
-                        <i class="bx bx-hourglass fs-1 text-warning col-3"></i>
-                        <div class="col">
-                            <small class="m-0 p-0 fw-bold">Uang Pending</small>
-                            <h4 class="fw-bold m-0 p-0">
-                                {{ formatRupiah($totalPendingPayments) }}
-                            </h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Data dari backend (menggunakan json_encode agar data diparsing dengan benar)
+                const totalBookings = {{ json_encode($totalBookings) }};
+                const totalUnpaidBookings = {{ json_encode($totalUnpaidBookings) }};
+                const totalCompletedBookings = {{ json_encode($totalCompletedBookings) }};
 
+                const totalConfirmedPayments = {{ json_encode($totalConfirmedPayments) }};
+                const totalPendingPayments = {{ json_encode($totalPendingPayments) }};
 
-        <div class="card mt-4">
-            {{-- @include('monitoring') --}}
-        </div>
-    </div>
+                // Chart Booking
+                new Chart(document.getElementById('bookingChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Total Booking', 'Belum Dibayar', 'Selesai'],
+                        datasets: [{
+                            label: 'Jumlah Booking',
+                            data: [totalBookings, totalUnpaidBookings, totalCompletedBookings],
+                            backgroundColor: ['#007bff', '#ffc107', '#28a745'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Chart Pembayaran
+                new Chart(document.getElementById('paymentChart').getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['Dikonfirmasi', 'Pending'],
+                        datasets: [{
+                            data: [totalConfirmedPayments, totalPendingPayments],
+                            backgroundColor: ['#28a745', '#ffc107'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+            });
+        </script>
     @endvolt
 </x-admin-layout>

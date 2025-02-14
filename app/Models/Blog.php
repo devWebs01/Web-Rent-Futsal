@@ -45,9 +45,9 @@ class Blog extends Model
         $slug = Str::slug($title);
         $count = 0;
 
-        while (static::where('slug', $slug)->when($excludeId, fn($q) => $q->where('id', '!=', $excludeId))->exists()) {
+        while (static::where('slug', $slug)->when($excludeId, fn ($q) => $q->where('id', '!=', $excludeId))->exists()) {
             $count++;
-            $slug = Str::slug($title) . '-' . $count;
+            $slug = Str::slug($title).'-'.$count;
         }
 
         return $slug;
