@@ -2,9 +2,8 @@
 
 use App\Models\Field;
 use App\Models\Setting;
-use App\Models\Schedule;
 use App\Models\Blog;
-use function Livewire\Volt\{state, mount};
+use function Livewire\Volt\{state};
 use function Laravel\Folio\{name};
 
 name('welcome');
@@ -52,9 +51,9 @@ state([
             <div class="container-fluid feature bg-light py-5">
                 <div class="container py-5">
                     <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px;">
-                        <h4 class="text-primary">Fitur Kami</h4>
-                        <h1 class="display-4 mb-4">Lapangan Futsal yang Nyaman dan Berkualitas</h1>
-                        <p class="mb-0">Kami menyediakan berbagai fasilitas untuk memastikan kenyamanan Anda selama
+                        <span class="text-primary">Fitur Kami</span>
+                        <h2 class="display-5 fw-bold mb-3">Lapangan Futsal yang Nyaman dan Berkualitas</h2>
+                        <p class="lead">Kami menyediakan berbagai fasilitas untuk memastikan kenyamanan Anda selama
                             bermain
                             di lapangan futsal kami. Temukan fitur-fitur unggulan yang kami tawarkan.
                         </p>
@@ -104,9 +103,9 @@ state([
             <div class="container-fluid service py-5" id="fields">
                 <div class="container py-5">
                     <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px;">
-                        <h4 class="text-primary">Pilih Lapangan</h4>
-                        <h1 class="display-4 mb-4 text-capitalize">untuk bermain bersama teman-temanmu!</h1>
-                        <p class="mb-0">Kami berkomitmen untuk memberikan layanan terbaik kepada semua pengguna lapangan
+                        <span class="text-primary">Pilih Lapangan</span>
+                        <h2 class="display-5 fw-bold mb-3 text-capitalize">untuk bermain bersama teman-temanmu!</h2>
+                        <p class="lead">Kami berkomitmen untuk memberikan layanan terbaik kepada semua pengguna lapangan
                             kami.
                             Temukan layanan-layanan unggulan yang kami tawarkan.
                         </p>
@@ -154,6 +153,8 @@ state([
                 </div>
             </div>
             <!-- Service End -->
+
+            @include('pages.scheduleTable')
 
             <!-- FAQs Start -->
             <div class="container-fluid bg-light faq-section py-5">

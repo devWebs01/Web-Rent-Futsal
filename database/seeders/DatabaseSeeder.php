@@ -50,6 +50,5 @@ class DatabaseSeeder extends Seeder
             'role' => 'customer',
         ]);
 
-        \App\Models\Bank::factory(3)->create();
     }
 }
