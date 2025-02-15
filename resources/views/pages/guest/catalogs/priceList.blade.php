@@ -294,7 +294,6 @@ $setActiveTab = function ($tab) {
             </li>
         </ul>
 
-
         <!-- Tabs Content -->
         <div class="tab-content mb-3" id="pills-tabContent" wire:poll.30s>
             <!-- Tab Pelajar -->

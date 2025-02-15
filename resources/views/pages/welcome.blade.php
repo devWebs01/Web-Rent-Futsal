@@ -12,7 +12,7 @@ state([
     'fields' => fn() => Field::get(),
     'starts' => range(1, 5),
     'setting' => fn() => Setting::first(),
-    'blogs' => Blog::inRandomOrder()->limit(3)->get(),
+    'blogs' => Blog::inRandomOrder()->limit(4)->get(),
 ]);
 
 ?>
@@ -156,101 +156,8 @@ state([
 
             @include('pages.scheduleTable')
 
-            <!-- FAQs Start -->
-            <div class="container-fluid bg-light faq-section py-5">
-                <div class="container">
-                    <div class="row mt-5">
-                        <div class="col-lg text-center">
-                            <img src="https://images.pexels.com/photos/15673782/pexels-photo-15673782/free-photo-of-pria-berebut-bola-saat-pertandingan.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                                class="img-fluid rounded w-100 mb-3" style="width: 50px; height: 600px; object-fit: cover">
-                        </div>
-                        <div class="col-lg-6">
-                            <span class="text-primary">Showcase</span>
-                            <h2 class="display-6 fw-bold">
-                                FAQs
-                            </h2>
-                            <p>Puluhan ribu teman baru sudah menantimu di lapangan, yuk sewa lapangan sekarang juga! </p>
-                            <div class="accordion accordion-flush" id="accordion-flush">
-                                <div class="accordion-item border mb-3 rounded-3">
-                                    <h5 class="accordion-header">
-                                        <button class="accordion-button bg-white rounded-4 text-primary collapsed"
-                                            style="font-weight:bold;" type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                            Jam berapa lapangan futsal tersedia untuk sewa?
-                                        </button>
-                                    </h5>
-                                    <div id="collapseTwo" class="accordion-collapse collapse show"
-                                        data-bs-parent="#accordion-flush">
-                                        <div class="accordion-body">
-                                            <p>Lapangan futsal kami tersedia untuk sewa setiap hari dari pukul 08:00
-                                                hingga
-                                                22:00.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item border mb-3 rounded-3">
-                                    <h5 class="accordion-header">
-                                        <button class="accordion-button bg-white rounded-4 text-primary collapsed"
-                                            style="font-weight:bold;" type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#collapseThree" aria-expanded="false"
-                                            aria-controls="collapseThree">
-                                            Bagaimana cara membatalkan sewa lapangan?
-                                        </button>
-                                    </h5>
-                                    <div id="collapseThree" class="accordion-collapse collapse"
-                                        data-bs-parent="#accordion-flush">
-                                        <div class="accordion-body">
-                                            <p>Anda dapat membatalkan sewa melalui aplikasi atau website kami. Pastikan
-                                                untuk
-                                                melakukannya setidaknya 24 jam sebelum waktu sewa.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item border mb-3 rounded-3">
-                                    <h5 class="accordion-header">
-                                        <button class="accordion-button bg-white rounded-4 text-primary collapsed"
-                                            style="font-weight:bold;" type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#collapseFour" aria-expanded="false"
-                                            aria-controls="collapseFour">
-                                            Apakah ada biaya tambahan untuk menggunakan fasilitas lain?
-                                        </button>
-                                    </h5>
-                                    <div id="collapseFour" class="accordion-collapse collapse"
-                                        data-bs-parent="#accordion-flush">
-                                        <div class="accordion-body">
-                                            <p>Biaya tambahan akan dikenakan jika Anda menggunakan fasilitas tambahan
-                                                seperti
-                                                alat olahraga atau ruang ganti. Silakan cek detail pada saat sewa.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item border mb-3 rounded-3">
-                                    <h5 class="accordion-header">
-                                        <button class="accordion-button bg-white rounded-4 text-primary collapsed"
-                                            style="font-weight:bold;" type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#collapseFive" aria-expanded="false"
-                                            aria-controls="collapseFive">
-                                            Apakah saya bisa mengubah waktu sewa setelah konfirmasi?
-                                        </button>
-                                    </h5>
-                                    <div id="collapseFive" class="accordion-collapse collapse"
-                                        data-bs-parent="#accordion-flush">
-                                        <div class="accordion-body">
-                                            <p>Ya, Anda dapat mengubah waktu sewa dengan menghubungi tim dukungan kami,
-                                                namun
-                                                hal ini tergantung pada ketersediaan lapangan.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- FAQs End -->
-
             <div class="container-fluid blog py-5">
-                <div class="container py-5">
+                <div class="px-3 py-5">
                     <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s"
                         style="max-width: 800px; visibility: visible; animation-delay: 0.2s; animation-name: fadeInUp;">
                         <span class="text-primary">Showcase</span>
@@ -261,7 +168,7 @@ state([
                     </div>
                     <div class="row g-4 justify-content-center">
                         @foreach ($blogs as $blog)
-                            <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="col-md-3 wow fadeInUp" data-wow-delay="0.2s">
                                 <div class="blog-item card h-100">
                                     <div class="blog-img">
                                         <img src="{{ Storage::url($blog->thumbnail) }}"
