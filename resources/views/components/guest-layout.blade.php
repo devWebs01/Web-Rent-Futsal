@@ -162,9 +162,7 @@
                 <!-- Links -->
                 <div class="col-12 col-md-6 col-lg-7 d-lg-flex justify-content-center">
                     <nav class="nav nav-footer">
-                        <a class="nav-link ps-0" href="#">Kebijakan Privasi</a>
-                        <a class="nav-link px-2 px-md-0" href="#">Pemberitahuan Cookie</a>
-                        <a class="nav-link" href="#">Syarat dan Ketentuan</a>
+                        <a class="nav-link ps-0" href="https://themewagon.github.io/LifeSure/">Template</a>
                     </nav>
                 </div>
                 <div class="col-lg-2 col-md-12 col-12 d-lg-flex justify-content-end">

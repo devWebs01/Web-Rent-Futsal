@@ -123,9 +123,9 @@ $updatedSelectDate = fn() => $this->loadSlots();
 @volt
     <div>
 
-        <div class="bg-light py-lg-14 py-12 bg-cover">
+        <div class="bg-light py-lg-14 py-12 bg-cover wow fadeInUp" data-wow-delay="0.2s">
             <!-- container -->
-            <div class="container-fluid px-3">
+            <div class="container-fluid px-3 ">
                 <!-- row -->
                 <div class="row align-items-center">
                     <div class="col-lg col-12">
