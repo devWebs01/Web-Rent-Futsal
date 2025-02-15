@@ -26,7 +26,7 @@
     </style>
 
 
-    @vite([])
+    {{-- @vite([]) --}}
 </head>
 
 <body>
