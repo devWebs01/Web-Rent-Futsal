@@ -182,7 +182,7 @@ state([
                                             </div>
                                         </div>
                                         <a href="{{ route('informations.blog', ['blog' => $blog]) }}"
-                                            class="h4 d-inline-block mb-3">
+                                            class="h6 fw-bold d-inline-block mb-3">
                                             {{ $blog->title }}
                                         </a>
                                         <a href="{{ route('informations.blog', ['blog' => $blog]) }}"
