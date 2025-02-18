@@ -30,8 +30,6 @@ $confirmBooking = function () {
             return;
         }
 
-        $this->updatingStatusTimes();
-
         $this->booking->update([
             'status' => 'CONFIRM',
         ]);

@@ -171,8 +171,8 @@ state([
                             <div class="col-md-3 wow fadeInUp" data-wow-delay="0.2s">
                                 <div class="blog-item card h-100">
                                     <div class="blog-img">
-                                        <img src="{{ Storage::url($blog->thumbnail) }}"
-                                            class="img-fluid rounded-top w-100" alt="{{ $blog->title }}">
+                                        <img src="{{ Storage::url($blog->thumbnail) }}" style="width: 100%; height: 250px; object-fit: cover;" class="img rounded-top"
+                                    alt="{{ $blog->title }}">
                                     </div>
                                     <div class="blog-content card-body d-flex flex-column">
                                         <div class="blog-comment d-flex justify-content-between mb-3">
@@ -182,7 +182,7 @@ state([
                                             </div>
                                         </div>
                                         <a href="{{ route('informations.blog', ['blog' => $blog]) }}"
-                                            class="h6 fw-bold d-inline-block mb-3">
+                                            class="h5 fw-bold d-inline-block mb-3">
                                             {{ $blog->title }}
                                         </a>
                                         <a href="{{ route('informations.blog', ['blog' => $blog]) }}"
@@ -196,6 +196,23 @@ state([
 
                     </div>
                 </div>
+            </div>
+
+            <div class="container-fluid px-5">
+                <section class="py-5 my-md-5">
+	<div class="container">
+		<div class="row justify-content-center text-center">
+			<div class="col-md-12">
+				<span class="text-primary">Lokasi Kami</span>
+				<h2 class="mb-3 display-5 fw-bold">Temukan lokasi kami di peta dan kunjungi kami sekarang!</h2>
+				<p class="lead">Bergabunglah dengan kami dan rasakan pengalaman yang tak terlupakan!</p>
+				<div class="mx-auto d-flex justify-content-center">
+					<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7976.37309067477!2d103.60853669117041!3d-1.6387247433841656!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e258618b0a72ee7%3A0x13a05c7622a53b65!2sAlpama%20Futsal%20And%20Gym%20Corner!5e0!3m2!1sen!2sid!4v1739860176400!5m2!1sen!2sid" width="100%" height="450" style="border:0;" class="rounded" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
             </div>
 
         </div>

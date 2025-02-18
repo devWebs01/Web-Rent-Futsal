@@ -31,7 +31,7 @@ state([
                     <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.2s">
                         <div class="blog-item card h-100">
                             <div class="blog-img">
-                                <img src="{{ Storage::url($blog->thumbnail) }}" class="img-fluid rounded-top w-100"
+                                <img src="{{ Storage::url($blog->thumbnail) }}" style="width: 100%; height: 250px; object-fit: cover;" class="img rounded-top"
                                     alt="{{ $blog->title }}">
                             </div>
                             <div class="blog-content card-body d-flex flex-column">
@@ -42,7 +42,7 @@ state([
                                     </div>
                                 </div>
                                 <a href="{{ route('informations.blog', ['blog' => $blog]) }}"
-                                    class="h4 d-inline-block mb-3">
+                                    class="h5 fw-bold d-inline-block mb-3">
                                     {{ $blog->title }}
                                 </a>
                                 <a href="{{ route('informations.blog', ['blog' => $blog]) }}" class="btn p-0 mt-auto">
