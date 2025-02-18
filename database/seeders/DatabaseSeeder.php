@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             FacilitySeeder::class,
             ImageSeeder::class,
             BlogSeeder::class,
-            // GallerySeeder::class,
+            GallerySeeder::class,
         ]);
 
         \App\Models\User::factory(20)->create();
@@ -49,6 +49,5 @@ class DatabaseSeeder extends Seeder
             'phone' => '08978301713',
             'role' => 'customer',
         ]);
-
     }
 }
