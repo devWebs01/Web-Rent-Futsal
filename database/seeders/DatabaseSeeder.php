@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
             ScheduleSeeder::class,
             FacilitySeeder::class,
             ImageSeeder::class,
-            GallerySeeder::class,
             BlogSeeder::class,
+            GallerySeeder::class,
         ]);
 
         \App\Models\User::factory(20)->create();
