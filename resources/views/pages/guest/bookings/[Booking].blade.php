@@ -86,12 +86,22 @@ $save_booking = function () {
         'alternative_phone' => 'nullable|numeric', // Nomor telepon alternatif bersifat opsional dan harus berupa angka
     ]);
 
-    DB::beginTransaction();
     try {
-        $booking->update([
+        DB::beginTransaction();
+
+        // Siapkan data untuk update booking
+        $updateData = [
             'payment_method' => $this->payment_method,
             'alternative_phone' => $this->alternative_phone,
-        ]);
+        ];
+
+        // Jika validasi identitas diperlukan, update status menjadi 'VERIFICATION'
+        if ($this->requires_identity_validation) {
+            $updateData['status'] = 'VERIFICATION';
+        }
+
+        // Update booking dengan data yang sudah disiapkan
+        $booking->update($updateData);
 
         $payment = Payment::create($validate_payment);
 
@@ -172,71 +182,12 @@ $getTimeRemainingAttribute = function () {
     @volt
         <div class="container-fluid px-3">
             <x-slot name="title">Booking {{ $booking->invoice }}</x-slot>
-
             @if (empty($booking->payment->records))
-
                 <div class="mb-3">
-                    @if ($requires_identity_validation)
-                        <div class="card mt-3 bg-light">
-                            <div class="card-body">
-                                @if (empty($identity))
-                                    <h5 class="mb-3 fw-bold">Validasi Identitas</h5>
-                                    <form wire:submit="validateIdentity">
-                                        <div class="mb-3">
-                                            <label for="dob" class="form-label">Tanggal Lahir</label>
-                                            <input type="date" class="form-control" wire:model="dob" id="dob">
-                                            @error('dob')
-                                                <small class="text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="document" class="form-label">Unggah Dokumen (Kartu Pelajar)</label>
-                                            <input type="file" class="form-control" wire:model="document" id="document">
-                                            @error('document')
-                                                <small class="text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Kirim</button>
-                                    </form>
-                                @else
-                                    <div class="row justify-content-between">
-                                        <div class="col-md-5">
-                                            <h5 class="mb-3 fw-bold">Profil Pelanggan</h5>
-                                            <div class="pb-3">
-                                                <p class="small mb-0">Nama Lengkap</p>
-                                                <p class="h6">{{ $user->name }}</p>
-                                                <p class="small mb-0">Tanggal Lahir</p>
-                                                <p class="h6">{{ Carbon::parse($user->identity->dob)->format('d-m-Y') }}
-                                                </p>
-                                                <p class="small mb-0">Email</p>
-                                                <p class="h6">{{ $user->email }}</p>
-                                                <p class="small mb-0">Telepon</p>
-                                                <p class="h6">{{ $user->phone }}</p>
-                                                <p class="small mb-0">Mendaftar Pada</p>
-                                                <p class="h6">
-                                                    {{ Carbon::parse($user->created_at)->format('d-m-Y h:i:s') }}</p>
-
-                                                <a class="icon-link" href="{{ route('profile.guest') }}">
-                                                    Edit Profile ->
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-7 text-md-end">
-                                            <h5 class="mb-3 fw-bold">Identitas Pelajar</h5>
-                                            <a href="{{ Storage::url($identity->document) }}" data-fancybox>
-                                                <img src="{{ Storage::url($identity->document) }}"
-                                                    class="img-fluid rounded" style="object-fit:cover; height: 300px;"
-                                                    alt="ducument identity user" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
+                    @include('pages.guest.bookings.formIdentity')
                 </div>
 
-                 <section >
+                <section>
                     <span class="fw-bold">Invoice</span>
                     <h4 class="display-6 fw-bold text-primary">
                         {{ $booking->invoice }}
@@ -246,7 +197,7 @@ $getTimeRemainingAttribute = function () {
                     </p>
                 </section>
 
-                <section >
+                <section>
                     <div class="card">
                         <div class="row g-2">
                             <div class="col">
@@ -282,13 +233,13 @@ $getTimeRemainingAttribute = function () {
                                 </div>
                             </div>
 
-                            <div class="col-lg-5" @if (now()->lessThan(\Carbon\Carbon::parse($expired_at))) wire:poll.1s @endif>
+                            <div class="col-lg-5" @if (now()->lessThan(\Carbon\Carbon::parse($expired_at)) && $booking->status === 'UNPAID') wire:poll.1s @endif>
                                 <div class="card-body">
                                     <h5 class="mb-3 fw-bold">Pembayaran</h5>
                                     <div class="row mb-3">
                                         <div class="col-5">Kadaluarsa</div>
                                         <div class="col-7">
-                                            : {{ $this->getTimeRemainingAttribute() }}
+                                            : {{ $booking->status === 'UNPAID' ? $this->getTimeRemainingAttribute() : '-' }}
                                         </div>
                                         <br>
                                         <div class="col-5">Total Bayar</div>
@@ -327,7 +278,7 @@ $getTimeRemainingAttribute = function () {
                                                 </option>
                                             </select>
                                             @error('payment_method')
-                                                <small class="text-primary">{{ $message }}</small>
+                                                <small class="form-text text-danger">{{ $message }}</small>
                                             @enderror
                                         </div>
 
@@ -350,7 +301,7 @@ $getTimeRemainingAttribute = function () {
                                                 name="alternative_phone" id="alternative_phone"
                                                 {{ $booking->status !== 'PROCESS' ?: 'disabled' }} />
                                             @error('alternative_phone')
-                                                <small id="alternative_phoneId" class="form-text text-primary">
+                                                <small id="alternative_phoneId" class="form-text text-danger">
                                                     {{ $message }}
                                                 </small>
                                             @else
@@ -383,7 +334,7 @@ $getTimeRemainingAttribute = function () {
                     </div>
                 </section>
             @else
-                <div >
+                <div>
                     @include('pages.guest.bookings.invoice', ['booking' => $booking])
                 </div>
             @endif

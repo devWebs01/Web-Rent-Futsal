@@ -100,7 +100,7 @@ $processPayment = function ($id) {
     <div>
         <div class="alert alert-danger text-center {{ $booking->status === 'UNPAID' ?: 'd-none' }}" role="alert">
             Selesaikan proses penyewaan lapangan dalam
-            <strong @if (now()->lessThan(\Carbon\Carbon::parse($expired_at))) wire:poll.1s @endif>
+            <strong @if (now()->lessThan(\Carbon\Carbon::parse($expired_at)) && $booking->status === 'UNPAID') wire:poll.1s @endif>
                 {{ $this->getTimeRemainingAttribute() }}
             </strong>
         </div>
@@ -109,7 +109,7 @@ $processPayment = function ($id) {
             <div class="card-body">
 
                 <!-- Invoice 1 - Bootstrap Brain Component -->
-                <section class="py-3 py-md-5">
+                <section>
                     <div class="row mb-4">
                         <div class="col-6">
                             <button class="btn btn-primary btn-lg text-uppercase">
@@ -254,9 +254,9 @@ $processPayment = function ($id) {
                                             </div>
                                         </div>
                                     </div>
-                                    @if ($booking->status !== 'CANCEL')
-                                        <div class="card-footer bg-white border-0">
 
+                                    @if ($booking->status !== 'CANCEL' && $booking->status !== 'VERIFICATION')
+                                        <div class="card-footer bg-white border-0">
                                             <button type="button" wire:click='processPayment({{ $item->id }})'
                                                 class="btn btn-dark w-100 mb-3 {{ $item->status === 'DRAF' ?: 'd-none' }}"
                                                 role="button">
