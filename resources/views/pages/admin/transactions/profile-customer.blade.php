@@ -1,8 +1,11 @@
 <?php
 
-use function Livewire\Volt\{state, uses};
-use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Carbon\Carbon;
+use App\Mail\ConfirmPaymentMail;
+use App\Mail\RejectBookingMail;
+use Illuminate\Support\Facades\Mail;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
+use function Livewire\Volt\{state, uses};
 
 uses([LivewireAlert::class]);
 
@@ -23,9 +26,14 @@ $rejectIdentity = function () {
             'status' => 'CANCEL',
         ]);
 
+        // Kirim Email Penolakan
+        Mail::to($this->booking->user->email)->send(new RejectBookingMail($this->booking));
+
         $this->alert('success', 'Proses berhasil!', [
             'position' => 'center',
         ]);
+
+        $this->redirectRoute('transactions.show', ['booking' => $this->booking->id]);
     } catch (\Throwable $th) {
         $this->alert('error', 'Proses gagal!', [
             'position' => 'center',
@@ -40,10 +48,18 @@ $confirmIdentity = function () {
             'expired_at' => Carbon::now()->addMinutes(10)
         ]);
 
+        // Kirim Email Konfirmasi Pembayaran
+        Mail::to($this->booking->user->email)->send(new ConfirmPaymentMail($this->booking));
+
         $this->alert('success', 'Proses berhasil!', [
             'position' => 'center',
         ]);
+        
+        $this->redirectRoute('transactions.show', ['booking' => $this->booking->id]);
+
     } catch (\Throwable $th) {
+        Log::error('Error saat konfirmasi identitas: ' . $th->getMessage());
+
         $this->alert('error', 'Proses gagal!', [
             'position' => 'center',
         ]);
@@ -116,11 +132,20 @@ $confirmIdentity = function () {
                     type="button" class="btn btn-danger w-100">
                         Tolak
                     </button>
-                    <button type="button" class="btn btn-success w-100">
+                    <button type="button" wire:click='confirmIdentity' class="btn btn-success w-100">
                         Konfirmasi
                     </button>
                 </div>
                 @endif
+
+                <div wire:loading wire:target='confirmIdentity, rejectIdentity'  class="text-center">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <div class="spinner-grow spinner-grow-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                </div>
 
             </div>
 

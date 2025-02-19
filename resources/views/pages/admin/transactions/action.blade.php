@@ -20,7 +20,7 @@
      @endpush
      @volt
          <div>
-             <section class="py-3 py-md-5">
+             <section>
                  <div class="row mb-4">
                      <div class="col-6">
                          <button class="btn btn-primary btn-lg text-uppercase">

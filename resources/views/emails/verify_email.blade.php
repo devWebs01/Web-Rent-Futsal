@@ -18,7 +18,7 @@
                     <!-- Header -->
                     <tr>
                         <td align="center"
-                            style="background-color: #ff0707; padding: 20px; border-radius: 8px 8px 0 0;">
+                            style="background-color: #0734ff; padding: 20px; border-radius: 8px 8px 0 0;">
                             <h1 style="margin: 0; font-size: 24px; color: #ffffff;">Verifikasi Email</h1>
                         </td>
                     </tr>
@@ -32,15 +32,15 @@
                             </p>
                             <div style="text-align: center; margin: 30px 0;">
                                 <a href="{{ $url }}"
-                                    style="display: inline-block; background-color: #ff0707; color: #ffffff; text-decoration: none; padding: 12px 25px; font-size: 18px; border-radius: 5px;">
+                                    style="display: inline-block; background-color: #0734ff; color: #ffffff; text-decoration: none; padding: 12px 25px; font-size: 18px; border-radius: 5px;">
                                     Verifikasi Email
                                 </a>
                             </div>
                             <p style="margin: 0 0 20px 0; text-align: center;">
                                 Jika tombol di atas tidak berfungsi, salin dan tempel tautan berikut di browser Anda:
                             </p>
-                            <p style="margin: 0 0 20px 0; text-align: center; color: #ff0707;">
-                                <a href="#" style="color: #ff0707; text-decoration: none;">
+                            <p style="margin: 0 0 20px 0; text-align: center; color: #0734ff;">
+                                <a href="#" style="color: #0734ff; text-decoration: none;">
                                     {{ $url }}
                                 </a>
                             </p>
@@ -55,7 +55,7 @@
                         <td
                             style="background-color: #f4f4f4; padding: 20px; text-align: center; font-size: 14px; color: #666666; border-radius: 0 0 8px 8px;">
                             <p style="margin: 0; font-weight: bold;">Butuh Bantuan Lebih?</p>
-                            <p style="margin: 0;"><a href="#" style="color: #ff0707; text-decoration: none;">Kami selalu
+                            <p style="margin: 0;"><a href="#" style="color: #0734ff; text-decoration: none;">Kami selalu
                                     siap membantu Anda</a></p>
                         </td>
                     </tr>
