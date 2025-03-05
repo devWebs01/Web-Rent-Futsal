@@ -216,7 +216,7 @@ $edit = function () {
                         </div>
                         <div class="col-md">
                             <div class="mb-3">
-                                <label for="images" class="form-label">Nama Lapangan</label>
+                                <label for="images" class="form-label">Gambar Lapangan</label>
                                 <input type="file" class="form-control @error('images') is-invalid @enderror"
                                     wire:model="images" id="images" aria-describedby="imagesId" accept="image/*"
                                     autocomplete="images" multiple />
