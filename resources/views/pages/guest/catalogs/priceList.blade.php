@@ -40,13 +40,26 @@ rules([
 ]);
 
 $selectAllTournamentSlots = function () {
+    // Periksa apakah user sudah login
     if (!Auth::check()) {
         $this->redirect('/login');
     }
 
+    // Validasi data
     $this->validate();
 
+    // Ambil semua waktu turnamen
     $tournamentSlots = $this->slots['tournament'];
+
+    if (empty($tournamentSlots)) {
+        $this->alert('warning', 'Tidak ada slot turnamen yang tersedia!', [
+            'position' => 'center',
+            'timer' => '3000',
+            'toast' => true,
+            'timerProgressBar' => true,
+        ]);
+        return;
+    }
 
     $earliestSlot = collect($tournamentSlots)->first();
     $latestSlot = collect($tournamentSlots)->last();
@@ -54,7 +67,8 @@ $selectAllTournamentSlots = function () {
     $selectedDate = Carbon::parse($this->selectDate ?? $this->today);
     $now = $today->format('H:i');
 
-    if ($selectedDate->isSameDay($today) && $earliestSlot['time'] < $now) {
+    // Periksa apakah waktu saat ini sudah melewati waktu slot paling awal (bandingkan start time)
+    if ($selectedDate->isSameDay($today) && explode(' - ', $earliestSlot['time'])[0] < $now) {
         $this->alert('warning', 'Anda tidak dapat memilih waktu yang sudah terlewati!', [
             'position' => 'center',
             'timer' => '3000',
@@ -64,13 +78,14 @@ $selectAllTournamentSlots = function () {
         return;
     }
 
+    // Periksa apakah ada slot lain yang sudah dipesan untuk lapangan yang sama pada tanggal yang sama
     $existingBookings = BookingTime::where('field_id', $this->field_id)
         ->where('booking_date', $selectedDate->format('Y-m-d'))
-        ->where('status', '!==', 'CANCEL')
+        ->where('status', '!=', 'CANCEL') // Abaikan slot yang sudah dibatalkan
         ->exists();
 
     if ($existingBookings) {
-        $this->alert('warning', 'Lapangan ini sudah dibooking untuk tanggal yang sama!', [
+        $this->alert('warning', 'Anda tidak dapat memilih slot turnamen karena sudah ada slot yang dibooking untuk lapangan ini pada tanggal yang sama!', [
             'position' => 'center',
             'timer' => '5000',
             'width' => '500px',
@@ -80,53 +95,40 @@ $selectAllTournamentSlots = function () {
         return;
     }
 
-    $checkCart = Cart::where('user_id', Auth::id())
-        ->where('field_id', $this->field_id)
-        ->where('booking_date', $this->selectDate ?? $this->today)
-        ->exists();
+    // Iterasi setiap slot turnamen dan tambahkan ke keranjang jika belum ada
+    foreach ($tournamentSlots as $slot) {
+        $times = explode(' - ', $slot['time']);
+        $slotStart = Carbon::parse($times[0])->format('H:i');
+        $slotEnd   = Carbon::parse($times[1])->format('H:i');
 
-    if ($checkCart) {
-        $this->alert('warning', 'Slot ini sudah ada di keranjang!', [
-            'position' => 'center',
-            'timer' => '5000',
-            'width' => '500px',
-            'toast' => true,
-            'timerProgressBar' => true,
-        ]);
-        return;
+        // Periksa apakah slot ini sudah ada di keranjang berdasarkan start_time
+        $slotExists = Cart::where('user_id', Auth::id())
+            ->where('field_id', $this->field_id)
+            ->where('booking_date', $selectedDate->format('Y-m-d'))
+            ->where('start_time', $slotStart)
+            ->exists();
+
+        if (!$slotExists) {
+            Cart::create([
+                'user_id'      => Auth::id(),
+                'field_id'     => $this->field_id,
+                'booking_date' => $selectedDate->format('Y-m-d'),
+                'start_time'   => $slotStart,
+                'end_time'     => $slotEnd,
+                'type'         => 'TOURNAMENT',
+                'price'        => $slot['cost'],
+            ]);
+        }
     }
-
-    // Ambil jam mulai dan selesai
-    $start_time = Carbon::parse(explode(' - ', $earliestSlot['time'])[0]);
-    $end_time = Carbon::parse(explode(' - ', $latestSlot['time'])[1]);
-
-    // Hitung durasi dalam jam
-    $duration = $start_time->diffInHours($end_time);
-
-    // Hitung total harga berdasarkan durasi
-    $pricePerHour = $earliestSlot['cost']; // Asumsi harga per jam dari slot pertama
-    $totalPrice = $pricePerHour * $duration;
-
-    // Tambahkan ke keranjang
-    Cart::create([
-        'user_id' => Auth::id(),
-        'field_id' => $this->field_id,
-        'booking_date' => $this->selectDate ?? $this->today,
-        'start_time' => $start_time->format('H:i'),
-        'end_time' => $end_time->format('H:i'),
-        'type' => 'TOURNAMENT',
-        'price' => $totalPrice,
-    ]);
 
     $this->allTournamentSelected = true;
-
     $this->dispatch('cart-updated');
 
     $this->alert('success', 'Slot waktu turnamen berhasil ditambahkan ke keranjang', [
-        'position' => 'center',
-        'timer' => '3000',
-        'toast' => true,
-        'timerProgressBar' => true,
+        'position'           => 'center',
+        'timer'              => '3000',
+        'toast'              => true,
+        'timerProgressBar'   => true,
     ]);
 };
 
