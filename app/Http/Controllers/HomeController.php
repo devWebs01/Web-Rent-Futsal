@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Blog;
+
 class HomeController extends Controller
 {
     /**
@@ -23,4 +25,21 @@ class HomeController extends Controller
     {
         return view('home');
     }
+
+    public function destroy($id)
+    {
+        try {
+            $blog = Blog::findOrFail($id);
+            $blog->delete();
+
+            return redirect()->route('blogs.index')
+                ->with('success', 'Data blog berhasil dihapus.');
+        } catch (\Exception $e) {
+            \Log::error("Gagal menghapus blog: " . $e->getMessage());
+
+            return redirect()->route('blogs.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus data blog.');
+        }
+    }
+
 }

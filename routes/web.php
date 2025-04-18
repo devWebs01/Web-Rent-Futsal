@@ -44,3 +44,6 @@ Route::get('/migrate-fresh', function () {
 
     return '✅ migrate dan seeder berhasil dibuat!';
 });
+
+Route::delete('/blogs/{id}', [HomeController::class, 'destroy'])->name('blogs.destroy');
+

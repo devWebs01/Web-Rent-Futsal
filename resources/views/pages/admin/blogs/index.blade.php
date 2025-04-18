@@ -93,12 +93,17 @@ $destroy = function (blog $blog) {
                                                 <div>
                                                     <a href="{{ route("blogs.edit", ["blog" => $item->id]) }}"
                                                         class="btn btn-sm btn-warning">Edit</a>
-                                                    <button wire:loading.attr='disabled'
-                                                        wire:click='destroy({{ $item->id }})'
-                                                        wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
-                                                        class="btn btn-sm btn-danger">
-                                                        {{ __("Hapus") }}
-                                                    </button>
+
+                                                    <!-- Tombol Hapus -->
+                                                    <form action="{{ route("blogs.destroy", $item->id) }}" method="POST"
+                                                        style="display: inline-block;"
+                                                        onsubmit="return confirm('Apakah kamu yakin ingin menghapus data ini?')">
+                                                        @csrf
+                                                        @method("DELETE")
+                                                        <button type="submit" class="btn btn-sm btn-danger">
+                                                            {{ __("Hapus") }}
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
