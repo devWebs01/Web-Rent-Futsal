@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\schedule;
+use App\Models\Schedule;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use function Laravel\Folio\name;
 use function Livewire\Volt\{computed, state, usesPagination, uses};

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\schedule;
+use App\Models\Schedule;
 use Illuminate\Validation\Rule;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use function Livewire\Volt\{state, rules, uses};
