@@ -26,7 +26,7 @@ $blogs = computed(function () {
     }
 });
 
-$destroy = function (blog $blog) {
+$destroy = function (Blog $blog) {
     try {
         $blog->delete();
         $this->alert('success', 'Data blog berhasil dihapus!', [
