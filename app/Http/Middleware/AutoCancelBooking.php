@@ -28,6 +28,21 @@ class AutoCancelBooking
             }
         }
 
+        // Logging dengan mencetak ID booking, bukan seluruh objek
+        if ($expiredBookings->isNotEmpty()) {
+            foreach ($expiredBookings as $booking) {
+                Log::info(
+                    "AutoCancelBooking: Booking ID {$booking->id} dibatalkan karena melewati batas waktu {$expire_time} menit."
+                );
+
+                // Optional: Log payment records if needed, ensuring they are strings
+                if ($booking->payment && $booking->payment->records) {
+                    $recordIds = $booking->payment->records->pluck('id')->toArray(); // Get record IDs
+                    Log::info("Related payment records for Booking ID {$booking->id}: " . json_encode($recordIds));
+                }
+            }
+        }
+
         return $next($request);
     }
 }
