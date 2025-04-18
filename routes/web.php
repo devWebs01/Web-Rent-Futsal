@@ -26,3 +26,13 @@ Auth::routes([
 Route::get('/home', [HomeController::class, 'index'])
     ->middleware(['checkRole:developer,admin', 'autoCancel'])
     ->name('home');
+
+Route::get('/storage-link', function () {
+    Artisan::call('storage:link');
+    return '✅ Storage link berhasil dibuat!';
+});
+
+Route::get('/migrate-fresh', function () {
+    Artisan::call('migrate:fresh --seed');
+    return '✅ migrate dan seeder berhasil dibuat!';
+});
