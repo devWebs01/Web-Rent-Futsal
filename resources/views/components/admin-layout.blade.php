@@ -223,20 +223,18 @@
                                         document.write(new Date().getFullYear());
                                     </script>
                                     , made with ❤️ by
-                                    <a href="https://themeselection.com" target="_blank"
-                                        class="footer-link">ThemeSelection</a>
+                                    <a href="#" target="_blank"
+                                        class="footer-link">Alpama Futsal</a>
                                 </div>
                                 <div class="d-none d-lg-inline-block">
-                                    <a href="https://themeselection.com/license/" class="footer-link me-4"
-                                        target="_blank">License</a>
-                                    <a href="https://themeselection.com/" target="_blank" class="footer-link me-4">More
-                                        Themes</a>
+                                    <a href="#" class="footer-link me-4"
+                                        target="_blank"></a>
 
-                                    <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/documentation/"
-                                        target="_blank" class="footer-link me-4">Documentation</a>
+                                    <a href="#"
+                                        target="_blank" class="footer-link me-4"></a>
 
-                                    <a href="https://github.com/themeselection/sneat-html-admin-template-free/issues"
-                                        target="_blank" class="footer-link">Support</a>
+                                    <a href="#"
+                                        target="_blank" class="footer-link"></a>
                                 </div>
                             </div>
                         </div>
