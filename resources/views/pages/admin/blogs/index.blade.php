@@ -35,7 +35,6 @@ $destroy = function (Blog $blog) {
             "toast" => true,
         ]);
     } catch (\Throwable $th) {
-        Log::error("Error deleting blog: " . $th->getMessage());
         $this->alert("error", "Data blog gagal dihapus!", [
             "position" => "center",
             "timer" => 3000,
