@@ -27,6 +27,12 @@ Route::get('/home', [HomeController::class, 'index'])
     ->middleware(['checkRole:developer,admin', 'autoCancel'])
     ->name('home');
 
+Route::get('/clear', function () {
+    Artisan::call('optimize:clear');
+
+    return '✅ Optimize berhasil dibuat!';
+});
+
 Route::get('/storage-link', function () {
     Artisan::call('storage:link');
 
