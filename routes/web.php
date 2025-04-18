@@ -33,17 +33,15 @@ Route::get('/clear', function () {
     return '✅ Optimize berhasil dibuat!';
 });
 
-Route::get('/storage-link', function () {
-    Artisan::call('storage:link');
-
-    return '✅ Storage link berhasil dibuat!';
-});
-
-Route::get('/migrate-fresh', function () {
-    Artisan::call('php artisan migrate:fresh --seed');
-
-    return '✅ migrate dan seeder berhasil dibuat!';
-});
-
 Route::delete('/blogs/{id}', [HomeController::class, 'destroy'])->name('blogs.destroy');
 
+use Illuminate\Support\Facades\File;
+
+Route::get('/copy-storage', function () {
+    $from = storage_path('app/public');
+    $to = public_path('storage');
+
+    File::copyDirectory($from, $to);
+
+    return 'File dari storage/app/public berhasil dicopy ke public_html/storage';
+});
