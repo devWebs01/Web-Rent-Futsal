@@ -31,6 +31,6 @@ class Payment extends Model
      */
     public function booking(): BelongsTo
     {
-        return $this->belongsTo(booking::class);
+        return $this->belongsTo(Booking::class);
     }
 }
