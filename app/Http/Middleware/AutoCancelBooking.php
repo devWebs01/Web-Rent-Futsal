@@ -11,16 +11,18 @@ class AutoCancelBooking
 {
     public function handle(Request $request, Closure $next)
     {
-        $expire_time = 10; // menit
+        $expire_time = 10; // Waktu kadaluarsa dalam menit
 
+        // Ambil booking yang sudah kadaluarsa
         $expiredBookings = Booking::where('status', 'UNPAID')
             ->where('created_at', '<=', now()->subMinutes($expire_time))
             ->get();
 
         foreach ($expiredBookings as $booking) {
+            // Update status booking menjadi CANCEL
             $booking->update(['status' => 'CANCEL']);
 
-            // Pastikan relasi payment dan records memang ada
+            // Pastikan relasi payment dan records ada sebelum mengaksesnya
             if ($booking->payment && $booking->payment->records) {
                 foreach ($booking->payment->records as $record) {
                     $record->update(['status' => 'FAILED']);
@@ -28,18 +30,10 @@ class AutoCancelBooking
             }
         }
 
-        // Logging dengan mencetak ID booking, bukan seluruh objek
+        // Log jika ada booking yang dibatalkan
         if ($expiredBookings->isNotEmpty()) {
             foreach ($expiredBookings as $booking) {
-                Log::info(
-                    "AutoCancelBooking: Booking ID {$booking->id} dibatalkan karena melewati batas waktu {$expire_time} menit."
-                );
-
-                // Optional: Log payment records if needed, ensuring they are strings
-                if ($booking->payment && $booking->payment->records) {
-                    $recordIds = $booking->payment->records->pluck('id')->toArray(); // Get record IDs
-                    Log::info("Related payment records for Booking ID {$booking->id}: " . json_encode($recordIds));
-                }
+                Log::info("AutoCancelBooking: Booking ID {$booking->id} dibatalkan karena melewati batas waktu {$expire_time} menit.");
             }
         }
 
