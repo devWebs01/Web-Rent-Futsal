@@ -14,23 +14,19 @@ usesPagination(theme: "bootstrap");
 
 $blogs = computed(function () {
     if ($this->search == null) {
-        return Blog::query()->latest()->paginate(10);
+        return blog::query()->latest()->paginate(10);
     } else {
-        return Blog::query()
+        return blog::query()
             ->where(function ($query) {
-                $query
-                    ->where("title", "LIKE", "%{$this->search}%")
-                    ->orWhere("slug", "LIKE", "%{$this->search}%")
-                    ->orWhere("body", "LIKE", "%{$this->search}%")
-                    ->orWhere("tag", "LIKE", "%{$this->search}%")
-                    ->orWhere("thumbnail", "LIKE", "%{$this->search}%");
+                // isi
+                $query->whereAny(["title", "slug", "body", "tag", "thumbnail"], "LIKE", "%{$this->search}%");
             })
             ->latest()
             ->paginate(10);
     }
 });
 
-$destroy = function (Blog $blog) {
+$destroy = function (blog $blog) {
     try {
         $blog->delete();
         $this->alert("success", "Data blog berhasil dihapus!", [
@@ -39,6 +35,7 @@ $destroy = function (Blog $blog) {
             "toast" => true,
         ]);
     } catch (\Throwable $th) {
+        Log::error("Error deleting blog: " . $th->getMessage());
         $this->alert("error", "Data blog gagal dihapus!", [
             "position" => "center",
             "timer" => 3000,
@@ -63,7 +60,7 @@ $destroy = function (Blog $blog) {
                                     Blog</a>
                             </div>
                             <div class="col">
-                                <input wire:model.live="search" type="search" class="form-control" name="search"
+                                <input wire:blog.live="search" type="search" class="form-control" name="search"
                                     id="search" aria-describedby="searchId"
                                     placeholder="Masukkan kata kunci pencarian" />
                             </div>
