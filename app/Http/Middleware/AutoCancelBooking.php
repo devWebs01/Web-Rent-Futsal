@@ -39,5 +39,4 @@ class AutoCancelBooking
 
         return $next($request);
     }
-
 }

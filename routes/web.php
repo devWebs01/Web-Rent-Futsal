@@ -29,10 +29,12 @@ Route::get('/home', [HomeController::class, 'index'])
 
 Route::get('/storage-link', function () {
     Artisan::call('storage:link');
+
     return '✅ Storage link berhasil dibuat!';
 });
 
 Route::get('/migrate-fresh', function () {
     Artisan::call('php artisan migrate:fresh --seed');
+
     return '✅ migrate dan seeder berhasil dibuat!';
 });
