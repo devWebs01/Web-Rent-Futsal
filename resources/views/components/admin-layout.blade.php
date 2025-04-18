@@ -51,7 +51,6 @@
 
     @stack('styles')
 
-    @vite([])
 </head>
 </head>
 

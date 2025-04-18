@@ -33,6 +33,6 @@ Route::get('/storage-link', function () {
 });
 
 Route::get('/migrate-fresh', function () {
-    Artisan::call('migrate:fresh --seed');
+    Artisan::call('php artisan migrate:fresh --seed');
     return '✅ migrate dan seeder berhasil dibuat!';
 });
