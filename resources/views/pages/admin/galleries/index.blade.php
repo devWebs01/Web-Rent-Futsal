@@ -60,7 +60,7 @@ $destroy = function (gallery $gallery) {
                                     Galeri</a>
                             </div>
                             <div class="col">
-                                <input wire:gallery.live="search" type="search" class="form-control" name="search"
+                                <input wire:model.live="search" type="search" class="form-control" name="search"
                                     id="search" aria-describedby="searchId"
                                     placeholder="Masukkan kata kunci pencarian" />
                             </div>

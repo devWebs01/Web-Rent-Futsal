@@ -7,10 +7,10 @@ use function Livewire\Volt\{computed, state, usesPagination, uses};
 
 uses([LivewireAlert::class]);
 
-name('blogs.index');
+name("blogs.index");
 
-state(['search'])->url();
-usesPagination(theme: 'bootstrap');
+state(["search"])->url();
+usesPagination(theme: "bootstrap");
 
 $blogs = computed(function () {
     if ($this->search == null) {
@@ -19,7 +19,7 @@ $blogs = computed(function () {
         return blog::query()
             ->where(function ($query) {
                 // isi
-                $query->whereAny(['title', 'slug', 'body', 'tag', 'thumbnail'], 'LIKE', "%{$this->search}%");
+                $query->whereAny(["title", "slug", "body", "tag", "thumbnail"], "LIKE", "%{$this->search}%");
             })
             ->latest()
             ->paginate(10);
@@ -29,17 +29,17 @@ $blogs = computed(function () {
 $destroy = function (Blog $blog) {
     try {
         $blog->delete();
-        $this->alert('success', 'Data blog berhasil dihapus!', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => true,
+        $this->alert("success", "Data blog berhasil dihapus!", [
+            "position" => "center",
+            "timer" => 3000,
+            "toast" => true,
         ]);
     } catch (\Throwable $th) {
-        Log::error('Error deleting blog: ' . $th->getMessage());
-        $this->alert('error', 'Data blog gagal dihapus!', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => true,
+        Log::error("Error deleting blog: " . $th->getMessage());
+        $this->alert("error", "Data blog gagal dihapus!", [
+            "position" => "center",
+            "timer" => 3000,
+            "toast" => true,
         ]);
     }
 };
@@ -50,18 +50,17 @@ $destroy = function (Blog $blog) {
     <div>
         <x-slot name="title">Data Blog</x-slot>
 
-
         @volt
             <div>
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
                             <div class="col">
-                                <a href="{{ route('blogs.create') }}" class="btn btn-primary">Tambah
+                                <a href="{{ route("blogs.create") }}" class="btn btn-primary">Tambah
                                     Blog</a>
                             </div>
                             <div class="col">
-                                <input wire:blog.live="search" type="search" class="form-control" name="search"
+                                <input wire:model.live="search" type="search" class="form-control" name="search"
                                     id="search" aria-describedby="searchId"
                                     placeholder="Masukkan kata kunci pencarian" />
                             </div>
@@ -92,13 +91,13 @@ $destroy = function (Blog $blog) {
                                             <!-- Menampilkan gambar thumbnail -->
                                             <td>
                                                 <div>
-                                                    <a href="{{ route('blogs.edit', ['blog' => $item->id]) }}"
+                                                    <a href="{{ route("blogs.edit", ["blog" => $item->id]) }}"
                                                         class="btn btn-sm btn-warning">Edit</a>
                                                     <button wire:loading.attr='disabled'
                                                         wire:click='destroy({{ $item }})'
                                                         wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
                                                         class="btn btn-sm btn-danger">
-                                                        {{ __('Hapus') }}
+                                                        {{ __("Hapus") }}
                                                     </button>
                                                 </div>
                                             </td>
@@ -109,7 +108,6 @@ $destroy = function (Blog $blog) {
 
                             {{ $this->blogs->links() }}
                         </div>
-
 
                     </div>
                 </div>
