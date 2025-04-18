@@ -14,12 +14,16 @@ usesPagination(theme: "bootstrap");
 
 $blogs = computed(function () {
     if ($this->search == null) {
-        return blog::query()->latest()->paginate(10);
+        return Blog::query()->latest()->paginate(10);
     } else {
-        return blog::query()
+        return Blog::query()
             ->where(function ($query) {
-                // isi
-                $query->whereAny(["title", "slug", "body", "tag", "thumbnail"], "LIKE", "%{$this->search}%");
+                $query
+                    ->where("title", "LIKE", "%{$this->search}%")
+                    ->orWhere("slug", "LIKE", "%{$this->search}%")
+                    ->orWhere("body", "LIKE", "%{$this->search}%")
+                    ->orWhere("tag", "LIKE", "%{$this->search}%")
+                    ->orWhere("thumbnail", "LIKE", "%{$this->search}%");
             })
             ->latest()
             ->paginate(10);
@@ -93,7 +97,7 @@ $destroy = function (Blog $blog) {
                                                     <a href="{{ route("blogs.edit", ["blog" => $item->id]) }}"
                                                         class="btn btn-sm btn-warning">Edit</a>
                                                     <button wire:loading.attr='disabled'
-                                                        wire:click='destroy({{ $item }})'
+                                                        wire:click='destroy({{ $item->id }})'
                                                         wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
                                                         class="btn btn-sm btn-danger">
                                                         {{ __("Hapus") }}
