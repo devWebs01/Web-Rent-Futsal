@@ -1,17 +1,17 @@
  <?php
-
+ 
  use Jantinnerezo\LivewireAlert\LivewireAlert;
  use function Livewire\Volt\{state, uses};
-
+ 
  state([
-     'user' => fn() => $this->booking->user,
-     'requires_identity_validation' => fn() => $this->booking->bookingTimes->contains(fn($item) => $item->type === 'STUDENT'),
-     'booking',
+     "user" => fn() => $this->booking->user,
+     "requires_identity_validation" => fn() => $this->booking->bookingTimes->contains(fn($item) => $item->type === "STUDENT"),
+     "booking",
  ]);
  ?>
 
  <div>
-     @push('scripts')
+     @push("scripts")
          <script>
              document.getElementById('printInvoiceBtn').addEventListener('click', function() {
                  window.print(); // Fungsi bawaan browser untuk mencetak halaman
@@ -22,31 +22,27 @@
          <div>
              <section>
                  <div class="row mb-4">
-                     <div class="col-6">
-                         <button class="btn btn-primary btn-lg text-uppercase">
-                             {{ __('booking.' . $booking->status) }}
-                         </button>
-
-                     </div>
-                     <div class="col-6 text-end">
-                         <button type="button" class="btn btn-dark btn-lg d-print-none" id="printInvoiceBtn">Download
+                     <div class="col-12 text-end">
+                         <button type="button" class="btn btn-dark d-print-none" id="printInvoiceBtn">Download
                              Invoice</button>
-
                      </div>
                  </div>
 
-                 <div class="row gy-3 mb-3">
-                     <div class="col-6">
-                         <h4 class="text-uppercase text-primary m-0">Invoice</h4>
-                     </div>
-                     <div class="col-6">
-                         <h4 class="text-uppercase text-primary text-end m-0">{{ $booking->invoice }}</h4>
-                     </div>
-                 </div>
                  <div class="row mb-3">
-                     <small class="h5 fw-bold">Penyewaan</small>
+
+                     <div class="d-flex justify-content-between align-items-center">
+                         <small class="h4 fw-bold pt-4">STATUS</small>
+
+                         <button class="btn btn-secondary btn-sm text-uppercase">
+                             {{ __("booking." . $booking->status) }}
+                         </button>
+                     </div>
+
+                     <hr>
+
                      <div class="col-12 col-sm-6 col-md-8">
                          <address>
+                             <div>{{ $booking->invoice }}</div>
                              <div>{{ $user->name }}</div>
                              <div>{{ $user->email }}</div>
                              <div>{{ $user->phone }}</div>
@@ -54,14 +50,14 @@
                      </div>
                      <div class="col-12 col-sm-6 col-md-4 text-end">
                          <address>
-                             <div>{{ $booking->created_at->format('d m Y h:i:s') }}</div>
+                             <div>{{ $booking->created_at->format("d m Y h:i:s") }}</div>
                              <div>
                                  Metode Pembayaran :
-                                 {{ __('status.' . $booking->payment_method) }}
+                                 {{ __("status." . $booking->payment_method) }}
                              </div>
                              <div>
                                  No. Telp Alternatif :
-                                 {{ $booking->alternative_phone ?? '-' }}
+                                 {{ $booking->alternative_phone ?? "-" }}
                              </div>
 
                          </address>
@@ -86,11 +82,11 @@
                                  @foreach ($booking->bookingTimes as $time)
                                      <tr>
                                          <th>{{ $time->field->field_name }}</th>
-                                         <th>{{ Carbon\Carbon::parse($time->booking_date)->format('d-m-Y') }}
+                                         <th>{{ Carbon\Carbon::parse($time->booking_date)->format("d-m-Y") }}
                                          </th>
-                                         <td>{{ $time->start_time . ' - ' . $time->end_time }}</td>
+                                         <td>{{ $time->start_time . " - " . $time->end_time }}</td>
                                          <td class="text-end">
-                                             {{ __('type.' . $time->type) }}
+                                             {{ __("type." . $time->type) }}
                                          </td>
                                          <td class="text-end">
                                              {{ formatRupiah($time->price) }}
@@ -103,7 +99,7 @@
                                          Total
                                      </th>
                                      <td class="text-end">
-                                         {{ formatRupiah($booking->bookingTimes->sum('price')) }}
+                                         {{ formatRupiah($booking->bookingTimes->sum("price")) }}
                                      </td>
                                  </tr>
                              </tbody>

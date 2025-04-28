@@ -14,7 +14,7 @@ class AutoCancelBooking
         $expire_time = 10; // menit
 
         $expiredBookings = Booking::where('status', 'UNPAID')
-            ->where('created_at', '<=', now()->subMinutes($expire_time))
+            ->where('expired_at', '<=', now()->subMinutes($expire_time))
             ->get();
 
 

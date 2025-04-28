@@ -10,13 +10,13 @@ use function Livewire\Volt\{state, uses, rules};
 uses([LivewireAlert::class]);
 
 state([
-    'user' => fn() => $this->booking->user,
-    'totalPrice' => fn() => $this->booking->bookingtimes->sum('price'),
-    'payment' => fn() => $this->booking->payment,
-    'expired_at' => fn() => $this->booking->expired_at ?? '',
-    'fullpayment' => fn() => $this->booking->total_price,
-    'downpayment' => fn() => $this->booking->total_price / 2,
-    'booking',
+    "user" => fn() => $this->booking->user,
+    "totalPrice" => fn() => $this->booking->bookingtimes->sum("price"),
+    "payment" => fn() => $this->booking->payment,
+    "expired_at" => fn() => $this->booking->expired_at ?? "",
+    "fullpayment" => fn() => $this->booking->total_price,
+    "downpayment" => fn() => $this->booking->total_price / 2,
+    "booking",
 ]);
 
 $getTimeRemainingAttribute = function () {
@@ -24,7 +24,7 @@ $getTimeRemainingAttribute = function () {
     $expiry = Carbon::parse($this->expired_at);
 
     if ($expiry->isPast()) {
-        return 'Expired';
+        return "Expired";
     }
 
     $diffInSeconds = $expiry->diffInSeconds($now);
@@ -38,48 +38,48 @@ $processPayment = function ($id) {
     $record = PaymentRecord::find($id);
 
     if (!empty($record->snapToken)) {
-        $this->redirectRoute('payment_record.show', [
-            'paymentRecord' => $id,
+        $this->redirectRoute("payment_record.show", [
+            "paymentRecord" => $id,
         ]);
     } else {
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = config('midtrans.is_production');
+        Config::$serverKey = config("midtrans.server_key");
+        Config::$isProduction = config("midtrans.is_production");
         Config::$isSanitized = true;
         Config::$is3ds = true;
 
         // Data transaksi
         $params = [
-            'transaction_details' => [
-                'order_id' => $record->order_id,
-                'gross_amount' => $this->booking->payment_method === 'fullpayment' ? $this->fullpayment : $this->downpayment,
+            "transaction_details" => [
+                "order_id" => $record->order_id,
+                "gross_amount" => $this->booking->payment_method === "fullpayment" ? $this->fullpayment : $this->downpayment,
             ],
-            'customer_details' => [
-                'first_name' => $this->user->name,
-                'email' => $this->user->email,
-                'phone' => $this->user->telp,
+            "customer_details" => [
+                "first_name" => $this->user->name,
+                "email" => $this->user->email,
+                "phone" => $this->user->telp,
             ],
-            'expiry' => [
-                'start_time' => $this->booking->expired_at ? Carbon::parse($this->booking->expired_at)->format('Y-m-d H:i:s O') : Carbon::now()->format('Y-m-d H:i:s O'),
-                'unit' => 'minutes',
-                'duration' => $this->booking->expired_at ? Carbon::now()->diffInMinutes(Carbon::parse($this->booking->expired_at)) : 5, // Menghitung durasi kedaluwarsa dalam menit
-            ],
+            // "expiry" => [
+            //     "start_time" => $this->booking->expired_at ? Carbon::parse($this->booking->expired_at)->format("Y-m-d H:i:s O") : Carbon::now()->format("Y-m-d H:i:s O"),
+            //     "unit" => "minutes",
+            //     // "duration" => $this->booking->expired_at ? Carbon::now()->diffInMinutes(Carbon::parse($this->booking->expired_at)) : 5, // Menghitung durasi kedaluwarsa dalam menit
+            // ],
         ];
 
         try {
             $snapToken = Snap::getSnapToken($params);
 
-            $record->update(['snapToken' => $snapToken]);
+            $record->update(["snapToken" => $snapToken]);
 
-            $this->redirectRoute('payment_record.show', [
-                'paymentRecord' => $id,
+            $this->redirectRoute("payment_record.show", [
+                "paymentRecord" => $id,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Payment Error: ' . $e->getMessage());
+            \Log::error("Payment Error: " . $e->getMessage());
 
-            $this->alert('error', 'Ada yang salah pada input data! Payment Error: ' . $e->getMessage(), [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => true,
+            $this->alert("error", "Ada yang salah pada input data! Payment Error: " . $e->getMessage(), [
+                "position" => "center",
+                "timer" => 3000,
+                "toast" => true,
             ]);
         }
     }
@@ -87,9 +87,8 @@ $processPayment = function ($id) {
 
 ?>
 
-
 @volt
-    @push('scripts')
+    @push("scripts")
         <script>
             document.getElementById('printInvoiceBtn').addEventListener('click', function() {
                 window.print(); // Fungsi bawaan browser untuk mencetak halaman
@@ -98,9 +97,9 @@ $processPayment = function ($id) {
     @endpush
 
     <div>
-        <div class="alert alert-danger text-center {{ $booking->status === 'UNPAID' ?: 'd-none' }}" role="alert">
+        <div class="alert alert-danger text-center {{ $booking->status === "UNPAID" ?: "d-none" }}" role="alert">
             Selesaikan proses penyewaan lapangan dalam
-            <strong @if (now()->lessThan(\Carbon\Carbon::parse($expired_at)) && $booking->status === 'UNPAID') wire:poll.1s @endif>
+            <strong @if (now()->lessThan(\Carbon\Carbon::parse($expired_at)) && $booking->status === "UNPAID") wire:poll.1s @endif>
                 {{ $this->getTimeRemainingAttribute() }}
             </strong>
         </div>
@@ -113,13 +112,12 @@ $processPayment = function ($id) {
                     <div class="row mb-4">
                         <div class="col-6">
                             <button class="btn btn-primary btn-lg text-uppercase">
-                                {{ __('booking.' . $booking->status) }}
+                                {{ __("booking." . $booking->status) }}
                             </button>
 
                         </div>
                         <div class="col-6 text-end">
-                            <button type="button" class="btn btn-dark btn-lg mb-3 d-print-none"
-                                id="printInvoiceBtn">Download
+                            <button type="button" class="btn btn-dark btn-lg mb-3 d-print-none" id="printInvoiceBtn">Download
                                 Invoice</button>
                         </div>
                     </div>
@@ -143,14 +141,14 @@ $processPayment = function ($id) {
                         </div>
                         <div class="col-12 col-sm-6 col-md-4 text-end">
                             <address>
-                                <div>{{ $booking->created_at->format('d m Y h:i:s') }}</div>
+                                <div>{{ $booking->created_at->format("d m Y h:i:s") }}</div>
                                 <div>
                                     Metode Pembayaran :
-                                    {{ __('status.' . $booking->payment_method) }}
+                                    {{ __("status." . $booking->payment_method) }}
                                 </div>
                                 <div>
                                     No. Telp Alternatif :
-                                    {{ $booking->alternative_phone ?? '-' }}
+                                    {{ $booking->alternative_phone ?? "-" }}
                                 </div>
 
                             </address>
@@ -174,10 +172,10 @@ $processPayment = function ($id) {
                                         @foreach ($booking->bookingTimes as $time)
                                             <tr>
                                                 <th>{{ $time->field->field_name }}</th>
-                                                <th>{{ Carbon::parse($time->booking_date)->format('d-m-Y') }}</th>
-                                                <td>{{ $time->start_time . ' - ' . $time->end_time }}</td>
+                                                <th>{{ Carbon::parse($time->booking_date)->format("d-m-Y") }}</th>
+                                                <td>{{ $time->start_time . " - " . $time->end_time }}</td>
                                                 <td class="text-end">
-                                                    {{ __('type.' . $time->type) }}
+                                                    {{ __("type." . $time->type) }}
                                                 </td>
                                                 <td class="text-end">
                                                     {{ formatRupiah($time->price) }}
@@ -214,52 +212,54 @@ $processPayment = function ($id) {
                                                 Status
                                             </div>
                                             <div class="col-6 text-end">
-                                                {{ __('record.' . $item->status) }}
+                                                {{ __("record." . $item->status) }}
                                             </div>
                                             <div class="col-6">
                                                 Jumlah harus dibayar
                                             </div>
                                             <div class="col-6 text-end">
-                                                {{ $booking->payment_method === 'fullpayment' ? formatRupiah($fullpayment) : formatRupiah($downpayment) }}
+                                                {{ $booking->payment_method === "fullpayment" ? formatRupiah($fullpayment) : formatRupiah($downpayment) }}
                                             </div>
                                             <div class="col-6">
                                                 Jumlah yang diterima
                                             </div>
                                             <div class="col-6 text-end">
-                                                {{ formatRupiah($item->gross_amount) ?? '-' }}
+                                                {{ formatRupiah($item->gross_amount) ?? "-" }}
                                             </div>
                                             <div class="col-6">
                                                 Waktu pembayaran
                                             </div>
                                             <div class="col-6 text-end">
-                                                {{ $item->payment_time ?? '-' }}
+                                                {{ $item->payment_time ?? "-" }}
                                             </div>
                                             <div class="col-6">
                                                 Jenis pembayaran
                                             </div>
                                             <div class="col-6 text-end">
-                                                {{ $item->payment_type ?? '-' }}
+                                                {{ $item->payment_type ?? "-" }}
                                             </div>
                                             <div class="col-6">
                                                 Detail
                                             </div>
                                             <div class="col-6 text-end">
-                                                {{ $item->payment_detail ?? '-' }}
+                                                {{ $item->payment_detail ?? "-" }}
                                             </div>
                                             <div class="col-6">
                                                 Info
                                             </div>
                                             <div class="col-6 text-end">
-                                                {{ $item->status_message ?? '-' }}
+                                                {{ $item->status_message ?? "-" }}
                                             </div>
                                         </div>
                                     </div>
 
-                                    @if ($booking->status !== 'CANCEL' && $booking->status !== 'VERIFICATION')
+                                    @if (
+                                        $booking->status !== "CANCEL" &&
+                                            $booking->status !== "VERIFICATION" &&
+                                            ($item->status === "DRAF" || $item->status === "UNPAID"))
                                         <div class="card-footer bg-white border-0">
                                             <button type="button" wire:click='processPayment({{ $item->id }})'
-                                                class="btn btn-dark w-100 mb-3 {{ $item->status === 'DRAF' ?: 'd-none' }}"
-                                                role="button">
+                                                class="btn btn-dark w-100 mb-3" role="button">
                                                 <span>Lakukan Pembayaran</span>
                                                 <div wire:loading wire:target='processPayment'
                                                     class="spinner-border spinner-border-sm ms-2" role="status">
@@ -268,6 +268,7 @@ $processPayment = function ($id) {
                                             </button>
                                         </div>
                                     @endif
+
                                 </div>
                             </div>
                         @endforeach
