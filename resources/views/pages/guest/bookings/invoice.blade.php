@@ -14,8 +14,10 @@ state([
     "totalPrice" => fn() => $this->booking->bookingtimes->sum("price"),
     "payment" => fn() => $this->booking->payment,
     "expired_at" => fn() => $this->booking->expired_at ?? "",
+    "notExpired" => fn() => Carbon::now()->lessThan($this->expired_at),
     "fullpayment" => fn() => $this->booking->total_price,
     "downpayment" => fn() => $this->booking->total_price / 2,
+    "runningStatuses" => fn() => ["UNPAID", "PROCESS", "VERIFICATION"],
     "booking",
 ]);
 
@@ -36,6 +38,20 @@ $getTimeRemainingAttribute = function () {
 
 $processPayment = function ($id) {
     $record = PaymentRecord::find($id);
+
+    $booking = $this->booking;
+
+    // Cek expired_at
+    $expiredAt = Carbon::parse($booking->expired_at);
+    if (Carbon::now()->greaterThanOrEqualTo($expiredAt)) {
+        // Booking sudah expired
+        $this->alert("error", "Waktu pembayaran telah kedaluwarsa.", [
+            "position" => "center",
+            "timer" => 3000,
+            "toast" => true,
+        ]);
+        return;
+    }
 
     if (!empty($record->snapToken)) {
         $this->redirectRoute("payment_record.show", [
@@ -58,11 +74,11 @@ $processPayment = function ($id) {
                 "email" => $this->user->email,
                 "phone" => $this->user->telp,
             ],
-            // "expiry" => [
-            //     "start_time" => $this->booking->expired_at ? Carbon::parse($this->booking->expired_at)->format("Y-m-d H:i:s O") : Carbon::now()->format("Y-m-d H:i:s O"),
-            //     "unit" => "minutes",
-            //     // "duration" => $this->booking->expired_at ? Carbon::now()->diffInMinutes(Carbon::parse($this->booking->expired_at)) : 5, // Menghitung durasi kedaluwarsa dalam menit
-            // ],
+            "expiry" => [
+                "start_time" => $this->booking->expired_at ? Carbon::parse($this->booking->expired_at)->format("Y-m-d H:i:s O") : Carbon::now()->format("Y-m-d H:i:s O"),
+                "unit" => "minutes",
+                "duration" => $this->booking->expired_at ? Carbon::now()->diffInMinutes(Carbon::parse($this->booking->expired_at)) : 10, // Menghitung durasi kedaluwarsa dalam menit
+            ],
         ];
 
         try {
@@ -97,9 +113,9 @@ $processPayment = function ($id) {
     @endpush
 
     <div>
-        <div class="alert alert-danger text-center {{ $booking->status === "UNPAID" ?: "d-none" }}" role="alert">
+        <div class="alert alert-danger text-center @unless ($booking->status === "UNPAID") d-none @endunless" role="alert">
             Selesaikan proses penyewaan lapangan dalam
-            <strong @if (now()->lessThan(\Carbon\Carbon::parse($expired_at)) && $booking->status === "UNPAID") wire:poll.1s @endif>
+            <strong @if (now()->lessThan(\Carbon\Carbon::parse($expired_at)) && in_array($booking->status, $runningStatuses)) wire:poll.1s @endif>
                 {{ $this->getTimeRemainingAttribute() }}
             </strong>
         </div>
@@ -253,21 +269,27 @@ $processPayment = function ($id) {
                                         </div>
                                     </div>
 
-                                    @if (
-                                        $booking->status !== "CANCEL" &&
-                                            $booking->status !== "VERIFICATION" &&
-                                            ($item->status === "DRAF" || $item->status === "UNPAID"))
-                                        <div class="card-footer bg-white border-0">
-                                            <button type="button" wire:click='processPayment({{ $item->id }})'
-                                                class="btn btn-dark w-100 mb-3" role="button">
-                                                <span>Lakukan Pembayaran</span>
-                                                <div wire:loading wire:target='processPayment'
-                                                    class="spinner-border spinner-border-sm ms-2" role="status">
-                                                    <span class="visually-hidden">Loading...</span>
-                                                </div>
-                                            </button>
-                                        </div>
-                                    @endif
+                                    <div @if (now()->lessThan(\Carbon\Carbon::parse($expired_at)) && in_array($booking->status, $runningStatuses)) wire:poll.1s @endif>
+                                        @if (
+                                            // hanya tampil kalau bukan CANCEL/VERIFICATION
+                                            $booking->status !== "CANCEL" &&
+                                                $booking->status !== "VERIFICATION" &&
+                                                // hanya kalau record masih DRAF atau UNPAID
+                                                ($item->status === "DRAF" || $item->status === "UNPAID") &&
+                                                // dan waktu belum kedaluwarsa
+                                                $notExpired)
+                                            <div class="card-footer bg-white border-0">
+                                                <button type="button" wire:click='processPayment({{ $item->id }})'
+                                                    class="btn btn-dark w-100 mb-3" role="button">
+                                                    <span>Lakukan Pembayaran</span>
+                                                    <div wire:loading wire:target='processPayment'
+                                                        class="spinner-border spinner-border-sm ms-2" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        @endif
+                                    </div>
 
                                 </div>
                             </div>

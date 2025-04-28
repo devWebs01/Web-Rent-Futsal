@@ -93,6 +93,7 @@
             }
         </style>
         @stack("styles")
+        @vite([])
 
     </head>
 
