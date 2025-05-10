@@ -20,6 +20,6 @@ class Image extends Model
      */
     public function field(): BelongsTo
     {
-        return $this->belongsTo(field::class);
+        return $this->belongsTo(Field::class);
     }
 }
