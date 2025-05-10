@@ -6,15 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     * 'booking_id',
-     * 'field_id',
-     * 'booking_date',
-     * 'start_time',
-     * 'end_time',
-     * 'price',
-     */
     public function up(): void
     {
         Schema::create('booking_times', function (Blueprint $table) {
@@ -31,9 +22,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('booking_times');

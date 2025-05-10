@@ -1,8 +1,8 @@
  <?php
- 
+
  use Jantinnerezo\LivewireAlert\LivewireAlert;
  use function Livewire\Volt\{state, uses};
- 
+
  state([
      "user" => fn() => $this->booking->user,
      "requires_identity_validation" => fn() => $this->booking->bookingTimes->contains(fn($item) => $item->type === "STUDENT"),

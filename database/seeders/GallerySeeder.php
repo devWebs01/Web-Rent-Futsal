@@ -56,7 +56,7 @@ class GallerySeeder extends Seeder
                 'alt' => $altText,
             ]);
 
-            echo "Gambar disimpan: $imageName\n";
+            echo "Gambar disimpan: {$imageName}\n";
         }
 
         echo "Seeding selesai!\n";

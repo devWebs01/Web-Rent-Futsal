@@ -31,17 +31,17 @@
             </div>
             <div class="col-md-4">
                 @if ($document)
-                    
+
                     <div class="card text-start" style="width:100%; height: 250px; object-fit: cover;">
                         <img class="card-img placeholder" src="{{ $document->temporaryUrl() }}" style="width:100%; height: 250px; object-fit: cover;" alt="identity" />
                     </div>
-                    
+
                 @else
-                    
+
                     <div class="card placeholder" style="width:100%; height: 250px; object-fit: cover;">
                         <div class="card-body placeholder"></div>
                     </div>
-                    
+
                 @endif
             </div>
         </div>

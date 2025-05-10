@@ -23,33 +23,33 @@ Auth::routes([
     'verify' => 'true',
 ]);
 
-Route::get('/home', [HomeController::class, 'index'])
+Route::get('home', [HomeController::class, 'index'])
     ->middleware(['checkRole:developer,admin', 'autoCancel'])
     ->name('home');
 
-Route::get('/clear', function () {
+Route::get('clear', function () {
     Artisan::call('optimize:clear');
 
     return '✅ Optimize berhasil dibuat!';
 });
 
-Route::get('/storage-link', function () {
+Route::get('storage-link', function () {
     Artisan::call('storage:link');
 
     return '✅ Storage link berhasil dibuat!';
 });
 
-Route::get('/migrate-fresh', function () {
+Route::get('migrate-fresh', function () {
     Artisan::call('migrate:fresh --seed');
 
     return '✅ migrate dan seeder berhasil dibuat!';
 });
 
-Route::delete('/blogs/{id}', [HomeController::class, 'destroy'])->name('blogs.destroy');
+Route::delete('blogs/{id}', [HomeController::class, 'destroy'])->name('blogs.destroy');
 
 use Illuminate\Support\Facades\File;
 
-Route::get('/copy-storage', function () {
+Route::get('copy-storage', function () {
     $from = storage_path('app/public');
     $to = public_path('storage');
 

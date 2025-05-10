@@ -175,7 +175,7 @@ $edit = function () {
                         @endforeach
                     </div>
                 </div>
-            @elseif($field->images->isNotEmpty())
+            @elseif ($field->images->isNotEmpty())
                 <div class="card-body">
                     <small>Gambar tersimpan
                         <span class="text-danger">(Jika tidak mengubah gambar, tidak perlu melakukan

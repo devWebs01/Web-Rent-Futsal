@@ -12,7 +12,7 @@ class ConfirmPaymentMail extends Mailable
 
     public $booking;
 
-    public $name; // Tambahkan variabel name
+    public $name;
 
     public function __construct($booking)
     {

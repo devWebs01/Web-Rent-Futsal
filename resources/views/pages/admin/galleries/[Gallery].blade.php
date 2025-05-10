@@ -76,7 +76,7 @@ $edit = function () {
                     @if ($image)
                         <img src="{{ $image->temporaryUrl() }}" class="img rounded mb-3" width="100%" height="500px"
                             style="object-fit: cover" alt="preview" />
-                    @elseif(empty($image))
+                    @elseif (empty($image))
                         <small>Gambar tersimpan
                             <span class="text-danger">(Jika tidak mengubah gambar, tidak perlu melakukan
                                 input gambar)</span>

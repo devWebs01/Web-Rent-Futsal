@@ -69,7 +69,7 @@ $edit = function () {
                     @if ($thumbnail)
                         <img src="{{ $thumbnail->temporaryUrl() }}" class="img-thumbnail mb-3 rounded" width="100%"
                             height="300" style="object-fit: cover" alt="Preview Thumbnail">
-                    @elseif($this->blog->thumbnail)
+                    @elseif ($this->blog->thumbnail)
                         <img src="{{ asset('storage/' . $this->blog->thumbnail) }}" class="img-thumbnail mb-3 rounded"
                             width="100%" height="300" style="object-fit: cover" alt="Preview Thumbnail">
                     @endif

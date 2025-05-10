@@ -25,7 +25,7 @@
                     <tr>
                         <td style="padding: 30px; color: #333333; font-size: 16px; line-height: 1.5;">
                             <p style="margin: 0 0 20px 0; text-align: center;">
-                                Halo, {{ $name }}. Pemesanan lapangan futsal Anda telah dikonfirmasi!  
+                                Halo, {{ $name }}. Pemesanan lapangan futsal Anda telah dikonfirmasi!
                                 Segera lakukan pembayaran sebelum waktu berikut:
                             </p>
                             <h3 style="text-align: center; color: #28a745;">{{ $expired_at }}</h3>

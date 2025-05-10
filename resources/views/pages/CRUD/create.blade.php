@@ -37,7 +37,7 @@ $create = function () {
 
 <x-admin-layout>
     <x-slot name="title">Tambah model Baru</x-slot>
-    
+
 
     @volt
         <div>

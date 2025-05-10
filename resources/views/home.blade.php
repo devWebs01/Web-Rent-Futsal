@@ -134,16 +134,16 @@ $verificationBookings = computed(function () {
                                         </td>
                                     </tr>
                                 @endforeach
-    
+
                             </tbody>
                         </table>
-    
+
                         {{ $this->verificationBookings->links() }}
                     </div>
-    
+
                 </div>
             </div>
-            
+
         </div>
     @endvolt
 </x-admin-layout>
