@@ -35,11 +35,10 @@ class HomeController extends Controller
             return redirect()->route('blogs.index')
                 ->with('success', 'Data blog berhasil dihapus.');
         } catch (\Exception $e) {
-            \Log::error("Gagal menghapus blog: " . $e->getMessage());
+            \Log::error('Gagal menghapus blog: '.$e->getMessage());
 
             return redirect()->route('blogs.index')
                 ->with('error', 'Terjadi kesalahan saat menghapus data blog.');
         }
     }
-
 }

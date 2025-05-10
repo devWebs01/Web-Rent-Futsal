@@ -33,9 +33,9 @@
                      <div class="d-flex justify-content-between align-items-center">
                          <small class="h4 fw-bold pt-4">STATUS</small>
 
-                         <button class="btn btn-secondary btn-sm text-uppercase">
+                         <small class="h4 fw-bold pt-4 text-uppercase">
                              {{ __("booking." . $booking->status) }}
-                         </button>
+                         </small>
                      </div>
 
                      <hr>

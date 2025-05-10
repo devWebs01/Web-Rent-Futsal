@@ -17,7 +17,6 @@ class AutoCancelBooking
             ->where('expired_at', '<=', now()->subMinutes($expire_time))
             ->get();
 
-
         // Jika tidak ada booking yang kadaluarsa, lanjutkan saja tanpa proses
         if ($expiredBookings->isEmpty()) {
             return $next($request);
@@ -36,7 +35,6 @@ class AutoCancelBooking
         }
 
         return $next($request);
-        ;
-    }
 
+    }
 }
