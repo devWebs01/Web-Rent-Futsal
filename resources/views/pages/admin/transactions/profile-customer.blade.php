@@ -16,6 +16,8 @@ state([
     "phone" => fn() => $this->customer->phone ?? "",
     "identity" => fn() => $this->customer->identity,
     "dob" => fn() => $this->customer->identity->dob ?? "",
+    "requires_identity_validation" => fn() => $this->booking->bookingTimes->contains(fn($item) => $item->type === "STUDENT"),
+
     "booking",
 ]);
 
@@ -82,16 +84,26 @@ $confirmIdentity = function () {
 <div>
     @volt
         <div>
-            <small class="h5 fw-bold m-4">
+            <h4 class="h5 fw-bold mb-4">
                 Data Pelanggan
-            </small>
+            </h4>
 
-            <div class="card-img-top my-5 rounded">
-                <a href="{{ Storage::url($customer->identity->document) }}" data-fancybox data-caption="Identitas customer">
-                    <img src="{{ Storage::url($customer->identity->document) }}" class="img border" style="object-fit: cover;"
-                        width="100%" height="200px" alt="Existing Identity">
-                </a>
-            </div>
+            @if ($requires_identity_validation)
+                @if (!empty($identity))
+                    <div class="card-img-top my-5 rounded">
+                        <a href="{{ Storage::url($customer->identity->document) }}" data-fancybox
+                            data-caption="Identitas customer">
+                            <img src="{{ Storage::url($customer->identity->document) }}" class="img border"
+                                style="object-fit: cover;" width="100%" height="200px" alt="Existing Identity">
+                        </a>
+                    </div>
+                @else
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Perhatian:</strong> Customer belum mengunggah dokumen identitas.
+                    </div>
+                @endif
+            @endif
+
             <div class="row">
                 <div class="col-12">
                     <div class="mb-3">

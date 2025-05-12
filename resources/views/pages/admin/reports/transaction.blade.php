@@ -49,7 +49,7 @@ state([
                                     <td>{{ $item->user->name }}</td>
                                     <td>{{ $item->invoice }}</td>
                                     <td>{{ formatRupiah($item->total_price) }}</td>
-                                    <td>{{ __('status.' . $item->status) }}</td>
+                                    <td>{{ __('booking.' . $item->status) }}</td>
                                 </tr>
                             @endforeach
 

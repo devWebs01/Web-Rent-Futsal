@@ -4,20 +4,21 @@ use App\Models\Booking;
 use App\Models\BookingTime;
 use App\Models\PaymentRecord;
 use function Livewire\Volt\{state, usesPagination, computed};
+use Carbon\Carbon;
 
-usesPagination(theme: 'bootstrap');
+usesPagination(theme: "bootstrap");
 
 state([
-    'totalBookings' => Booking::count() ?: 0,
-    'totalUnpaidBookings' => Booking::where('status', 'UNPAID')->count() ?: 0,
-    'totalCompletedBookings' => BookingTime::where('status', 'STOP')->count() ?: 0,
-    'totalConfirmedPayments' => PaymentRecord::where('status', 'PAID')->sum('gross_amount') ?: 0,
-    'totalPendingPayments' => PaymentRecord::where('status', 'DRAF')->sum('gross_amount') ?: 0,
+    "totalBookings" => Booking::count() ?: 0,
+    "totalUnpaidBookings" => Booking::where("status", "UNPAID")->count() ?: 0,
+    "totalCompletedBookings" => BookingTime::where("status", "STOP")->count() ?: 0,
+    "totalConfirmedPayments" => PaymentRecord::where("status", "PAID")->sum("gross_amount") ?: 0,
+    "totalPendingPayments" => PaymentRecord::where("status", "DRAF")->sum("gross_amount") ?: 0,
     // 'verificationBookings' => Booking::where('status', 'VERIFICATION')->orWhere('status', 'PROCESS')->paginate(10),
 ]);
 
 $verificationBookings = computed(function () {
-    return Booking::where('status', 'VERIFICATION')->orWhere('status', 'PROCESS')->paginate(10);
+    return Booking::whereDate("created_at", Carbon::today())->paginate(10);
 });
 
 ?>
@@ -26,11 +27,10 @@ $verificationBookings = computed(function () {
     <x-slot name="title">Dashboard</x-slot>
 
     <x-slot name="header">
-        <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route("home") }}">Dashboard</a></li>
     </x-slot>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 
     @volt
         <div class="conteiner-fluid">
@@ -104,44 +104,44 @@ $verificationBookings = computed(function () {
             <div class="card" wire:poll.15s>
                 <h6 class="card-header fw-bold text-center">
                     Tabel Penyewaan Baru
-                </h5>
-                <div class="card-body">
-                    <div class="table-responsive border rounded">
-                        <table class="table table-striped text-center text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th>No.</th>
-                                    <th>Pelanggan</th>
-                                    <th>Invoice</th>
-                                    <th>Status</th>
-                                    <th>Total</th>
-                                    <th>Opsi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($this->verificationBookings as $no => $item)
+                    </h5>
+                    <div class="card-body">
+                        <div class="table-responsive border rounded">
+                            <table class="table table-striped text-center text-nowrap">
+                                <thead>
                                     <tr>
-                                        <td>{{ ++$no }}</td>
-                                        <td>{{ $item->user->name }}</td>
-                                        <td>{{ $item->invoice }}</td>
-                                        <td>{{ __('booking.' . $item->status) }}</td>
-                                        <td>{{ formatRupiah($item->total_price) }}</td>
-                                        <td>
-                                            <div>
-                                                <a href="{{ route('transactions.show', ['booking' => $item->id]) }}"
-                                                    class="btn btn-sm btn-primary">Detail</a>
-                                            </div>
-                                        </td>
+                                        <th>No.</th>
+                                        <th>Pelanggan</th>
+                                        <th>Invoice</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                        <th>Opsi</th>
                                     </tr>
-                                @endforeach
+                                </thead>
+                                <tbody>
+                                    @foreach ($this->verificationBookings as $no => $item)
+                                        <tr>
+                                            <td>{{ ++$no }}</td>
+                                            <td>{{ $item->user->name }}</td>
+                                            <td>{{ $item->invoice }}</td>
+                                            <td>{{ __("booking." . $item->status) }}</td>
+                                            <td>{{ formatRupiah($item->total_price) }}</td>
+                                            <td>
+                                                <div>
+                                                    <a href="{{ route("transactions.show", ["booking" => $item->id]) }}"
+                                                        class="btn btn-sm btn-primary">Detail</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
 
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
 
-                        {{ $this->verificationBookings->links() }}
+                            {{ $this->verificationBookings->links() }}
+                        </div>
+
                     </div>
-
-                </div>
             </div>
 
         </div>
