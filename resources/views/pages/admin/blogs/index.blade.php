@@ -3,27 +3,14 @@
 use App\Models\Blog;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use function Laravel\Folio\name;
-use function Livewire\Volt\{computed, state, usesPagination, uses};
+use function Livewire\Volt\{computed, uses};
 
 uses([LivewireAlert::class]);
 
 name("blogs.index");
 
-state(["search"])->url();
-usesPagination(theme: "bootstrap");
-
 $blogs = computed(function () {
-    if ($this->search == null) {
-        return blog::query()->latest()->paginate(10);
-    } else {
-        return blog::query()
-            ->where(function ($query) {
-                // isi
-                $query->whereAny(["title", "slug", "body", "tag", "thumbnail"], "LIKE", "%{$this->search}%");
-            })
-            ->latest()
-            ->paginate(10);
-    }
+    return blog::query()->latest()->get();
 });
 
 $destroy = function (blog $blog) {
@@ -42,6 +29,8 @@ $destroy = function (blog $blog) {
             "toast" => true,
         ]);
     }
+
+    $this->redirectRoute("blogs.index");
 };
 
 ?>
@@ -50,25 +39,19 @@ $destroy = function (blog $blog) {
     <div>
         <x-slot name="title">Data Blog</x-slot>
 
+        @include("components.partials.datatables")
+
         @volt
             <div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="row">
-                            <div class="col">
-                                <a href="{{ route("blogs.create") }}" class="btn btn-primary">Tambah
-                                    Blog</a>
-                            </div>
-                            <div class="col">
-                                <input wire:blog.live="search" type="search" class="form-control" name="search"
-                                    id="search" aria-describedby="searchId"
-                                    placeholder="Masukkan kata kunci pencarian" />
-                            </div>
-                        </div>
+                        <a href="{{ route("blogs.create") }}" class="btn btn-primary">Tambah
+                            Blog</a>
+
                     </div>
 
                     <div class="card-body">
-                        <div class="table-responsive border rounded">
+                        <div class="table-responsive border rounded p-4">
                             <table class="table table-striped text-center text-nowrap">
                                 <thead>
                                     <tr>
@@ -84,8 +67,8 @@ $destroy = function (blog $blog) {
                                             <td>{{ ++$no }}</td>
                                             <td>
                                                 <img class="object-fit-cover rounded-circle"
-                                                    src="{{ Storage::url($item->thumbnail) }}" alt="Thumbnail"
-                                                    width="50" height="50">
+                                                    src="{{ Storage::url($item->thumbnail) }}" alt="Thumbnail" width="50"
+                                                    height="50">
                                             </td>
                                             <td>{{ $item->title }}</td>
                                             <!-- Menampilkan gambar thumbnail -->
@@ -110,10 +93,7 @@ $destroy = function (blog $blog) {
                                     @endforeach
                                 </tbody>
                             </table>
-
-                            {{ $this->blogs->links() }}
                         </div>
-
                     </div>
                 </div>
             </div>

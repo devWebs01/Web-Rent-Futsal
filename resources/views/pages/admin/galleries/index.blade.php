@@ -3,44 +3,33 @@
 use App\Models\Gallery;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use function Laravel\Folio\name;
-use function Livewire\Volt\{computed, state, usesPagination, uses};
+use function Livewire\Volt\{computed, uses};
 
 uses([LivewireAlert::class]);
 
-name('galleries.index');
-
-state(['search'])->url();
-usesPagination(theme: 'bootstrap');
+name("galleries.index");
 
 $galleries = computed(function () {
-    if ($this->search == null) {
-        return gallery::query()->latest()->paginate(10);
-    } else {
-        return gallery::query()
-            ->where(function ($query) {
-                // isi
-                $query->whereAny(['image', 'alt'], 'LIKE', "%{$this->search}%");
-            })
-            ->latest()
-            ->paginate(10);
-    }
+    return gallery::query()->latest()->get();
 });
 
 $destroy = function (gallery $gallery) {
     try {
         $gallery->delete();
-        $this->alert('success', 'Data gallery berhasil dihapus!', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => true,
+        $this->alert("success", "Data gallery berhasil dihapus!", [
+            "position" => "center",
+            "timer" => 3000,
+            "toast" => true,
         ]);
     } catch (\Throwable $th) {
-        $this->alert('error', 'Data gallery gagal dihapus!', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => true,
+        $this->alert("error", "Data gallery gagal dihapus!", [
+            "position" => "center",
+            "timer" => 3000,
+            "toast" => true,
         ]);
     }
+
+    $this->redirectRoute("galleries.index");
 };
 
 ?>
@@ -49,26 +38,18 @@ $destroy = function (gallery $gallery) {
     <div>
         <x-slot name="title">Data gallery</x-slot>
 
+        @include("components.partials.datatables")
 
         @volt
             <div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="row">
-                            <div class="col">
-                                <a href="{{ route('galleries.create') }}" class="btn btn-primary">Tambah
-                                    Galeri</a>
-                            </div>
-                            <div class="col">
-                                <input wire:model.live="search" type="search" class="form-control" name="search"
-                                    id="search" aria-describedby="searchId"
-                                    placeholder="Masukkan kata kunci pencarian" />
-                            </div>
-                        </div>
+                        <a href="{{ route("galleries.create") }}" class="btn btn-primary">Tambah
+                            Galeri</a>
                     </div>
 
                     <div class="card-body">
-                        <div class="table-responsive border rounded">
+                        <div class="table-responsive border rounded p-4">
                             <table class="table table-striped text-center text-nowrap">
                                 <thead>
                                     <tr>
@@ -83,20 +64,20 @@ $destroy = function (gallery $gallery) {
                                         <tr>
                                             <td>{{ ++$no }}</td>
                                             <td>
-                                                <img src="{{ Storage::url($item->image) }}" class="object-fit-cover rounded" width="50" height="50"
-                                                    alt="{{ $item->alt }}" />
+                                                <img src="{{ Storage::url($item->image) }}" class="object-fit-cover rounded"
+                                                    width="50" height="50" alt="{{ $item->alt }}" />
 
                                             </td>
                                             <td>{{ $item->alt }}</td>
                                             <td>
                                                 <div>
-                                                    <a href="{{ route('galleries.edit', ['gallery' => $item->id]) }}"
+                                                    <a href="{{ route("galleries.edit", ["gallery" => $item->id]) }}"
                                                         class="btn btn-sm btn-warning">Edit</a>
                                                     <button wire:loading.attr='disabled'
                                                         wire:click='destroy({{ $item->id }})'
                                                         wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
                                                         class="btn btn-sm btn-danger">
-                                                        {{ __('Hapus') }}
+                                                        {{ __("Hapus") }}
                                                     </button>
                                                 </div>
                                             </td>
@@ -106,7 +87,6 @@ $destroy = function (gallery $gallery) {
                                 </tbody>
                             </table>
 
-                            {{ $this->galleries->links() }}
                         </div>
 
                     </div>
