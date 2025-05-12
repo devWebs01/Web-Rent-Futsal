@@ -28,7 +28,7 @@ $destroy = function (User $user) {
             "toast" => true,
         ]);
     }
-    $this->redirectRoute("get().index");
+    $this->redirectRoute("customers");
 };
 
 ?>

@@ -8,10 +8,10 @@ use function Livewire\Volt\{computed, state, usesPagination, uses};
 
 uses([LivewireAlert::class]);
 
-name('fields.index');
+name("fields.index");
 
-state(['search'])->url();
-usesPagination(theme: 'bootstrap');
+state(["search"])->url();
+usesPagination(theme: "bootstrap");
 
 $fields = computed(function () {
     if ($this->search == null) {
@@ -20,7 +20,7 @@ $fields = computed(function () {
         return field::query()
             ->where(function ($query) {
                 // isi
-                $query->whereAny(['field_name', 'description'], 'LIKE', "%{$this->search}%");
+                $query->whereAny(["field_name", "description"], "LIKE", "%{$this->search}%");
             })
             ->latest()
             ->paginate(10);
@@ -28,10 +28,8 @@ $fields = computed(function () {
 });
 
 $destroy = function (field $field) {
-
     try {
-
-        $images = Image::where('field_id', $field->id)->get();
+        $images = Image::where("field_id", $field->id)->get();
 
         if ($images->isNotEmpty()) {
             // Cek apakah koleksi tidak kosong
@@ -46,18 +44,21 @@ $destroy = function (field $field) {
 
         $field->delete();
 
-        $this->alert('success', 'Data berhasil dihapus!', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => true,
+        $this->alert("success", "Data berhasil dihapus!", [
+            "position" => "center",
+            "timer" => 3000,
+            "toast" => true,
         ]);
     } catch (\Throwable $th) {
-        $this->alert('error', 'Data gagal dihapus!', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => true,
+        $this->alert("error", "Data gagal dihapus!", [
+            "position" => "center",
+            "timer" => 3000,
+            "toast" => true,
         ]);
     }
+
+    $this->redirectRoute("users.index");
+
 };
 
 ?>
@@ -68,69 +69,63 @@ $destroy = function (field $field) {
 
         <x-slot name="header">
             <li class="breadcrumb-item">
-                <a href="{{ route('home') }}">Dashboard</a>
+                <a href="{{ route("home") }}">Dashboard</a>
             </li>
             <li class="breadcrumb-item">
-                <a href="{{ route('fields.index') }}">Lapangan</a>
+                <a href="{{ route("fields.index") }}">Lapangan</a>
             </li>
         </x-slot>
 
+        @include("components.partials.datatables")
+
+
         @volt
-        <div>
-            <div class="card">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col">
-                            <a href="{{ route('fields.create') }}" class="btn btn-primary">Tambah
-                                Lapangan</a>
-                        </div>
-                        <div class="col">
-                            <input wire:model.live="search" type="search" class="form-control" name="search" id="search"
-                                aria-describedby="searchId" placeholder="Masukkan kata kunci pencarian" />
-                        </div>
-                    </div>
-                </div>
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <a href="{{ route("fields.create") }}" class="btn btn-primary">Tambah
+                            Lapangan</a>
 
-                <div class="card-body">
-                    <div class="table-responsive border rounded">
-                        <table class="table table-striped text-center text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th>No.</th>
-                                    <th>Lapangan</th>
-                                    <th>Opsi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($this->fields as $no => $item)
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive border rounded p-4">
+                            <table class="table table-striped text-center text-nowrap">
+                                <thead>
                                     <tr>
-                                        <td>{{ ++$no }}</td>
-                                        <td>{{ $item->field_name }}</td>
-                                        <td>
-                                            <div>
-                                                <a href="{{ route('fields.edit', ['field' => $item->id]) }}"
-                                                    class="btn btn-sm btn-warning">Edit</a>
-                                                <button wire:loading.attr='disabled' wire:click='destroy({{ $item->id }})'
-                                                    wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
-                                                    class="btn btn-sm btn-danger">
-                                                    {{ __('Hapus') }}
-                                                </button>
-                                            </div>
-                                        </td>
+                                        <th>No.</th>
+                                        <th>Lapangan</th>
+                                        <th>Opsi</th>
                                     </tr>
-                                @endforeach
+                                </thead>
+                                <tbody>
+                                    @foreach ($this->fields as $no => $item)
+                                        <tr>
+                                            <td>{{ ++$no }}</td>
+                                            <td>{{ $item->field_name }}</td>
+                                            <td>
+                                                <div>
+                                                    <a href="{{ route("fields.edit", ["field" => $item->id]) }}"
+                                                        class="btn btn-sm btn-warning">Edit</a>
+                                                    <button wire:loading.attr='disabled'
+                                                        wire:click='destroy({{ $item->id }})'
+                                                        wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
+                                                        class="btn btn-sm btn-danger">
+                                                        {{ __("Hapus") }}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
 
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+
+                        </div>
 
                     </div>
-                    <div class="m-3">
-                        {{ $this->fields->links() }}
-                    </div>
-
                 </div>
             </div>
-        </div>
         @endvolt
 
     </div>
