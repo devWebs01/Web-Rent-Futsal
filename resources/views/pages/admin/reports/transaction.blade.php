@@ -7,10 +7,10 @@ use function Livewire\Volt\{computed, state, usesPagination, uses};
 
 uses([LivewireAlert::class]);
 
-name('reports.index');
+name("reports.index");
 
 state([
-    'bookings' => booking::latest()->get(),
+    "bookings" => booking::latest()->get(),
 ]);
 
 ?>
@@ -19,48 +19,47 @@ state([
     <x-slot name="title">Laporan Transaksi</x-slot>
 
     <x-slot name="header">
-        <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route("home") }}">Dashboard</a></li>
         <li class="breadcrumb-item">
-            <a href="{{ route('reports.index') }}">Laporan Transaksi</a>
+            <a href="{{ route("reports.index") }}">Laporan Transaksi</a>
         </li>
     </x-slot>
 
-    @include('layouts.print')
+    @include("components.partials.print")
 
     @volt
-    <div>
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table display" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th>Pelanggan</th>
-                                <th>Invoice</th>
-                                <th>Total Harga</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($bookings as $no => $item)
+        <div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table display" style="width:100%">
+                            <thead>
                                 <tr>
-                                    <td>{{ ++$no }}</td>
-                                    <td>{{ $item->user->name }}</td>
-                                    <td>{{ $item->invoice }}</td>
-                                    <td>{{ formatRupiah($item->total_price) }}</td>
-                                    <td>{{ __('booking.' . $item->status) }}</td>
+                                    <th>No.</th>
+                                    <th>Pelanggan</th>
+                                    <th>Invoice</th>
+                                    <th>Total Harga</th>
+                                    <th>Status</th>
                                 </tr>
-                            @endforeach
+                            </thead>
+                            <tbody>
+                                @foreach ($bookings as $no => $item)
+                                    <tr>
+                                        <td>{{ ++$no }}</td>
+                                        <td>{{ $item->user->name }}</td>
+                                        <td>{{ $item->invoice }}</td>
+                                        <td>{{ formatRupiah($item->total_price) }}</td>
+                                        <td>{{ __("booking." . $item->status) }}</td>
+                                    </tr>
+                                @endforeach
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
-
             </div>
         </div>
-    </div>
     @endvolt
-
 
 </x-admin-layout>

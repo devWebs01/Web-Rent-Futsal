@@ -11,21 +11,21 @@ usesFileUploads();
 
 uses([LivewireAlert::class]);
 
-name('blogs.create');
+name("blogs.create");
 
 state([
-    'title' => '',
-    'slug' => '',
-    'body' => '',
-    'tag' => '',
-    'thumbnail' => null,
+    "title" => "",
+    "slug" => "",
+    "body" => "",
+    "tag" => "",
+    "thumbnail" => null,
 ]);
 
 rules([
-    'title' => 'required|string|max:255',
-    'body' => 'required|string',
-    'tag' => 'required|string',
-    'thumbnail' => 'required|image', // Maksimal 2MB
+    "title" => "required|string|max:255",
+    "body" => "required|string",
+    "tag" => "required|string",
+    "thumbnail" => "required|image", // Maksimal 2MB
 ]);
 
 $create = function () {
@@ -35,20 +35,20 @@ $create = function () {
 
     // Simpan thumbnail jika diupload
     if ($this->thumbnail) {
-        $validateData['thumbnail'] = $this->thumbnail->store('blogs', 'public');
+        $validateData["thumbnail"] = $this->thumbnail->store("blogs", "public");
     }
 
     Blog::create($validateData);
 
     $this->reset();
 
-    $this->alert('success', 'Blog berhasil ditambahkan!', [
-        'position' => 'center',
-        'timer' => 3000,
-        'toast' => true,
+    $this->alert("success", "Blog berhasil ditambahkan!", [
+        "position" => "center",
+        "timer" => 3000,
+        "toast" => true,
     ]);
 
-    $this->redirectRoute('blogs.index');
+    $this->redirectRoute("blogs.index");
 };
 
 ?>
@@ -56,11 +56,11 @@ $create = function () {
 <x-admin-layout>
     <x-slot name="title">Tambah Blog Baru</x-slot>
 
-    @include('layouts.tom-select')
+    @include("components.partials.tom-select")
 
     @volt
         <div>
-            @include('layouts.editor')
+            @include("components.partials.editor")
             <div class="card">
                 <div class="card-header">
                     <div class="alert alert-primary" role="alert">
@@ -81,9 +81,9 @@ $create = function () {
 
                         <div class="mb-3">
                             <label for="title" class="form-label">Judul</label>
-                            <input type="text" class="form-control @error('title') is-invalid @enderror"
+                            <input type="text" class="form-control @error("title") is-invalid @enderror"
                                 wire:model="title" id="title" placeholder="Masukkan judul blog" />
-                            @error('title')
+                            @error("title")
                                 <small class="form-text text-danger">{{ $message }}</small>
                             @enderror
                         </div>
@@ -94,7 +94,7 @@ $create = function () {
                                 <input type="text" id="input-tags" wire:model="tag" id="tag"
                                     placeholder="Masukkan tag blog (opsional)" />
                             </div>
-                            @error('tag')
+                            @error("tag")
                                 <small class="form-text text-danger">{{ $message }}</small>
                             @enderror
                         </div>
@@ -102,21 +102,21 @@ $create = function () {
                         <div class="mb-3">
                             <label for="body" class="form-label">Konten</label>
                             <div wire:ignore>
-                                <textarea class="form-control @error('body') is-invalid @enderror" wire:model="body" id="editor" rows="6"
+                                <textarea class="form-control @error("body") is-invalid @enderror" wire:model="body" id="editor" rows="6"
                                     placeholder="Tulis isi blog">
                         {{ $body }}
                         </textarea>
                             </div>
-                            @error('body')
+                            @error("body")
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
 
                         <div class="mb-3">
                             <label for="thumbnail" class="form-label">Thumbnail</label>
-                            <input type="file" class="form-control @error('thumbnail') is-invalid @enderror"
+                            <input type="file" class="form-control @error("thumbnail") is-invalid @enderror"
                                 wire:model="thumbnail" id="thumbnail" />
-                            @error('thumbnail')
+                            @error("thumbnail")
                                 <small class="form-text text-danger">{{ $message }}</small>
                             @enderror
                         </div>

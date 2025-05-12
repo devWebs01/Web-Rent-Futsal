@@ -24,7 +24,7 @@ class AdminLayout extends Component
     {
         $setting = Setting::first();
 
-        return view('components.admin-layout', [
+        return view('components.layouts.admin-layout', [
             'setting' => $setting,
         ]);
     }

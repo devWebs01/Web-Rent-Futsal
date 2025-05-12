@@ -7,19 +7,19 @@ use function Livewire\Volt\{state, uses};
 
 uses([LivewireAlert::class]);
 
-name('bookings.index');
+name("bookings.index");
 
-state(['search'])->url();
+state(["search"])->url();
 state([
-    'auth' => fn() => Auth::user(),
-    'bookings' => fn() => booking::where('user_id', $this->auth->id)->latest()->get(),
+    "auth" => fn() => Auth::user(),
+    "bookings" => fn() => booking::where("user_id", $this->auth->id)->latest()->get(),
 ]);
 
 ?>
 
 <x-guest-layout>
     <x-slot name="title">Data booking</x-slot>
-    @include('layouts.datatables')
+    @include("components.partials.datatables")
 
     @volt
         <div class="container-fluid px-3">
@@ -58,14 +58,14 @@ state([
                                         <td>{{ $item->invoice }}</td>
                                         <td>
                                             <span class="btn btn-light">
-                                                {{ __('booking.' . $item->status) }}
+                                                {{ __("booking." . $item->status) }}
                                             </span>
 
                                         </td>
                                         <td>{{ formatRupiah($item->total_price) }}</td>
                                         <td>
                                             <div>
-                                                <a href="{{ route('bookings.show', ['booking' => $item->id]) }}"
+                                                <a href="{{ route("bookings.show", ["booking" => $item->id]) }}"
                                                     wire:confirm="Apakah kamu yakin ingin menghapus data ini?"
                                                     class="btn btn-primary">
                                                     Detail

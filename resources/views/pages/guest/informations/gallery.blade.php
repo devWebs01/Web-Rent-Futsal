@@ -4,17 +4,17 @@ use App\Models\Gallery;
 use function Livewire\Volt\{state};
 use function Laravel\Folio\{name};
 
-name('informations.gallery');
+name("informations.gallery");
 
 state([
-    'galleries' => fn() => Gallery::get(),
+    "galleries" => fn() => Gallery::get(),
 ]);
 
 ?>
 
 <x-guest-layout>
     <x-slot name="title">Galeri Kami</x-slot>
-    @include('layouts.fancybox')
+    @include("components.partials.fancybox")
     @volt
         <div>
             <div class="container-fluid px-3">

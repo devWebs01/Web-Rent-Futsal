@@ -14,54 +14,54 @@ use Carbon\Carbon;
 uses([LivewireAlert::class]);
 usesFileUploads();
 
-name('bookings.show');
+name("bookings.show");
 
 state([
-    'fullpayment' => fn() => $this->booking->total_price,
-    'downpayment' => fn() => $this->booking->total_price / 2,
-    'payment_method' => fn() => $this->booking->payment_method ?? '',
-    'expired_at' => fn() => $this->booking->expired_at ?? '',
-    'booking',
+    "fullpayment" => fn() => $this->booking->total_price,
+    "downpayment" => fn() => $this->booking->total_price / 2,
+    "payment_method" => fn() => $this->booking->payment_method ?? "",
+    "expired_at" => fn() => $this->booking->expired_at ?? "",
+    "booking",
 
     // user
-    'user' => fn() => Auth()->user(),
-    'booking_id' => fn() => $this->booking->id,
-    'user_name' => fn() => $this->user->name,
-    'user_phone' => fn() => $this->user->phone,
-    'alternative_phone' => fn() => $this->booking->alternative_phone ?? '',
+    "user" => fn() => Auth()->user(),
+    "booking_id" => fn() => $this->booking->id,
+    "user_name" => fn() => $this->user->name,
+    "user_phone" => fn() => $this->user->phone,
+    "alternative_phone" => fn() => $this->booking->alternative_phone ?? "",
 
     // identity
-    'requires_identity_validation' => fn() => $this->booking->bookingTimes->contains(fn($item) => $item->type === 'STUDENT'),
-    'identity' => fn() => $this->user->identity ?? '',
-    'dob',
-    'document',
+    "requires_identity_validation" => fn() => $this->booking->bookingTimes->contains(fn($item) => $item->type === "STUDENT"),
+    "identity" => fn() => $this->user->identity ?? "",
+    "dob",
+    "document",
 ]);
 
 rules([
-    'payment_method' => 'required|in:downpayment,fullpayment',
+    "payment_method" => "required|in:downpayment,fullpayment",
 ]);
 
 $validateIdentity = function () {
     $validatedData = $this->validate([
-        'dob' => 'required|date',
-        'document' => 'required|file|mimes:jpg,png,pdf', // Maksimal 2MB
+        "dob" => "required|date",
+        "document" => "required|file|mimes:jpg,png,pdf", // Maksimal 2MB
     ]);
 
-    $path = $this->document->store('documents', 'public');
+    $path = $this->document->store("documents", "public");
 
     Identity::create([
-        'user_id' => $this->user->id,
-        'dob' => $validatedData['dob'],
-        'document' => $path,
+        "user_id" => $this->user->id,
+        "dob" => $validatedData["dob"],
+        "document" => $path,
     ]);
 
-    $this->alert('success', 'Validasi identitas berhasil!', [
-        'position' => 'center',
-        'timer' => 3000,
-        'toast' => true,
+    $this->alert("success", "Validasi identitas berhasil!", [
+        "position" => "center",
+        "timer" => 3000,
+        "toast" => true,
     ]);
 
-    $this->redirectRoute('bookings.show', ['booking' => $this->booking->id]);
+    $this->redirectRoute("bookings.show", ["booking" => $this->booking->id]);
 };
 
 $gap_dp = fn() => $this->booking->total_price - $this->total_downpayment;
@@ -70,20 +70,20 @@ $save_booking = function () {
     $this->validate();
     $booking = $this->booking;
 
-    if ($this->requires_identity_validation && !Identity::where('user_id', $this->user->id)->exists()) {
-        $this->alert('error', 'Silakan lengkapi validasi identitas terlebih dahulu.', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => true,
+    if ($this->requires_identity_validation && !Identity::where("user_id", $this->user->id)->exists()) {
+        $this->alert("error", "Silakan lengkapi validasi identitas terlebih dahulu.", [
+            "position" => "center",
+            "timer" => 3000,
+            "toast" => true,
         ]);
         return;
     }
 
     $validate_payment = $this->validate([
-        'booking_id' => 'required|exists:bookings,id', // Memastikan booking_id ada di tabel bookings
-        'user_name' => 'required|string|max:255', // Nama pengguna harus diisi, berupa string, dan maksimal 255 karakter
-        'user_phone' => 'required|numeric', // Nomor telepon pengguna harus diisi dan berupa angka
-        'alternative_phone' => 'nullable|numeric', // Nomor telepon alternatif bersifat opsional dan harus berupa angka
+        "booking_id" => "required|exists:bookings,id", // Memastikan booking_id ada di tabel bookings
+        "user_name" => "required|string|max:255", // Nama pengguna harus diisi, berupa string, dan maksimal 255 karakter
+        "user_phone" => "required|numeric", // Nomor telepon pengguna harus diisi dan berupa angka
+        "alternative_phone" => "nullable|numeric", // Nomor telepon alternatif bersifat opsional dan harus berupa angka
     ]);
 
     try {
@@ -91,13 +91,13 @@ $save_booking = function () {
 
         // Siapkan data untuk update booking
         $updateData = [
-            'payment_method' => $this->payment_method,
-            'alternative_phone' => $this->alternative_phone,
+            "payment_method" => $this->payment_method,
+            "alternative_phone" => $this->alternative_phone,
         ];
 
         // Jika validasi identitas diperlukan, update status menjadi 'VERIFICATION'
         if ($this->requires_identity_validation) {
-            $updateData['status'] = 'VERIFICATION';
+            $updateData["status"] = "VERIFICATION";
         }
 
         // Update booking dengan data yang sudah disiapkan
@@ -105,41 +105,41 @@ $save_booking = function () {
 
         $payment = Payment::create($validate_payment);
 
-        if ($this->payment_method == 'fullpayment') {
+        if ($this->payment_method == "fullpayment") {
             PaymentRecord::create([
-                'payment_id' => $payment->id,
-                'status' => 'DRAF',
-                'order_id' => rand(),
+                "payment_id" => $payment->id,
+                "status" => "DRAF",
+                "order_id" => rand(),
             ]);
         } else {
             PaymentRecord::create([
-                'payment_id' => $payment->id,
-                'status' => 'DRAF',
-                'order_id' => rand(),
+                "payment_id" => $payment->id,
+                "status" => "DRAF",
+                "order_id" => rand(),
             ]);
 
             PaymentRecord::create([
-                'payment_id' => $payment->id,
-                'status' => 'DRAF',
-                'order_id' => rand(),
+                "payment_id" => $payment->id,
+                "status" => "DRAF",
+                "order_id" => rand(),
             ]);
         }
 
         DB::commit();
 
-        $this->alert('success', 'Data booking sedang di proses!', [
-            'position' => 'center',
-            'timer' => 5000,
-            'toast' => true,
+        $this->alert("success", "Data booking sedang di proses!", [
+            "position" => "center",
+            "timer" => 5000,
+            "toast" => true,
         ]);
 
-        $this->redirectRoute('bookings.show', ['booking' => $this->booking->id]);
+        $this->redirectRoute("bookings.show", ["booking" => $this->booking->id]);
     } catch (\Throwable $th) {
         DB::rollback();
-        $this->alert('error', 'Ada yang salah pada input data!', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => true,
+        $this->alert("error", "Ada yang salah pada input data!", [
+            "position" => "center",
+            "timer" => 3000,
+            "toast" => true,
         ]);
     }
 };
@@ -147,16 +147,16 @@ $save_booking = function () {
 $cancelBooking = function () {
     $booking = $this->booking;
     $booking->update([
-        'status' => 'CANCEL',
+        "status" => "CANCEL",
     ]);
 
-    $this->alert('warning', 'Booking telah dibatalkan!', [
-        'position' => 'center',
-        'timer' => 5000,
-        'toast' => true,
+    $this->alert("warning", "Booking telah dibatalkan!", [
+        "position" => "center",
+        "timer" => 5000,
+        "toast" => true,
     ]);
 
-    $this->redirectRoute('bookings.index');
+    $this->redirectRoute("bookings.index");
 };
 
 $getTimeRemainingAttribute = function () {
@@ -164,7 +164,7 @@ $getTimeRemainingAttribute = function () {
     $expiry = Carbon::parse($this->expired_at);
 
     if ($expiry->isPast()) {
-        return 'Expired';
+        return "Expired";
     }
 
     $diffInSeconds = $expiry->diffInSeconds($now);
@@ -178,13 +178,13 @@ $getTimeRemainingAttribute = function () {
 
 <x-guest-layout>
 
-    @include('layouts.fancybox')
+    @include("components.partials.fancybox")
     @volt
         <div class="container-fluid px-3">
             <x-slot name="title">Booking {{ $booking->invoice }}</x-slot>
             @if (empty($booking->payment->records))
                 <div class="mb-3">
-                    @include('pages.guest.bookings.formIdentity')
+                    @include("pages.guest.bookings.formIdentity")
                 </div>
 
                 <section>
@@ -222,9 +222,9 @@ $getTimeRemainingAttribute = function () {
                                             <div class="col">
                                                 <h4 class="fw-bold text-primary">{{ $item->field->field_name }}</h4>
                                                 <p class="mb-0">
-                                                    {{ Carbon::parse($item->booking_date)->format('d M Y') }}
-                                                    - {{ $item->start_time . ' - ' . $item->end_time }}
-                                                    - {{ __('type.' . $item->type) }}
+                                                    {{ Carbon::parse($item->booking_date)->format("d M Y") }}
+                                                    - {{ $item->start_time . " - " . $item->end_time }}
+                                                    - {{ __("type." . $item->type) }}
                                                 </p>
                                                 <p>{{ formatRupiah($item->price) }}</p>
                                             </div>
@@ -233,13 +233,13 @@ $getTimeRemainingAttribute = function () {
                                 </div>
                             </div>
 
-                            <div class="col-lg-5" @if (now()->lessThan(\Carbon\Carbon::parse($expired_at)) && $booking->status === 'UNPAID') wire:poll.1s @endif>
+                            <div class="col-lg-5" @if (now()->lessThan(\Carbon\Carbon::parse($expired_at)) && $booking->status === "UNPAID") wire:poll.1s @endif>
                                 <div class="card-body">
                                     <h5 class="mb-3 fw-bold">Pembayaran</h5>
                                     <div class="row mb-3">
                                         <div class="col-5">Kadaluarsa</div>
                                         <div class="col-7">
-                                            : {{ $booking->status === 'UNPAID' ? $this->getTimeRemainingAttribute() : '-' }}
+                                            : {{ $booking->status === "UNPAID" ? $this->getTimeRemainingAttribute() : "-" }}
                                         </div>
                                         <br>
                                         <div class="col-5">Total Bayar</div>
@@ -249,7 +249,7 @@ $getTimeRemainingAttribute = function () {
                                         <br>
                                         <div class="col-5">Status</div>
                                         <div class="col-7">
-                                            : {{ __('booking.' . $booking->status) }}
+                                            : {{ __("booking." . $booking->status) }}
                                         </div>
                                         <br>
                                         <div class="col-5">Pelanggan</div>
@@ -258,17 +258,15 @@ $getTimeRemainingAttribute = function () {
                                         </div>
                                     </div>
 
-
-
                                     <form wire:submit='save_booking'
-                                        class="{{ $booking->status !== 'CANCEL' ?: 'd-none' }}">
+                                        class="{{ $booking->status !== "CANCEL" ?: "d-none" }}">
                                         <div class="border-top py-3">
                                             <label for="payment_method" class="form-label">
                                                 Metode Pembayaran
                                             </label>
                                             <select class="form-select" wire:model.live='payment_method'
                                                 name="payment_method" id="payment_method"
-                                                {{ $booking->status !== 'PROCESS' ?: 'disabled' }}>
+                                                {{ $booking->status !== "PROCESS" ?: "disabled" }}>
                                                 <option value=" " selected>Pilih salah satu</option>
                                                 <option value="downpayment">
                                                     Down Payment (DP)
@@ -277,17 +275,17 @@ $getTimeRemainingAttribute = function () {
                                                     Bayar Penuh (Lunas)
                                                 </option>
                                             </select>
-                                            @error('payment_method')
+                                            @error("payment_method")
                                                 <small class="form-text text-danger">{{ $message }}</small>
                                             @enderror
                                         </div>
 
-                                        @if ($payment_method === 'downpayment')
+                                        @if ($payment_method === "downpayment")
                                             <div class="mb-3">
                                                 <label for="downpayment" class="form-label">Down Payment (DP)</label>
                                                 <input type="number" class="form-control" name="downpayment"
                                                     id="downpayment" value="{{ $downpayment }}" readonly
-                                                    {{ $booking->status !== 'PROCESS' ?: 'disabled' }} />
+                                                    {{ $booking->status !== "PROCESS" ?: "disabled" }} />
                                                 <small id="downpaymentId" class="form-text text-muted">Silahkan bayar
                                                     sisa
                                                     pembayaran saat dilapangan</small>
@@ -299,8 +297,8 @@ $getTimeRemainingAttribute = function () {
                                                 (Opsional)</label>
                                             <input type="number" wire:model='alternative_phone' class="form-control"
                                                 name="alternative_phone" id="alternative_phone"
-                                                {{ $booking->status !== 'PROCESS' ?: 'disabled' }} />
-                                            @error('alternative_phone')
+                                                {{ $booking->status !== "PROCESS" ?: "disabled" }} />
+                                            @error("alternative_phone")
                                                 <small id="alternative_phoneId" class="form-text text-danger">
                                                     {{ $message }}
                                                 </small>
@@ -315,13 +313,13 @@ $getTimeRemainingAttribute = function () {
                                         <div class="row">
                                             <div class="col-6">
                                                 <button type="button" wire:click='cancelBooking'
-                                                    class="w-100 btn btn-dark {{ $booking->status !== 'PROCESS' ?: 'd-none' }}">
+                                                    class="w-100 btn btn-dark {{ $booking->status !== "PROCESS" ?: "d-none" }}">
                                                     Batal
                                                 </button>
                                             </div>
                                             <div class="col-6">
                                                 <button type="submit"
-                                                    class="w-100 btn btn-primary {{ $booking->status !== 'PROCESS' ?: 'd-none' }}">
+                                                    class="w-100 btn btn-primary {{ $booking->status !== "PROCESS" ?: "d-none" }}">
                                                     Submit
                                                 </button>
                                             </div>
@@ -335,7 +333,7 @@ $getTimeRemainingAttribute = function () {
                 </section>
             @else
                 <div>
-                    @include('pages.guest.bookings.invoice', ['booking' => $booking])
+                    @include("pages.guest.bookings.invoice", ["booking" => $booking])
                 </div>
             @endif
 

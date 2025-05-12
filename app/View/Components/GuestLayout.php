@@ -24,6 +24,6 @@ class GuestLayout extends Component
     {
         $setting = Setting::first();
 
-        return view('components.guest-layout', compact('setting'));
+        return view('components.layouts.guest-layout', compact('setting'));
     }
 }

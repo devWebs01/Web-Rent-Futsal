@@ -24,6 +24,6 @@ class AuthLayout extends Component
     {
         $setting = Setting::first();
 
-        return view('components.auth-layout', compact('setting'));
+        return view('components.layouts.auth-layout', compact('setting'));
     }
 }

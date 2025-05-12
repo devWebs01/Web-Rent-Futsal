@@ -105,7 +105,7 @@ $cashPayment = function ($id) {
         </li>
     </x-slot>
 
-    @include("layouts.fancybox")
+    @include("components.partials.fancybox")
 
     @volt
         <div>

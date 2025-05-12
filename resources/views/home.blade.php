@@ -3,7 +3,7 @@
 use App\Models\Booking;
 use App\Models\BookingTime;
 use App\Models\PaymentRecord;
-use function Livewire\Volt\{state, usesPagination, computed};
+use function Livewire\Volt\{state, usesPagination, computed, with};
 use Carbon\Carbon;
 
 usesPagination(theme: "bootstrap");
@@ -14,12 +14,8 @@ state([
     "totalCompletedBookings" => BookingTime::where("status", "STOP")->count() ?: 0,
     "totalConfirmedPayments" => PaymentRecord::where("status", "PAID")->sum("gross_amount") ?: 0,
     "totalPendingPayments" => PaymentRecord::where("status", "DRAF")->sum("gross_amount") ?: 0,
-    // 'verificationBookings' => Booking::where('status', 'VERIFICATION')->orWhere('status', 'PROCESS')->paginate(10),
+    "verificationBookings" => Booking::whereDate("created_at", Carbon::today())->get(),
 ]);
-
-$verificationBookings = computed(function () {
-    return Booking::whereDate("created_at", Carbon::today())->paginate(10);
-});
 
 ?>
 
@@ -30,10 +26,13 @@ $verificationBookings = computed(function () {
         <li class="breadcrumb-item"><a href="{{ route("home") }}">Dashboard</a></li>
     </x-slot>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     @volt
         <div class="conteiner-fluid">
+            
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+            @include("components.partials.datatables")
+
             <!-- Grafik Booking -->
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -84,6 +83,7 @@ $verificationBookings = computed(function () {
                     });
                 });
             </script>
+
             <div class="row gap-2 px-3">
                 <div class="col-md-8 card mb-4">
                     <div class="card-body">
@@ -105,8 +105,8 @@ $verificationBookings = computed(function () {
                 <h6 class="card-header fw-bold text-center">
                     Tabel Penyewaan Baru
                     </h5>
-                    <div class="card-body">
-                        <div class="table-responsive border rounded">
+                    <div class="card-body" wire:ignore>
+                        <div class="table-responsive border rounded p-4">
                             <table class="table table-striped text-center text-nowrap">
                                 <thead>
                                     <tr>
@@ -119,7 +119,7 @@ $verificationBookings = computed(function () {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($this->verificationBookings as $no => $item)
+                                    @foreach ($verificationBookings as $no => $item)
                                         <tr>
                                             <td>{{ ++$no }}</td>
                                             <td>{{ $item->user->name }}</td>
@@ -138,7 +138,6 @@ $verificationBookings = computed(function () {
                                 </tbody>
                             </table>
 
-                            {{ $this->verificationBookings->links() }}
                         </div>
 
                     </div>
