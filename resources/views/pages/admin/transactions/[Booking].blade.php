@@ -46,9 +46,18 @@ $confirmBooking = function () {
 
 $cancelBooking = function () {
     try {
-        $this->booking->update([
+        $booking = $this->booking;
+
+        $booking->update([
             "status" => "CANCEL",
         ]);
+
+        foreach ($booking->payment->records as $paymentRecord) {
+            $paymentRecord->update([
+                "status" => "FAILED",
+                "status_message" => "Pemesanan telah di batalkan.",
+            ]);
+        }
 
         $this->alert("success", "Proses berhasil!", [
             "position" => "center",
@@ -58,6 +67,8 @@ $cancelBooking = function () {
             "position" => "center",
         ]);
     }
+
+    $this->redirectRoute("transactions.show", ["booking" => $this->booking->id]);
 };
 
 $cashPayment = function ($id) {
@@ -73,7 +84,7 @@ $cashPayment = function ($id) {
         ]);
 
         // → JIKA INGIN AUTO-CONFIRM BOOKING KETIKA SEMUA RECORD SUDAH PAID
-        $undone = $this->booking->payment->records()->where("status", "DRAF")->count();
+        $undone = $this->booking->payment->records()->where("status", "UNPAID")->count();
         if ($undone === 0) {
             $this->booking->update(["status" => "CONFIRM"]);
         }
@@ -222,7 +233,7 @@ $cashPayment = function ($id) {
                             </div>
                         </div>
 
-                        <div class="card-footer {{ $booking->status === "PROCESS" ?: "d-none" }}">
+                        <div class="card-footer {{ in_array($booking->status, ["PROCESS", "UNPAID"]) ? "" : "d-none" }}">
                             <div class="row">
                                 <div class="col-md">
                                     <button wire:click='cancelBooking' class="btn btn-danger w-100">

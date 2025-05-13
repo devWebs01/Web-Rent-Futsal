@@ -52,7 +52,7 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'phone' => ['required', 'numeric', 'digits_between:10,12'],
+            'phone' => ['required', 'numeric', 'digits_between:10,12', 'unique:users,phone'],
         ]);
     }
 
@@ -80,9 +80,9 @@ class RegisterController extends Controller
     protected function registered(Request $request, $user)
     {
         // Logout user setelah registrasi
-        auth()->logout();
+        // auth()->logout();
 
         // Redirect ke halaman register dengan pesan sukses
-        return redirect('/register')->with('success', 'Registrasi berhasil! Silakan periksa email Anda untuk memverifikasi akun Anda.');
+        return redirect('/welcome')->with('success', 'Registrasi berhasil! Silakan periksa email Anda untuk memverifikasi akun Anda.');
     }
 }
